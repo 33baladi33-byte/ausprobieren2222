@@ -1,26 +1,26 @@
-class MemoryTrainer{constructor(){this.questions=[],this.allQuestions=[],this.sharedOptions=[],this.trainingQueue=[],this.wrongQuestions=[],this.currentIndex=0,this.isActive=!1,this.isReviewMode=!1,this.isFromList=!1,this.examType="hoeren",this.currentCorrectText="",this.currentCorrectIndex=-1,this.currentOptions=[],this.currentQuestionIndex=0,this.currentExamId=1,this.currentQuestionObj=null,this.attempts=0,this.correctAttempts=0,this.totalQuestions=0,this.overlay=null,this.card=null,this.timer=null,this.isAnswered=!1,this.isCardReady=!1,this.TOTAL_OPTIONS=3,this.WRONG_OPTIONS=2,this.LEVELS_KEY="memory_levels",this.MAX_LEVEL=5,this.currentSkill="hoeren1",this.currentExamId=1,this._sharedOptionsCache={}}async getUserStatus(){try{return typeof window.getUserStatusGlobal=="function"?await window.getUserStatusGlobal():typeof window.getUserStatusForExam=="function"?await window.getUserStatusForExam():"free"}catch(t){return console.warn("⚠️ فشل جلب حالة المستخدم:",t),"free"}}async start(t="single"){console.log(`🧠 بدء Memory Trainer V4 (المهارة: ${this.currentSkill}, الوضع: ${t})...`);let e=null;if(this.isFromList=!1,this.sharedOptions=[],t==="list"){const s=`_${this.currentSkill}_combinedData`;if(window[s])e=window[s],this.isFromList=!0,console.log(`📚 تدريب من قائمة ${this.currentSkill} (المرحلة ${e.currentStage||1})`),e.sharedOptions&&(this.sharedOptions=e.sharedOptions),this.examType=e.examType||"hoeren",this.currentSkill==="lesen1"||this.currentSkill==="lesen3"?this.examType="matching":this.currentSkill==="lesen2"?this.examType="multiple":this.currentSkill==="sprach1"?this.examType="sprach1":this.currentSkill==="sprach2"&&(this.examType="sprach2");else if(typeof window.loadStageExams=="function"){window.loadStageExams(this.currentSkill).then(()=>{window[s]?this.start(t):this.showNotAvailable(`لم يتم تحميل بيانات ${this.currentSkill} بعد`)});return}else{this.showNotAvailable(`لم يتم تحميل بيانات ${this.currentSkill} بعد`);return}}else if(e=window.currentExamData||window._currentExamData,e)this.currentSkill=window.currentSkill||"hoeren1",this.currentExamId=window.currentExamId||1,console.log(`📖 تدريب من امتحان فردي: ${this.currentSkill} exam${this.currentExamId}`),e.sharedOptions&&(this.sharedOptions=e.sharedOptions),this.examType=e.type||"hoeren",this.currentSkill==="lesen1"||this.currentSkill==="lesen3"?this.examType="matching":this.currentSkill==="lesen2"?this.examType="multiple":this.currentSkill==="sprach1"?this.examType="sprach1":this.currentSkill==="sprach2"&&(this.examType="sprach2");else{this.showNotAvailable("لا توجد بيانات امتحان");return}if(!e){this.showNotAvailable("لا توجد بيانات امتحان");return}let i=[];if(this.isFromList)i=e.allQuestions||[],this.currentSkill==="lesen1"||this.currentSkill==="lesen2"||this.currentSkill==="lesen3"||this.currentSkill==="sprach1"||this.currentSkill==="sprach2"?this.questions=i:this.questions=i.filter(s=>s.correct===!0);else{let s=[];this.currentSkill==="sprach1"||this.currentSkill==="sprach2"?(e.options&&Array.isArray(e.options)?s=e.options:e.questions&&Array.isArray(e.questions)?s=e.questions:s=[],s=s.filter(r=>r.memoryHighlight)):this.currentSkill==="lesen3"&&e.items?(s=e.items,e.situations&&!this.sharedOptions.length&&(this.sharedOptions=e.situations)):s=e.questions||[],i=s.map((r,n)=>{let o="",a="",l="",c=0;return(this.currentSkill==="sprach1"||this.currentSkill==="sprach2")&&r.memoryHighlight&&(o=r.memoryHighlight.before||"",l=r.memoryHighlight.connector||"",a=r.memoryHighlight.after||"",c=0),{text:r.text||"",correct:r.correct,options:r.options||[],examId:this.currentExamId,questionIndex:n,originalQuestion:r,memoryHighlight:r.memoryHighlight||null,id:r.id,before:o,connector:l,after:a,color:c}}),this.currentSkill==="lesen1"||this.currentSkill==="lesen2"||this.currentSkill==="lesen3"||this.currentSkill==="sprach1"||this.currentSkill==="sprach2"?this.questions=i:this.questions=i.filter(r=>r.correct===!0)}if(this.isFromList&&(this.currentSkill==="lesen1"||this.currentSkill==="lesen3")){const s=[...new Set(i.map(r=>r.examId))];for(const r of s)if(!this._sharedOptionsCache[r])try{const n=await window.loadExamFromFile(this.currentSkill,r);n&&n.sharedOptions?(this._sharedOptionsCache[r]=n.sharedOptions,console.log(`✅ تم تحميل sharedOptions للامتحان ${r} (${n.sharedOptions.length} عنوان)`)):(this._sharedOptionsCache[r]=[],console.warn(`⚠️ لا يوجد sharedOptions للامتحان ${r}`))}catch(n){this._sharedOptionsCache[r]=[],console.warn(`⚠️ فشل تحميل الامتحان ${r}`,n)}i=i.map(r=>(r.sharedOptions=this._sharedOptionsCache[r.examId]||[],r)),this.currentSkill==="lesen3"&&(i=i.filter(r=>r.correct!==null&&r.correct!==void 0)),this.questions=i,i.length>0&&i[0].sharedOptions&&(this.sharedOptions=i[0].sharedOptions)}if(this.allQuestions=i,(this.currentSkill==="lesen1"||this.currentSkill==="lesen3")&&this.sharedOptions.length===0&&i.length>0&&console.warn(`⚠️ لم يتم العثور على sharedOptions لـ ${this.currentSkill}، قد لا تعمل الخيارات بشكل صحيح.`),this.questions.length===0){this.showNotAvailable("لا توجد إجابات صحيحة في هذا الامتحان");return}if(this.currentSkill==="lesen3"&&this.sharedOptions.length>0){const s=this.questions.length;this.questions=this.questions.filter(n=>n.correct!==null&&n.correct!==void 0&&typeof n.correct=="number"&&n.correct>=0&&n.correct<this.sharedOptions.length);const r=this.questions.length;r<s&&console.log(`🔍 Lesen 3: تم استبعاد ${s-r} فقرة غير صالحة (correct == null أو خارج النطاق)، بقي ${r} فقرة للتدريب`)}if(this.buildTrainingQueue(),this.trainingQueue.length===0){this.showNotAvailable("لا توجد جمل للتدريب");return}this.isActive=!0,this.isReviewMode=!1,this.currentIndex=0,this.attempts=0,this.correctAttempts=0,this.wrongQuestions=[],this.totalQuestions=this.trainingQueue.length,this.isCardReady=!1,this.createOverlay(),this.createCardStructure(),this.isFromList?this.showIntroCardList():this.showIntroCardSingle()}createOverlay(){this.overlay&&this.overlay.remove(),this.overlay=document.createElement("div"),this.overlay.className="memory-trainer-overlay",this.overlay.addEventListener("click",t=>{if(t.target===this.overlay){if(this.currentIndex>=this.trainingQueue.length&&this.isActive){this.wrongQuestions.length>0?this.showPhaseComplete():this.showResults();return}this.close()}}),document.body.appendChild(this.overlay)}createCardStructure(){this.overlay||(console.warn("⚠️ createCardStructure: overlay غير موجود، يتم إنشاؤه تلقائياً"),this.createOverlay());const t=this.overlay.querySelector(".memory-trainer-card-container");t&&t.remove(),this.card=document.createElement("div"),this.card.className="memory-trainer-card-container",this.card.style.cssText=`
+class MemoryTrainer{constructor(){this.questions=[],this.allQuestions=[],this.sharedOptions=[],this.trainingQueue=[],this.wrongQuestions=[],this.currentIndex=0,this.isActive=!1,this.isReviewMode=!1,this.isFromList=!1,this.examType="hoeren",this.currentCorrectText="",this.currentCorrectIndex=-1,this.currentOptions=[],this.currentQuestionIndex=0,this.currentExamId=1,this.currentQuestionObj=null,this.attempts=0,this.correctAttempts=0,this.totalQuestions=0,this.overlay=null,this.card=null,this.timer=null,this.isAnswered=!1,this.isCardReady=!1,this.TOTAL_OPTIONS=3,this.WRONG_OPTIONS=2,this.LEVELS_KEY="memory_levels",this.MAX_LEVEL=5,this.currentSkill="hoeren1",this.currentExamId=1,this.examSharedOptionsMap={}}async getUserStatus(){try{return typeof window.getUserStatusGlobal=="function"?await window.getUserStatusGlobal():typeof window.getUserStatusForExam=="function"?await window.getUserStatusForExam():"free"}catch(e){return console.warn("⚠️ فشل جلب حالة المستخدم:",e),"free"}}async start(e="single"){console.log(`🧠 بدء Memory Trainer V4 (المهارة: ${this.currentSkill}, الوضع: ${e})...`);let t=null;if(this.isFromList=!1,this.sharedOptions=[],this.examSharedOptionsMap={},e==="list"){const i=`_${this.currentSkill}_combinedData`;if(window[i]){t=window[i],this.isFromList=!0,console.log(`📚 تدريب من قائمة ${this.currentSkill} (المرحلة ${t.currentStage||1})`),this.examType=t.examType||"hoeren",this.currentSkill==="lesen1"||this.currentSkill==="lesen3"?this.examType="matching":this.currentSkill==="lesen2"?this.examType="multiple":this.currentSkill==="sprach1"?this.examType="sprach1":this.currentSkill==="sprach2"&&(this.examType="sprach2");const a=t.examIds||[];if(a.length===0){this.showNotAvailable("لا توجد امتحانات في هذه المرحلة");return}let n=[];for(const o of a)try{const s=await fetch(`data/${this.currentSkill}/exam${o}.json`);if(!s.ok){console.warn(`⚠️ لا يمكن تحميل الامتحان ${o}`);continue}const r=await s.json();let l=[];if(this.currentSkill==="lesen1"&&r.sharedOptions?l=r.sharedOptions:this.currentSkill==="lesen3"&&r.situations&&(l=r.situations),l.length===0){console.warn(`⚠️ الامتحان ${o} ليس لديه sharedOptions، سيتم تخطيه`);continue}this.examSharedOptionsMap[o]=l;let c=[];this.currentSkill==="lesen1"||this.currentSkill==="lesen2"?c=r.questions||[]:this.currentSkill==="lesen3"?(c=r.items||[],c=c.filter(d=>d.correct!==null&&d.correct!==void 0&&typeof d.correct=="number"&&d.correct>=0&&d.correct<l.length)):c=r.questions||[];for(const d of c){const p={...d,examId:o};p._sharedOptions=l,n.push(p)}console.log(`✅ تم تحميل الامتحان ${o} (${c.length} سؤال)`)}catch(s){console.warn(`⚠️ فشل تحميل الامتحان ${o}:`,s)}if(n.length===0){this.showNotAvailable("لا توجد أسئلة صالحة للتدريب في هذه المرحلة");return}if(this.questions=this.shuffleArray(n),this.allQuestions=this.questions.slice(),console.log(`📊 تم جمع ${this.questions.length} سؤال من ${a.length} امتحان`),this.sharedOptions.length===0&&a.length>0){const o=a[0];this.examSharedOptionsMap[o]&&(this.sharedOptions=this.examSharedOptionsMap[o])}}else if(typeof window.loadStageExams=="function"){await window.loadStageExams(this.currentSkill),window[i]?this.start(e):this.showNotAvailable(`لم يتم تحميل بيانات ${this.currentSkill} بعد`);return}else{this.showNotAvailable(`لم يتم تحميل بيانات ${this.currentSkill} بعد`);return}}else if(t=window.currentExamData||window._currentExamData,t){this.currentSkill=window.currentSkill||"hoeren1",this.currentExamId=window.currentExamId||1,console.log(`📖 تدريب من امتحان فردي: ${this.currentSkill} exam${this.currentExamId}`),this.currentSkill==="lesen3"&&t.situations&&!this.sharedOptions.length?this.sharedOptions=t.situations:t.sharedOptions&&(this.sharedOptions=t.sharedOptions),this.examType=t.type||"hoeren",this.currentSkill==="lesen1"||this.currentSkill==="lesen3"?this.examType="matching":this.currentSkill==="lesen2"?this.examType="multiple":this.currentSkill==="sprach1"?this.examType="sprach1":this.currentSkill==="sprach2"&&(this.examType="sprach2");let i=[];if(this.currentSkill==="sprach1"||this.currentSkill==="sprach2"?i=(t.options&&Array.isArray(t.options)?t.options:t.questions||[]).filter(n=>n.memoryHighlight).map((n,o)=>{const s=n.memoryHighlight||{};return{text:n.text||"",correct:n.correct,options:n.options||[],examId:this.currentExamId,questionIndex:o,originalQuestion:n,memoryHighlight:n.memoryHighlight||null,id:n.id,before:s.before||"",connector:s.connector||"",after:s.after||"",color:0,_sharedOptions:this.sharedOptions}}):this.currentSkill==="lesen3"&&t.items?(i=(t.items||[]).map((n,o)=>({...n,examId:this.currentExamId,questionIndex:o,_sharedOptions:this.sharedOptions})),this.sharedOptions.length>0&&(i=i.filter(n=>n.correct!==null&&n.correct!==void 0&&typeof n.correct=="number"&&n.correct>=0&&n.correct<this.sharedOptions.length))):i=(t.questions||[]).map((n,o)=>({...n,examId:this.currentExamId,questionIndex:o,_sharedOptions:this.sharedOptions})),this.questions=i,this.allQuestions=i.slice(),this.questions.length===0){this.showNotAvailable("لا توجد أسئلة صالحة في هذا الامتحان");return}}else{this.showNotAvailable("لا توجد بيانات امتحان");return}if(this.buildTrainingQueue(),this.trainingQueue.length===0){this.showNotAvailable("لا توجد جمل للتدريب");return}this.isActive=!0,this.isReviewMode=!1,this.currentIndex=0,this.attempts=0,this.correctAttempts=0,this.wrongQuestions=[],this.totalQuestions=this.trainingQueue.length,this.isCardReady=!1,this.createOverlay(),this.createCardStructure(),this.isFromList?this.showIntroCardList():this.showIntroCardSingle()}createOverlay(){this.overlay&&this.overlay.remove(),this.overlay=document.createElement("div"),this.overlay.className="memory-trainer-overlay",this.overlay.addEventListener("click",e=>{if(e.target===this.overlay){if(this.currentIndex>=this.trainingQueue.length&&this.isActive){this.wrongQuestions.length>0?this.showPhaseComplete():this.showResults();return}this.close()}}),document.body.appendChild(this.overlay)}createCardStructure(){this.overlay||(console.warn("⚠️ createCardStructure: overlay غير موجود، يتم إنشاؤه تلقائياً"),this.createOverlay());const e=this.overlay.querySelector(".memory-trainer-card-container");e&&e.remove(),this.card=document.createElement("div"),this.card.className="memory-trainer-card-container",this.card.style.cssText=`
             width: 100%;
             display: flex;
             align-items: center;
             justify-content: center;
             animation: memorySlideUp 0.15s ease;
-        `,this.overlay.appendChild(this.card),this.isCardReady=!0}updateCard(t){(!this.isCardReady||!this.card)&&this.createCardStructure(),this.card.innerHTML=t}buildTrainingQueue(){const t=this.questions.map(r=>r),e=Math.ceil(t.length/2),i=this.shuffleArray([...t]),s=[];for(let r=0;r<Math.min(e,i.length);r++)s.push(i[r]);this.trainingQueue=this.shuffleArray([...t,...s]),console.log(`📊 قائمة التدريب: ${this.trainingQueue.length} جملة (${this.isFromList?"مرحلة":"امتحان فردي"})`)}buildSentenceId(t,e,i){return window.buildSentenceId?window.buildSentenceId(t,e,i):`${t}_exam${e}_${i}`}getSentenceLevel(t){const e=JSON.parse(localStorage.getItem(this.LEVELS_KEY)||"{}");return e[t]!==void 0?e[t]:0}setSentenceLevel(t,e){const i=JSON.parse(localStorage.getItem(this.LEVELS_KEY)||"{}");let s=Math.max(0,Math.min(this.MAX_LEVEL,e));i[t]=s,localStorage.setItem(this.LEVELS_KEY,JSON.stringify(i))}increaseLevel(t){const e=this.getSentenceLevel(t);if(e<this.MAX_LEVEL){const i=e+1;this.setSentenceLevel(t,i),console.log(`⬆️ زيادة مستوى ${t} -> ${i}`)}}decreaseLevel(t){const e=this.getSentenceLevel(t);if(e>0){const i=e-1;this.setSentenceLevel(t,i),console.log(`⬇️ إنقاص مستوى ${t} -> ${i}`)}}getExamProgress(t,e){if(window.getExamProgress)return window.getExamProgress(t,e);const i=`${t}_exam${e}_`,s=JSON.parse(localStorage.getItem(this.LEVELS_KEY)||"{}");let r=0,n=0;for(const o in s)o.startsWith(i)&&(r+=s[o],n++);return n===0?0:Math.min(100,Math.round(r/(n*this.MAX_LEVEL)*100))}getOverallProgressForSkill(t){return window.getOverallProgress?window.getOverallProgress.length===1?window.getOverallProgress(t):window.getOverallProgress():0}getStageProgressForSkill(t){return window.getStageProgress?window.getStageProgress(t):0}generateOptions(t,e){const i=[t];let s=0;if(this.examType==="matching"&&this.sharedOptions&&this.sharedOptions.length>0){const o=e.correct,a=this.sharedOptions[o],l=this.sharedOptions.filter((h,x)=>x!==o),d=this.shuffleArray([...l]).slice(0,2),p=[a,...d];for(;p.length<3;){const h=this.sharedOptions[Math.floor(Math.random()*this.sharedOptions.length)];p.includes(h)||p.push(h)}return this.shuffleArray(p)}const r=this.allQuestions.filter(o=>o.text!==t).map(o=>o.text);let n=this.shuffleArray([...r]);for(let o=0;o<n.length&&s<this.WRONG_OPTIONS;o++){const a=n[o];!i.includes(a)&&a.trim()!==""&&(i.push(a),s++)}for(;i.length<this.TOTAL_OPTIONS;)console.warn("⚠️ لم يتم العثور على جمل خاطئة كافية، نضيف جملة وهمية مؤقتة"),i.push(`جملة ${i.length+1}`);return this.shuffleArray(i)}showIntroCardSingle(){const t=this.getExamProgress(this.currentSkill,this.currentExamId);let e=`امتحان ${this.currentExamId}`;this.examType==="matching"?this.currentSkill==="lesen3"?e=`امتحان ${this.currentExamId} (Lesen 3)`:e=`امتحان ${this.currentExamId} (Lesen 1)`:this.examType==="multiple"?e=`امتحان ${this.currentExamId} (Lesen 2)`:this.examType==="sprach1"?e=`امتحان ${this.currentExamId} (Sprachbausteine 1)`:this.examType==="sprach2"&&(e=`امتحان ${this.currentExamId} (Sprachbausteine 2)`),this.updateCard(`
+        `,this.overlay.appendChild(this.card),this.isCardReady=!0}updateCard(e){(!this.isCardReady||!this.card)&&this.createCardStructure(),this.card.innerHTML=e}buildTrainingQueue(){const e=this.questions.map(n=>n),t=Math.ceil(e.length/2),i=this.shuffleArray([...e]),a=[];for(let n=0;n<Math.min(t,i.length);n++)a.push(i[n]);this.trainingQueue=this.shuffleArray([...e,...a]),console.log(`📊 قائمة التدريب: ${this.trainingQueue.length} جملة (${this.isFromList?"مرحلة":"امتحان فردي"})`)}buildSentenceId(e,t,i){return window.buildSentenceId?window.buildSentenceId(e,t,i):`${e}_exam${t}_${i}`}getSentenceLevel(e){const t=JSON.parse(localStorage.getItem(this.LEVELS_KEY)||"{}");return t[e]!==void 0?t[e]:0}setSentenceLevel(e,t){const i=JSON.parse(localStorage.getItem(this.LEVELS_KEY)||"{}");let a=Math.max(0,Math.min(this.MAX_LEVEL,t));i[e]=a,localStorage.setItem(this.LEVELS_KEY,JSON.stringify(i))}increaseLevel(e){const t=this.getSentenceLevel(e);if(t<this.MAX_LEVEL){const i=t+1;this.setSentenceLevel(e,i),console.log(`⬆️ زيادة مستوى ${e} -> ${i}`)}}decreaseLevel(e){const t=this.getSentenceLevel(e);if(t>0){const i=t-1;this.setSentenceLevel(e,i),console.log(`⬇️ إنقاص مستوى ${e} -> ${i}`)}}getExamProgress(e,t){if(window.getExamProgress)return window.getExamProgress(e,t);const i=`${e}_exam${t}_`,a=JSON.parse(localStorage.getItem(this.LEVELS_KEY)||"{}");let n=0,o=0;for(const s in a)s.startsWith(i)&&(n+=a[s],o++);return o===0?0:Math.min(100,Math.round(n/(o*this.MAX_LEVEL)*100))}getOverallProgressForSkill(e){return window.getOverallProgress?window.getOverallProgress.length===1?window.getOverallProgress(e):window.getOverallProgress():0}getStageProgressForSkill(e){return window.getStageProgress?window.getStageProgress(e):0}generateOptions(e,t){const i=[e];let a=0;if(this.examType==="matching"){const s=t.examId||this.currentExamId;let r=this.examSharedOptionsMap[s]||this.sharedOptions;if(r&&r.length>0){const l=t.correct,c=r[l],d=r.filter((m,g)=>g!==l),x=this.shuffleArray([...d]).slice(0,2),h=[c,...x];for(;h.length<3;){const m=r[Math.floor(Math.random()*r.length)];h.includes(m)||h.push(m)}return this.shuffleArray(h)}}const n=this.allQuestions.filter(s=>s.text!==e).map(s=>s.text);let o=this.shuffleArray([...n]);for(let s=0;s<o.length&&a<this.WRONG_OPTIONS;s++){const r=o[s];!i.includes(r)&&r.trim()!==""&&(i.push(r),a++)}for(;i.length<this.TOTAL_OPTIONS;)console.warn("⚠️ لم يتم العثور على جمل خاطئة كافية، نضيف جملة وهمية مؤقتة"),i.push(`جملة ${i.length+1}`);return this.shuffleArray(i)}showIntroCardSingle(){const e=this.getExamProgress(this.currentSkill,this.currentExamId);let t=`امتحان ${this.currentExamId}`;this.examType==="matching"?this.currentSkill==="lesen3"?t=`امتحان ${this.currentExamId} (Lesen 3)`:t=`امتحان ${this.currentExamId} (Lesen 1)`:this.examType==="multiple"?t=`امتحان ${this.currentExamId} (Lesen 2)`:this.examType==="sprach1"?t=`امتحان ${this.currentExamId} (Sprachbausteine 1)`:this.examType==="sprach2"&&(t=`امتحان ${this.currentExamId} (Sprachbausteine 2)`),this.updateCard(`
             <div class="memory-trainer-intro">
                 <div class="memory-trainer-icon">🧩</div>
                 <h2>استدعاء ذكي</h2>
-                <p style="font-size:14px;color:#334155;margin:6px 0 2px 0;">تدريب ${e}.</p>
+                <p style="font-size:14px;color:#334155;margin:6px 0 2px 0;">تدريب ${t}.</p>
                 <p style="font-size:13px;color:#64748B;margin:2px 0 14px 0;">${this.examType==="multiple"?"سترى السؤال مرة واحدة، ثم سنطلب منك اختيار الجواب الصحيح.":this.examType==="sprach1"||this.examType==="sprach2"?"سترى الجملة مع الفراغ، ثم سنطلب منك اختيار الكلمة المناسبة.":"سترى النص مرة واحدة، ثم سنطلب منك اختيار العنوان المناسب."}</p>
                 <div style="margin:4px 0 14px 0;background:#FFFFFF;border:1px solid #E8EEF5;border-radius:6px;padding:4px 10px;">
                     <div style="display:flex;align-items:center;gap:10px;">
                         <div style="flex:1;height:5px;background:#e9eef5;border-radius:6px;overflow:hidden;">
-                            <div style="width:${t}%;height:100%;background:linear-gradient(90deg,#1565C0,#38bdf8);border-radius:6px;"></div>
+                            <div style="width:${e}%;height:100%;background:linear-gradient(90deg,#1565C0,#38bdf8);border-radius:6px;"></div>
                         </div>
-                        <span style="font-size:12px;font-weight:600;color:#1565C0;">${t}%</span>
+                        <span style="font-size:12px;font-weight:600;color:#1565C0;">${e}%</span>
                     </div>
                 </div>
                 <button class="memory-trainer-btn primary" onclick="window.memoryTrainer.showMemoryCard()">ابدأ</button>
             </div>
-        `)}showIntroCardList(){this.getUserStatus().then(t=>{const e=t==="premium",i=this.getOverallProgressForSkill(this.currentSkill),s=this.trainingQueue.length;let r=1,n=1;window.getCurrentStage&&window.getTotalStages&&(r=window.getCurrentStage(this.currentSkill),n=window.getTotalStages(this.currentSkill));let o=this.currentSkill;this.examType==="matching"?this.currentSkill==="lesen3"?o="Lesen 3":o="Lesen 1":this.examType==="multiple"?o="Lesen 2":this.examType==="sprach1"?o="Sprachbausteine 1":this.examType==="sprach2"&&(o="Sprachbausteine 2");let a="";e?a='<button class="memory-trainer-btn primary" onclick="window.memoryTrainer.showMemoryCard()">ابدأ التدريب</button>':a=`
+        `)}showIntroCardList(){this.getUserStatus().then(e=>{const t=e==="premium",i=this.getOverallProgressForSkill(this.currentSkill),a=this.trainingQueue.length;let n=1,o=1;window.getCurrentStage&&window.getTotalStages&&(n=window.getCurrentStage(this.currentSkill),o=window.getTotalStages(this.currentSkill));let s=this.currentSkill;this.examType==="matching"?this.currentSkill==="lesen3"?s="Lesen 3":s="Lesen 1":this.examType==="multiple"?s="Lesen 2":this.examType==="sprach1"?s="Sprachbausteine 1":this.examType==="sprach2"&&(s="Sprachbausteine 2");let r="";t?r='<button class="memory-trainer-btn primary" onclick="window.memoryTrainer.showMemoryCard()">ابدأ التدريب</button>':r=`
                     <button class="memory-trainer-btn locked" onclick="window.location.href='subscribe.html'" style="
                         padding: 8px 20px;
                         border: none;
@@ -45,7 +45,7 @@ class MemoryTrainer{constructor(){this.questions=[],this.allQuestions=[],this.sh
                 `,this.updateCard(`
                 <div class="memory-trainer-intro">
                     <h2>استدعاء متقدم 🧩</h2>
-                    <p style="font-size:14px;color:#334155;margin:4px 0 2px 0;">هاد الميزة غدي تخليك تتدرب على جميع أسئلة امتحانات المرحلة ${r} من ${o}.</p>
+                    <p style="font-size:14px;color:#334155;margin:4px 0 2px 0;">هاد الميزة غدي تخليك تتدرب على جميع أسئلة امتحانات المرحلة ${n} من ${s}.</p>
                     <p style="font-size:13px;color:#64748B;margin:2px 0 12px 0;">كلما تدربت أكثر، أصبح النظام أكثر ذكاءً في اختيار الأسئلة.</p>
                     <div style="margin:10px 0 14px 0;background:#FFFFFF;border:1px solid #E8EEF5;border-radius:6px;padding:6px 10px;text-align:left;">
                         <div style="display:flex;align-items:center;gap:10px;">
@@ -55,9 +55,9 @@ class MemoryTrainer{constructor(){this.questions=[],this.allQuestions=[],this.sh
                             <span style="font-size:13px;font-weight:600;color:#1565C0;min-width:40px;text-align:right;">${i}%</span>
                         </div>
                     </div>
-                    <p style="font-size:12px;color:#94A3B8;margin:4px 0 4px 0;">${s} نص للتدريب</p>
-                    <p style="font-size:11px;color:#94A3B8;margin:0 0 12px 0;">المرحلة ${r} / ${n}</p>
-                    ${a}
+                    <p style="font-size:12px;color:#94A3B8;margin:4px 0 4px 0;">${a} نص للتدريب</p>
+                    <p style="font-size:11px;color:#94A3B8;margin:0 0 12px 0;">المرحلة ${n} / ${o}</p>
+                    ${r}
                 </div>
             `)}).catch(()=>{this.updateCard(`
                 <div class="memory-trainer-intro">
@@ -75,7 +75,7 @@ class MemoryTrainer{constructor(){this.questions=[],this.allQuestions=[],this.sh
                     <p style="font-size:12px;color:#94A3B8;margin:4px 0 4px 0;">جاري التحميل...</p>
                     <button class="memory-trainer-btn locked" onclick="window.location.href='subscribe.html'" style="padding:8px 20px;border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;margin-top:12px;background:#64748B;color:#cbd5e1;opacity:0.7;">🔒 متاح للحساب الكامل</button>
                 </div>
-            `)})}showMemoryCard(){if(this.clearTimer(),this.isAnswered=!1,this.currentIndex>=this.trainingQueue.length){this.showPhaseComplete();return}const t=this.trainingQueue[this.currentIndex],e=t.text;this.currentCorrectText=e,this.currentExamId=t.examId,this.currentQuestionIndex=t.questionIndex,this.currentQuestionObj=t,this.currentCorrectIndex=t.correct;let i="",s="";if(this.examType==="matching"){const r=this.sharedOptions,n=this.currentQuestionObj.correct,o=r[n]||"",a=o.match(/^[a-zA-Z][\.\)]\s*/)?o.match(/^[a-zA-Z][\.\)]\s*/)[0]:"",l=o.replace(/^[a-zA-Z][\.\)]\s*/,"");i=`
+            `)})}showMemoryCard(){if(this.clearTimer(),this.isAnswered=!1,this.currentIndex>=this.trainingQueue.length){this.showPhaseComplete();return}const e=this.trainingQueue[this.currentIndex],t=e.text;this.currentCorrectText=t,this.currentExamId=e.examId||this.currentExamId,this.currentQuestionIndex=e.questionIndex||0,this.currentQuestionObj=e,this.currentCorrectIndex=e.correct;const i=e.examId||this.currentExamId,a=this.examSharedOptionsMap[i]||this.sharedOptions;let n="";if(this.examType==="matching"){const o=this.currentCorrectIndex,s=a&&a[o]||"",r=s.match(/^[a-zA-Z][\.\)]\s*/)?s.match(/^[a-zA-Z][\.\)]\s*/)[0]:"",l=s.replace(/^[a-zA-Z][\.\)]\s*/,"");n=`
                 <div class="memory-trainer-card" style="
                     background: #FFFFFF;
                     border: 1px solid #E8EEF5;
@@ -139,7 +139,7 @@ class MemoryTrainer{constructor(){this.questions=[],this.allQuestions=[],this.sh
                             box-sizing: border-box;
                             margin: 8px 0 12px 0;
                         ">
-                            ${e}
+                            ${t}
                         </div>
 
                         <!-- العنوان كسطر عادي -->
@@ -152,7 +152,7 @@ class MemoryTrainer{constructor(){this.questions=[],this.allQuestions=[],this.sh
                             direction: rtl;
                             margin-top: 0;
                         ">
-                            ✅ ${a}${l}
+                            ✅ ${r}${l}
                         </div>
                     </div>
 
@@ -174,9 +174,7 @@ class MemoryTrainer{constructor(){this.questions=[],this.allQuestions=[],this.sh
                         أنا جاهز
                     </button>
                 </div>
-            `}else if(this.examType==="multiple"){const r=this.currentQuestionObj.questionIndex!==void 0?this.currentQuestionObj.questionIndex+1:this.currentIndex+1;let o=this.currentQuestionObj.options&&this.currentQuestionObj.options.length>0?this.currentQuestionObj.options[this.currentQuestionObj.correct]:"";/^[a-zA-Z][\.\)]\s*/.test(o)&&(o=o.replace(/^[a-zA-Z][\.\)]\s*/,""));const a=`${r}:${e}:
-
-         a. ${o}`;i=`
+            `}else if(this.examType==="multiple"){const o=this.currentQuestionIndex!==void 0?this.currentQuestionIndex+1:this.currentIndex+1;let r=e.options&&e.options.length>0?e.options[e.correct]:"";/^[a-zA-Z][\.\)]\s*/.test(r)&&(r=r.replace(/^[a-zA-Z][\.\)]\s*/,"")),n=`
                 <div class="memory-trainer-card" style="
                     background: #FFFFFF;
                     border: 1px solid #E8EEF5;
@@ -233,7 +231,7 @@ class MemoryTrainer{constructor(){this.questions=[],this.allQuestions=[],this.sh
     background: transparent;
     border-radius: 6px;
 ">
-    ✅ ${o}
+    ✅ ${r}
 </div>
                     </div>
 
@@ -255,7 +253,7 @@ class MemoryTrainer{constructor(){this.questions=[],this.allQuestions=[],this.sh
                         أنا جاهز
                     </button>
                 </div>
-            `}else if(this.examType==="sprach1"){const r=this.currentQuestionObj,n=r.memoryHighlight||{},o=r.id||this.currentQuestionIndex+1,a=n.before||"",l=n.connector||"",c=n.after||"";i=`
+            `}else if(this.examType==="sprach1"){const o=e.memoryHighlight||{},s=e.id||this.currentQuestionIndex+1,r=o.before||"",l=o.connector||"",c=o.after||"";n=`
                 <div class="memory-trainer-card" style="
                     background: #FFFFFF;
                     border: 1px solid #E8EEF5;
@@ -320,7 +318,7 @@ class MemoryTrainer{constructor(){this.questions=[],this.allQuestions=[],this.sh
     box-sizing: border-box;
     margin: 8px 0 12px 0;
 ">
-    ${a} <span style="font-weight:700;color:#1565C0;background:#E3F2FD;padding:0 6px;border-radius:4px;">[${o}]</span> ${c}
+    ${r} <span style="font-weight:700;color:#1565C0;background:#E3F2FD;padding:0 6px;border-radius:4px;">[${s}]</span> ${c}
 </div>
 
                         <!-- الإجابة الصحيحة -->
@@ -357,7 +355,7 @@ class MemoryTrainer{constructor(){this.questions=[],this.allQuestions=[],this.sh
                         أنا جاهز
                     </button>
                 </div>
-            `}else if(this.examType==="sprach2"){const r=this.currentQuestionObj,n=r.memoryHighlight||{},o=r.id||this.currentQuestionIndex+1,a=n.before||"",l=n.connector||"",c=n.after||"";i=`
+            `}else if(this.examType==="sprach2"){const o=e.memoryHighlight||{},s=e.id||this.currentQuestionIndex+1,r=o.before||"",l=o.connector||"",c=o.after||"";n=`
                 <div class="memory-trainer-card" style="
                     background: #FFFFFF;
                     border: 1px solid #E8EEF5;
@@ -422,7 +420,7 @@ class MemoryTrainer{constructor(){this.questions=[],this.allQuestions=[],this.sh
                             box-sizing: border-box;
                             margin: 8px 0 12px 0;
                         ">
-                            ${a} <span style="font-weight:700;color:#1565C0;background:#E3F2FD;padding:0 6px;border-radius:4px;">[${o}]</span> ${c}
+                            ${r} <span style="font-weight:700;color:#1565C0;background:#E3F2FD;padding:0 6px;border-radius:4px;">[${s}]</span> ${c}
                         </div>
 
                         <!-- الإجابة الصحيحة -->
@@ -459,7 +457,7 @@ class MemoryTrainer{constructor(){this.questions=[],this.allQuestions=[],this.sh
                         أنا جاهز
                     </button>
                 </div>
-            `}else i=`
+            `}else n=`
                 <div class="memory-trainer-card">
                     <div class="memory-trainer-header">
                         <span class="memory-trainer-progress">${this.currentIndex+1}/${this.trainingQueue.length}</span>
@@ -468,16 +466,16 @@ class MemoryTrainer{constructor(){this.questions=[],this.allQuestions=[],this.sh
                     <div class="memory-trainer-content">
                         <p class="memory-trainer-hint">🌿 سأطلب منك هذه الجملة بعد قليل.</p>
                         <div class="memory-trainer-answer">
-                            <span>${e}</span>
+                            <span>${t}</span>
                         </div>
                     </div>
                     <button class="memory-trainer-btn primary" onclick="window.memoryTrainer.readyToRecall()">أنا جاهز</button>
                 </div>
-            `;this.updateCard(i)}readyToRecall(){if(this.clearTimer(),this.examType==="matching"){const s=this.sharedOptions;if(!s||s.length===0){console.error("❌ خطأ: لا توجد خيارات لهذا السؤال",this.currentQuestionObj),this.showNotAvailable("حدث خطأ في تحميل خيارات هذا السؤال. يرجى العودة والمحاولة مرة أخرى.");return}const r=this.currentQuestionObj.correct,n=s[r],o=s.filter((a,l)=>l!==r).sort(()=>Math.random()-.5).slice(0,2);for(;o.length<2;){const a=s[Math.floor(Math.random()*s.length)];!o.includes(a)&&a!==n&&o.push(a)}this.currentOptions=this.shuffleArray([n,...o])}else if(this.examType==="multiple")this.currentOptions=this.currentQuestionObj.options||[],this.currentOptions.length===0&&(console.warn("⚠️ لا توجد خيارات في السؤال، نستخدم generateOptions كحل احتياطي"),this.currentOptions=this.generateOptions(this.currentCorrectText,this.currentQuestionObj));else if(this.examType==="sprach1")this.currentOptions=this.currentQuestionObj.options||[],this.currentOptions.length===0&&(console.warn("⚠️ لا توجد خيارات في السؤال، نستخدم generateOptions كحل احتياطي"),this.currentOptions=this.generateOptions(this.currentCorrectText,this.currentQuestionObj));else if(this.examType==="sprach2"){const s=this.currentQuestionObj.options||[],r=this.currentQuestionObj.connector||this.currentQuestionObj.correct,n=s.filter(o=>o!==r).sort(()=>Math.random()-.5).slice(0,2);this.currentOptions=this.shuffleArray([r,...n])}else this.currentOptions=this.generateOptions(this.currentCorrectText,this.currentQuestionObj);let t="",e="",i="";if(this.examType==="matching")t=this.currentSkill==="lesen3"?"اختر الحالة المناسبة للفقرة التي قرأتها:":"اختر العنوان المناسب للنص الذي قرأته:";else if(this.examType==="multiple")t="ما الاختيار الصحيح؟",e=`
+            `;this.updateCard(n)}readyToRecall(){this.clearTimer();const e=this.currentQuestionObj,t=e.examId||this.currentExamId,i=this.examSharedOptionsMap[t]||this.sharedOptions;if(this.examType==="matching"){const s=this.currentCorrectIndex,r=i[s],l=i.filter((c,d)=>d!==s).sort(()=>Math.random()-.5).slice(0,2);for(;l.length<2;){const c=i[Math.floor(Math.random()*i.length)];!l.includes(c)&&c!==r&&l.push(c)}this.currentOptions=this.shuffleArray([r,...l])}else if(this.examType==="multiple")this.currentOptions=e.options||[],this.currentOptions.length===0&&(console.warn("⚠️ لا توجد خيارات في السؤال، نستخدم generateOptions كحل احتياطي"),this.currentOptions=this.generateOptions(this.currentCorrectText,e));else if(this.examType==="sprach1")this.currentOptions=e.options||[],this.currentOptions.length===0&&(console.warn("⚠️ لا توجد خيارات في السؤال، نستخدم generateOptions كحل احتياطي"),this.currentOptions=this.generateOptions(this.currentCorrectText,e));else if(this.examType==="sprach2"){const s=e.options||[],r=e.connector||e.correct,l=s.filter(c=>c!==r).sort(()=>Math.random()-.5).slice(0,2);this.currentOptions=this.shuffleArray([r,...l])}else this.currentOptions=this.generateOptions(this.currentCorrectText,e);let a="",n="";if(this.examType==="matching")a=this.currentSkill==="lesen3"?"اختر الحالة المناسبة للفقرة التي قرأتها:":"اختر العنوان المناسب للنص الذي قرأته:";else if(this.examType==="multiple")a="ما الاختيار الصحيح؟",n=`
                 <div style="font-size:17px; font-weight:500; text-align:left; padding:12px 0; color:#1a202c; margin-bottom:16px;">
-                    ${this.currentQuestionObj.questionIndex!==void 0?this.currentQuestionObj.questionIndex+1:this.currentIndex+1}. ${this.currentCorrectText}:
+                    ${this.currentQuestionIndex!==void 0?this.currentQuestionIndex+1:this.currentIndex+1}. ${this.currentCorrectText}:
                 </div>
-            `;else if(this.examType==="sprach1"){t="اختر الكلمة الصحيحة:";const s=this.currentQuestionObj,r=s.memoryHighlight||{},n=s.id||this.currentQuestionIndex+1,o=r.before||"",a=r.after||"";e=`
+            `;else if(this.examType==="sprach1"){a="اختر الكلمة الصحيحة:";const s=e.memoryHighlight||{},r=e.id||this.currentQuestionIndex+1,l=s.before||"",c=s.after||"";n=`
                 <div style="
                     font-size: 18px;
                     font-weight: 500;
@@ -489,9 +487,9 @@ class MemoryTrainer{constructor(){this.questions=[],this.allQuestions=[],this.sh
                     background: rgba(255,255,255,0.5);
                     border-radius: 8px;
                 ">
-                    ${o} <span style="font-weight:700;color:#1565C0;background:#E3F2FD;padding:0 6px;border-radius:4px;">[${n}]</span> ${a}
+                    ${l} <span style="font-weight:700;color:#1565C0;background:#E3F2FD;padding:0 6px;border-radius:4px;">[${r}]</span> ${c}
                 </div>
-            `}else if(this.examType==="sprach2"){t="اختر الكلمة الصحيحة:";const s=this.currentQuestionObj,r=s.memoryHighlight||{},n=s.id||this.currentQuestionIndex+1,o=r.before||"",a=r.after||"";e=`
+            `}else if(this.examType==="sprach2"){a="اختر الكلمة الصحيحة:";const s=e.memoryHighlight||{},r=e.id||this.currentQuestionIndex+1,l=s.before||"",c=s.after||"";n=`
                 <div style="
                     font-size: 18px;
                     font-weight: 500;
@@ -503,156 +501,81 @@ class MemoryTrainer{constructor(){this.questions=[],this.allQuestions=[],this.sh
                     background: rgba(255,255,255,0.5);
                     border-radius: 8px;
                 ">
-                    ${o} <span style="font-weight:700;color:#1565C0;background:#E3F2FD;padding:0 6px;border-radius:4px;">[${n}]</span> ${a}
+                    ${l} <span style="font-weight:700;color:#1565C0;background:#E3F2FD;padding:0 6px;border-radius:4px;">[${r}]</span> ${c}
                 </div>
-            `}else t="ما هي الجملة التي رأيتها قبل قليل؟";if(this.examType==="matching"&&this.isFromList){const s=this.currentCorrectText,r=this.currentOptions.map((n,o)=>`
-                <button class="memory-trainer-option" data-index="${o}" onclick="window.memoryTrainer.checkAnswer(${o})" style="
-                    background: #FFFFFF;
-                    border: 1.5px solid #E8EEF5;
+            `}else a="ما هي الجملة التي رأيتها قبل قليل؟";let o="";this.examType==="matching"&&(o=`
+                <div class="memory-reading-box" style="
+                    width: 100%;
+                    max-height: 140px;
+                    overflow-y: auto;
+                    padding: 12px 16px;
+                    background: #F8FAFC;
+                    border: 1px solid #EDF2F7;
                     border-radius: 10px;
-                    padding: 9px 14px;
-                    font-size: 14px;
-                    font-weight: 500;
-                    color: #334155;
-                    cursor: pointer;
-                    text-align: left;
-                    transition: background-color 0.08s ease, border-color 0.08s ease, box-shadow 0.08s ease, transform 0.08s ease;
-                    transform: translateY(0);
-                    box-shadow: none;
-                "
-                onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 10px rgba(0,0,0,0.08)'; this.style.borderColor='#2c3e66';"
-                onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none'; this.style.borderColor='#E8EEF5';"
-                >
-                    ${String.fromCharCode(65+o)}. ${n}
-                </button>
-            `).join("");i=`
-                <div class="memory-trainer-recall" style="
-                    background: #FFFFFF;
-                    border: 1px solid #E8EEF5;
-                    border-radius: 12px;
-                    padding: 20px 24px;
-                    max-width: 440px;
-                    width: 90%;
-                    text-align: center;
-                    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
-                    position: relative;
+                    text-align: right;
+                    direction: rtl;
+                    font-size: 15px;
+                    line-height: 1.8;
+                    font-weight: 400;
+                    color: #1a202c;
+                    box-sizing: border-box;
+                    margin: 8px 0 12px 0;
                 ">
-                    <div class="memory-trainer-header" style="
-                        display: flex;
-                        justify-content: space-between;
-                        align-items: center;
-                        margin-bottom: 10px;
-                        padding-bottom: 8px;
-                        border-bottom: 1px solid #F1F5F9;
-                    ">
-                        <span class="memory-trainer-progress" style="
-                            font-size: 12px;
-                            color: #94A3B8;
-                            font-weight: 500;
-                        ">
-                            ${this.currentIndex+1}/${this.trainingQueue.length}
-                        </span>
-                        <span class="memory-trainer-focus" style="
-                            font-size: 13px;
-                            font-weight: 600;
-                            color: #2D6A4F;
-                        ">
-                            🍃 اختر العنوان
-                        </span>
-                    </div>
-                    <div class="memory-trainer-content">
-                        <p class="memory-trainer-question" style="
-                            font-size: 15px;
-                            font-weight: 500;
-                            color: #334155;
-                            margin-bottom: 10px;
-                        ">
-                            ${t}
-                        </p>
-                        <!-- الفقرة تبقى ظاهرة -->
-                        <div class="memory-reading-box" style="
-                            width: 100%;
-                            height: 160px;
-                            overflow-y: auto;
-                            padding: 12px 16px;
-                            background: #F8FAFC;
-                            border: 1px solid #EDF2F7;
-                            border-radius: 10px;
-                            text-align: left;
-                            direction: rtl;
-                            font-size: 15px;
-                            line-height: 1.8;
-                            font-weight: 400;
-                            color: #1a202c;
-                            box-sizing: border-box;
-                            margin: 8px 0 12px 0;
-                        ">
-                            ${s}
-                        </div>
-                        <!-- الخيارات أسفل الفقرة -->
-                        <div class="memory-trainer-options" style="
-                            display: flex;
-                            flex-direction: column;
-                            gap: 6px;
-                            margin: 8px 0;
-                        ">
-                            ${r}
-                        </div>
-                    </div>
-                    <div id="memory-trainer-feedback"></div>
+                    ${this.currentCorrectText}
                 </div>
-            `}else i=`
-                <div class="memory-trainer-recall" style="
-                    background: #FFFFFF;
-                    border: 1px solid #E8EEF5;
-                    border-radius: 12px;
-                    padding: 20px 24px;
-                    max-width: 440px;
-                    width: 90%;
-                    text-align: center;
-                    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
-                    position: relative;
+            `),this.updateCard(`
+            <div class="memory-trainer-recall" style="
+                background: #FFFFFF;
+                border: 1px solid #E8EEF5;
+                border-radius: 12px;
+                padding: 20px 24px;
+                max-width: 440px;
+                width: 90%;
+                text-align: center;
+                box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+                position: relative;
+            ">
+                <div class="memory-trainer-header" style="
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    margin-bottom: 10px;
+                    padding-bottom: 8px;
+                    border-bottom: 1px solid #F1F5F9;
                 ">
-                    <div class="memory-trainer-header" style="
-                        display: flex;
-                        justify-content: space-between;
-                        align-items: center;
-                        margin-bottom: 10px;
-                        padding-bottom: 8px;
-                        border-bottom: 1px solid #F1F5F9;
+                    <span class="memory-trainer-progress" style="
+                        font-size: 12px;
+                        color: #94A3B8;
+                        font-weight: 500;
                     ">
-                        <span class="memory-trainer-progress" style="
-                            font-size: 12px;
-                            color: #94A3B8;
-                            font-weight: 500;
-                        ">
-                            ${this.currentIndex+1}/${this.trainingQueue.length}
-                        </span>
-                        <span class="memory-trainer-focus" style="
-                            font-size: 13px;
-                            font-weight: 600;
-                            color: #2D6A4F;
-                        ">
-                            🍃 خذ وقتك
-                        </span>
-                    </div>
-                    <div class="memory-trainer-content">
-                        <p class="memory-trainer-question" style="
-                            font-size: 15px;
-                            font-weight: 500;
-                            color: #334155;
-                            margin-bottom: 10px;
-                        ">
-                            ${t}
-                        </p>
-                        ${e}
-                        <div class="memory-trainer-options" style="
-                            display: flex;
-                            flex-direction: column;
-                            gap: 6px;
-                            margin: 8px 0;
-                        ">
-                           ${this.currentOptions.map((s,r)=>`
+                        ${this.currentIndex+1}/${this.trainingQueue.length}
+                    </span>
+                    <span class="memory-trainer-focus" style="
+                        font-size: 13px;
+                        font-weight: 600;
+                        color: #2D6A4F;
+                    ">
+                        🍃 خذ وقتك
+                    </span>
+                </div>
+                <div class="memory-trainer-content">
+                    <p class="memory-trainer-question" style="
+                        font-size: 15px;
+                        font-weight: 500;
+                        color: #334155;
+                        margin-bottom: 10px;
+                    ">
+                        ${a}
+                    </p>
+                    ${n}
+                    ${o}
+                    <div class="memory-trainer-options" style="
+                        display: flex;
+                        flex-direction: column;
+                        gap: 6px;
+                        margin: 8px 0;
+                    ">
+                       ${this.currentOptions.map((s,r)=>`
     <button class="memory-trainer-option" data-index="${r}" onclick="window.memoryTrainer.checkAnswer(${r})" style="
         background: #FFFFFF;
         border: 1.5px solid #E8EEF5;
@@ -673,16 +596,16 @@ class MemoryTrainer{constructor(){this.questions=[],this.allQuestions=[],this.sh
         ${String.fromCharCode(65+r)}. ${s}
     </button>
 `).join("")}
-                        </div>
                     </div>
-                    <div id="memory-trainer-feedback"></div>
                 </div>
-            `;this.updateCard(i)}checkAnswer(t){if(this.isAnswered)return;this.isAnswered=!0,this.attempts++;const e=this.currentOptions[t];let i=!1,s="";if(this.examType==="matching"){const d=this.sharedOptions,p=this.currentQuestionObj.correct,h=d[p];i=e===h,s=h}else if(this.examType==="multiple"){const d=this.currentQuestionObj.correct,p=this.currentOptions[d];i=e===p,s=p}else if(this.examType==="sprach1"){const d=this.currentQuestionObj.connector||this.currentQuestionObj.correct;i=e===d,s=d}else if(this.examType==="sprach2"){const d=this.currentQuestionObj.connector||this.currentQuestionObj.correct;i=e===d,s=d}else i=e===this.currentCorrectText,s=this.currentCorrectText;const r=this.currentSkill,n=this.currentExamId,o=this.currentQuestionIndex,a=this.buildSentenceId(r,n,o),l=document.querySelectorAll(".memory-trainer-option"),c=document.getElementById("memory-trainer-feedback");l.forEach(d=>{d.disabled=!0,d.style.opacity="0.7",d.style.cursor="default"}),i?(this.correctAttempts++,this.increaseLevel(a),l[t].style.borderColor="#28a745",l[t].style.backgroundColor="#d4edda",c.innerHTML='<button class="memory-trainer-btn primary small" onclick="window.memoryTrainer.nextQuestion()" style="padding:6px 16px; border:none; border-radius:8px; font-size:14px; font-weight:600; cursor:pointer; background:#28a745; color:white;">التالي →</button>'):(this.decreaseLevel(a),this.wrongQuestions.includes(this.currentQuestionObj)||this.wrongQuestions.push(this.currentQuestionObj),l[t].style.borderColor="#e67e22",l[t].style.backgroundColor="#fef0e0",l.forEach((d,p)=>{this.currentOptions[p]===s&&(d.style.borderColor="#28a745",d.style.backgroundColor="#d4edda")}),c.innerHTML=`
+                <div id="memory-trainer-feedback"></div>
+            </div>
+        `)}checkAnswer(e){if(this.isAnswered)return;this.isAnswered=!0,this.attempts++;const t=this.currentOptions[e];let i=!1,a="";if(this.examType==="matching"){const d=this.currentQuestionObj.examId||this.currentExamId,p=this.examSharedOptionsMap[d]||this.sharedOptions,x=this.currentCorrectIndex,h=p[x];i=t===h,a=h}else if(this.examType==="multiple"){const d=this.currentQuestionObj.correct,p=this.currentOptions[d];i=t===p,a=p}else if(this.examType==="sprach1"){const d=this.currentQuestionObj.connector||this.currentQuestionObj.correct;i=t===d,a=d}else if(this.examType==="sprach2"){const d=this.currentQuestionObj.connector||this.currentQuestionObj.correct;i=t===d,a=d}else i=t===this.currentCorrectText,a=this.currentCorrectText;const n=this.currentSkill,o=this.currentExamId,s=this.currentQuestionIndex,r=this.buildSentenceId(n,o,s),l=document.querySelectorAll(".memory-trainer-option"),c=document.getElementById("memory-trainer-feedback");l.forEach(d=>{d.disabled=!0,d.style.opacity="0.7",d.style.cursor="default"}),i?(this.correctAttempts++,this.increaseLevel(r),l[e].style.borderColor="#28a745",l[e].style.backgroundColor="#d4edda",c.innerHTML='<button class="memory-trainer-btn primary small" onclick="window.memoryTrainer.nextQuestion()" style="padding:6px 16px; border:none; border-radius:8px; font-size:14px; font-weight:600; cursor:pointer; background:#28a745; color:white;">التالي →</button>'):(this.decreaseLevel(r),this.wrongQuestions.includes(this.currentQuestionObj)||this.wrongQuestions.push(this.currentQuestionObj),l[e].style.borderColor="#e67e22",l[e].style.backgroundColor="#fef0e0",l.forEach((d,p)=>{this.currentOptions[p]===a&&(d.style.borderColor="#28a745",d.style.backgroundColor="#d4edda")}),c.innerHTML=`
                 <div style="display:flex;gap:10px;justify-content:center;margin-top:8px;">
                     <button class="memory-trainer-btn secondary small" onclick="window.memoryTrainer.retryQuestion()" style="padding:6px 16px; border:2px solid #e67e22; border-radius:8px; font-size:14px; font-weight:600; cursor:pointer; background:white; color:#e67e22;">🔄 إعادة المحاولة</button>
                     <button class="memory-trainer-btn primary small" onclick="window.memoryTrainer.nextQuestion()" style="padding:6px 16px; border:none; border-radius:8px; font-size:14px; font-weight:600; cursor:pointer; background:#1565C0; color:white;">التالي →</button>
                 </div>
-            `),this.isFromList&&this.updateProgressBar()}updateProgressBar(){const t=this.getOverallProgressForSkill(this.currentSkill),e=this.card?.querySelectorAll(".memory-progress-fill, .memory-trainer-progress-bar");e&&e.forEach(s=>{s.classList.contains("memory-progress-fill")&&(s.style.width=t+"%")});const i=this.card?.querySelector(".memory-progress-percent");i&&(i.textContent=t+"%")}retryQuestion(){this.isAnswered=!1,this.currentIndex--,this.nextQuestion()}nextQuestion(){this.currentIndex++,this.currentIndex<this.trainingQueue.length?this.showMemoryCard():this.showPhaseComplete()}showPhaseComplete(){this.clearTimer();const t=this.wrongQuestions.length,e=this.isFromList?this.getOverallProgressForSkill(this.currentSkill):0;if(t===0){this.showResults();return}this.updateCard(`
+            `),this.isFromList&&this.updateProgressBar()}updateProgressBar(){const e=this.getOverallProgressForSkill(this.currentSkill),t=this.card?.querySelectorAll(".memory-progress-fill, .memory-trainer-progress-bar");t&&t.forEach(a=>{a.classList.contains("memory-progress-fill")&&(a.style.width=e+"%")});const i=this.card?.querySelector(".memory-progress-percent");i&&(i.textContent=e+"%")}retryQuestion(){this.isAnswered=!1,this.currentIndex--,this.nextQuestion()}nextQuestion(){this.currentIndex++,this.currentIndex<this.trainingQueue.length?this.showMemoryCard():this.showPhaseComplete()}showPhaseComplete(){this.clearTimer();const e=this.wrongQuestions.length,t=this.isFromList?this.getOverallProgressForSkill(this.currentSkill):0;if(e===0){this.showResults();return}this.updateCard(`
             <div class="memory-trainer-results phase-complete" style="
                 background: #FFFDF5;
                 border: 1px solid #FDE68A;
@@ -698,9 +621,9 @@ class MemoryTrainer{constructor(){this.questions=[],this.allQuestions=[],this.sh
                 <div style="margin:8px 0 12px 0;background:#FFFFFF;border:1px solid #E8EEF5;border-radius:6px;padding:6px 10px;">
                     <div style="display:flex;align-items:center;gap:10px;">
                         <div style="flex:1;height:5px;background:#e9eef5;border-radius:6px;overflow:hidden;">
-                            <div style="width:${e}%;height:100%;background:linear-gradient(90deg,#1565C0,#38bdf8);border-radius:6px;"></div>
+                            <div style="width:${t}%;height:100%;background:linear-gradient(90deg,#1565C0,#38bdf8);border-radius:6px;"></div>
                         </div>
-                        <span style="font-size:12px;font-weight:600;color:#1565C0;min-width:35px;text-align:right;">${e}%</span>
+                        <span style="font-size:12px;font-weight:600;color:#1565C0;min-width:35px;text-align:right;">${t}%</span>
                     </div>
                 </div>
                 <div class="memory-trainer-stats" style="margin:6px 0 10px 0;padding:4px 0;display:flex;justify-content:space-around;border-top:1px solid #F1F5F9;border-bottom:1px solid #F1F5F9;">
@@ -714,9 +637,9 @@ class MemoryTrainer{constructor(){this.questions=[],this.allQuestions=[],this.sh
                     </div>
                 </div>
                 <p class="memory-trainer-hint" style="font-size:13px; color:#64748B; margin:8px 0 16px 0;">الآن سنعيد فقط الأسئلة التي لم تثبت بعد.</p>
-                <button class="memory-trainer-btn primary" onclick="window.memoryTrainer.startReview()" style="padding:8px 20px; border:none; border-radius:10px; font-size:14px; font-weight:600; cursor:pointer; background:#1565C0; color:white; box-shadow:0 2px 6px rgba(21,101,192,0.15);">مراجعة ${t} سؤال →</button>
+                <button class="memory-trainer-btn primary" onclick="window.memoryTrainer.startReview()" style="padding:8px 20px; border:none; border-radius:10px; font-size:14px; font-weight:600; cursor:pointer; background:#1565C0; color:white; box-shadow:0 2px 6px rgba(21,101,192,0.15);">مراجعة ${e} سؤال →</button>
             </div>
-        `)}startReview(){this.isReviewMode=!0,this.trainingQueue=[...this.wrongQuestions],this.currentIndex=0,this.totalQuestions=this.trainingQueue.length,this.wrongQuestions=[],this.showMemoryCard()}showResults(){const t=this.isFromList,e=this.currentSkill,i=this.currentExamId||1,s=this.getExamProgress(e,i),r=this.getOverallProgressForSkill(e),n=this.getStageProgressForSkill(e);let o="";if(t){let a=1,l=1,c=!1;if(window.getCurrentStage&&window.getTotalStages)a=window.getCurrentStage(e),l=window.getTotalStages(e),c=a>=l;else{const h=`_${e}_combinedData`;if(window[h]){const x=window[h];a=x.currentStage||1,l=x.totalStages||1,c=x.isLastStage||a>=l}}let d=this.totalQuestions||0;const p=`_${e}_combinedData`;window[p]&&(d=window[p].totalQuestions||d),c?o=`
+        `)}startReview(){this.isReviewMode=!0,this.trainingQueue=[...this.wrongQuestions],this.currentIndex=0,this.totalQuestions=this.trainingQueue.length,this.wrongQuestions=[],this.showMemoryCard()}showResults(){const e=this.isFromList,t=this.currentSkill,i=this.currentExamId||1,a=this.getExamProgress(t,i),n=this.getOverallProgressForSkill(t),o=this.getStageProgressForSkill(t);let s="";if(e){let r=1,l=1,c=!1;if(window.getCurrentStage&&window.getTotalStages)r=window.getCurrentStage(t),l=window.getTotalStages(t),c=r>=l;else{const x=`_${t}_combinedData`;if(window[x]){const h=window[x];r=h.currentStage||1,l=h.totalStages||1,c=h.isLastStage||r>=l}}let d=this.totalQuestions||0;const p=`_${t}_combinedData`;window[p]&&(d=window[p].totalQuestions||d),c?s=`
                     <div class="memory-trainer-results final" style="
                         background: #F0FDF4;
                         border: 1px solid #86EFAC;
@@ -728,19 +651,19 @@ class MemoryTrainer{constructor(){this.questions=[],this.allQuestions=[],this.sh
                         box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
                     ">
                         <div style="font-size:28px;text-align:center;margin-bottom:4px;">🏆</div>
-                        <h2 style="color:#1565C0;font-size:18px;font-weight:600;text-align:center;margin-bottom:4px;">لقد أكملت ${e} بالكامل</h2>
+                        <h2 style="color:#1565C0;font-size:18px;font-weight:600;text-align:center;margin-bottom:4px;">لقد أكملت ${t} بالكامل</h2>
                         <p style="font-size:14px;color:#64748B;text-align:center;margin-bottom:14px;font-weight:400;">تهانينا! لقد أنهيت جميع المراحل بنجاح.</p>
                         <div style="margin:0 0 14px 0;background:#FFFFFF;border:1px solid #E8EEF5;border-radius:6px;padding:6px 10px;">
                             <div style="display:flex;align-items:center;gap:10px;">
                                 <div style="flex:1;height:5px;background:#e9eef5;border-radius:6px;overflow:hidden;">
-                                    <div style="width:${r}%;height:100%;background:linear-gradient(90deg,#1565C0,#38bdf8);border-radius:6px;"></div>
+                                    <div style="width:${n}%;height:100%;background:linear-gradient(90deg,#1565C0,#38bdf8);border-radius:6px;"></div>
                                 </div>
-                                <span style="font-size:13px;font-weight:600;color:#1565C0;min-width:40px;text-align:right;">${r}%</span>
+                                <span style="font-size:13px;font-weight:600;color:#1565C0;min-width:40px;text-align:right;">${n}%</span>
                             </div>
                         </div>
                         <button class="memory-trainer-btn primary" onclick="window.memoryTrainer.close();" style="padding:8px 20px;border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;transition:all 0.2s ease;margin-top:6px;background:#1565C0;color:white;box-shadow:0 2px 6px rgba(21,101,192,0.15);display:block;width:100%;">⬅ العودة للقائمة</button>
                     </div>
-                `:o=`
+                `:s=`
                     <div class="memory-trainer-results final" style="
                         background: #F8FFFB;
                         border: 1px solid #B8E6B8;
@@ -752,19 +675,19 @@ class MemoryTrainer{constructor(){this.questions=[],this.allQuestions=[],this.sh
                         box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
                     ">
                         <div style="font-size:28px;text-align:center;margin-bottom:4px;">🎉</div>
-                        <h2 style="color:#1565C0;font-size:18px;font-weight:600;text-align:center;margin-bottom:4px;">أحسنت، لقد أنهيت المرحلة ${a}</h2>
+                        <h2 style="color:#1565C0;font-size:18px;font-weight:600;text-align:center;margin-bottom:4px;">أحسنت، لقد أنهيت المرحلة ${r}</h2>
                         <p style="font-size:14px;color:#64748B;text-align:center;margin-bottom:14px;font-weight:400;">تم تثبيت ${d} نص.</p>
                         <div style="margin:0 0 14px 0;background:#FFFFFF;border:1px solid #E8EEF5;border-radius:6px;padding:6px 10px;">
                             <div style="display:flex;align-items:center;gap:10px;">
                                 <div style="flex:1;height:5px;background:#e9eef5;border-radius:6px;overflow:hidden;">
-                                    <div style="width:${n}%;height:100%;background:linear-gradient(90deg,#1565C0,#38bdf8);border-radius:6px;"></div>
+                                    <div style="width:${o}%;height:100%;background:linear-gradient(90deg,#1565C0,#38bdf8);border-radius:6px;"></div>
                                 </div>
-                                <span style="font-size:13px;font-weight:600;color:#1565C0;min-width:40px;text-align:right;">${n}%</span>
+                                <span style="font-size:13px;font-weight:600;color:#1565C0;min-width:40px;text-align:right;">${o}%</span>
                             </div>
                         </div>
-                        <button class="memory-trainer-btn primary" onclick="window.memoryTrainer.close(); if (typeof window.goToNextStage === 'function') window.goToNextStage('${e}');" style="padding:8px 20px;border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;transition:all 0.2s ease;margin-top:6px;background:#1565C0;color:white;box-shadow:0 2px 6px rgba(21,101,192,0.15);display:block;width:100%;">➡ متابعة المرحلة ${a+1}</button>
+                        <button class="memory-trainer-btn primary" onclick="window.memoryTrainer.close(); if (typeof window.goToNextStage === 'function') window.goToNextStage('${t}');" style="padding:8px 20px;border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;transition:all 0.2s ease;margin-top:6px;background:#1565C0;color:white;box-shadow:0 2px 6px rgba(21,101,192,0.15);display:block;width:100%;">➡ متابعة المرحلة ${r+1}</button>
                     </div>
-                `}else{let a=`امتحان ${this.currentExamId}`;this.examType==="matching"?this.currentSkill==="lesen3"?a=`امتحان ${this.currentExamId} (Lesen 3)`:a=`امتحان ${this.currentExamId} (Lesen 1)`:this.examType==="multiple"?a=`امتحان ${this.currentExamId} (Lesen 2)`:this.examType==="sprach1"?a=`امتحان ${this.currentExamId} (Sprachbausteine 1)`:this.examType==="sprach2"&&(a=`امتحان ${this.currentExamId} (Sprachbausteine 2)`),o=`
+                `}else{let r=`امتحان ${this.currentExamId}`;this.examType==="matching"?this.currentSkill==="lesen3"?r=`امتحان ${this.currentExamId} (Lesen 3)`:r=`امتحان ${this.currentExamId} (Lesen 1)`:this.examType==="multiple"?r=`امتحان ${this.currentExamId} (Lesen 2)`:this.examType==="sprach1"?r=`امتحان ${this.currentExamId} (Sprachbausteine 1)`:this.examType==="sprach2"&&(r=`امتحان ${this.currentExamId} (Sprachbausteine 2)`),s=`
                 <div class="memory-trainer-results final" style="
                     background: #F8FFFB;
                     border: 1px solid #B8E6B8;
@@ -777,18 +700,18 @@ class MemoryTrainer{constructor(){this.questions=[],this.allQuestions=[],this.sh
                 ">
                     <div style="font-size:28px;text-align:center;margin-bottom:4px;">🧩</div>
                     <h2 style="color:#1565C0;font-size:18px;font-weight:600;text-align:center;margin-bottom:4px;">اكتمل الاستدعاء</h2>
-                    <p style="font-size:14px;color:#64748B;text-align:center;margin-bottom:14px;font-weight:400;">لقد أنهيت تدريب ${a}.</p>
+                    <p style="font-size:14px;color:#64748B;text-align:center;margin-bottom:14px;font-weight:400;">لقد أنهيت تدريب ${r}.</p>
                     <div style="margin:0 0 14px 0;background:#FFFFFF;border:1px solid #E8EEF5;border-radius:6px;padding:6px 10px;">
                         <div style="display:flex;align-items:center;gap:10px;">
                             <div style="flex:1;height:5px;background:#e9eef5;border-radius:6px;overflow:hidden;">
-                                <div style="width:${s}%;height:100%;background:linear-gradient(90deg,#1565C0,#38bdf8);border-radius:6px;"></div>
+                                <div style="width:${a}%;height:100%;background:linear-gradient(90deg,#1565C0,#38bdf8);border-radius:6px;"></div>
                             </div>
-                            <span style="font-size:13px;font-weight:600;color:#1565C0;min-width:40px;text-align:right;">${s}%</span>
+                            <span style="font-size:13px;font-weight:600;color:#1565C0;min-width:40px;text-align:right;">${a}%</span>
                         </div>
                     </div>
                     <button class="memory-trainer-btn primary" onclick="window.memoryTrainer.close();" style="padding:8px 20px;border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;transition:all 0.2s ease;margin-top:6px;background:#1565C0;color:white;box-shadow:0 2px 6px rgba(21,101,192,0.15);display:block;width:100%;">⬅ العودة للامتحان</button>
                 </div>
-            `}this.updateCard(o)}clearTimer(){this.timer&&(clearTimeout(this.timer),this.timer=null)}shuffleArray(t){for(let e=t.length-1;e>0;e--){const i=Math.floor(Math.random()*(e+1));[t[e],t[i]]=[t[i],t[e]]}return t}showNotAvailable(t="هذه الميزة غير متوفرة لهذا الامتحان."){this.updateCard(`
+            `}this.updateCard(s)}clearTimer(){this.timer&&(clearTimeout(this.timer),this.timer=null)}shuffleArray(e){for(let t=e.length-1;t>0;t--){const i=Math.floor(Math.random()*(t+1));[e[t],e[i]]=[e[i],e[t]]}return e}showNotAvailable(e="هذه الميزة غير متوفرة لهذا الامتحان."){this.updateCard(`
             <div class="memory-trainer-intro" style="
                 background: #FFFFFF;
                 border: 1px solid #E8EEF5;
@@ -800,7 +723,7 @@ class MemoryTrainer{constructor(){this.questions=[],this.allQuestions=[],this.sh
                 box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
             ">
                 <h2 style="color:#1565C0; font-size:17px; font-weight:600;">ℹ️ غير متوفرة</h2>
-                <p style="color:#64748B; margin:12px 0;">${t}</p>
+                <p style="color:#64748B; margin:12px 0;">${e}</p>
                 <button class="memory-trainer-btn primary" onclick="window.memoryTrainer.close()" style="padding:8px 20px; border:none; border-radius:10px; font-size:14px; font-weight:600; cursor:pointer; background:#1565C0; color:white; box-shadow:0 2px 6px rgba(21,101,192,0.15);">فهمت</button>
             </div>
         `)}close(){this.clearTimer(),this.overlay&&(this.overlay.remove(),this.overlay=null),this.card=null,this.isCardReady=!1,this.questions=[],this.allQuestions=[],this.sharedOptions=[],this.trainingQueue=[],this.wrongQuestions=[],this.currentIndex=0,this.isActive=!1,this.isReviewMode=!1,this.isFromList=!1,this.attempts=0,this.correctAttempts=0,this.totalQuestions=0,this.currentExamId=1,this.examType="hoeren"}}window.memoryTrainer=new MemoryTrainer,window.startMemoryTrainerForExam=u=>{window.memoryTrainer&&(window.memoryTrainer.currentSkill=u||window.currentSkill||"hoeren1",window.memoryTrainer.currentExamId=window.currentExamId||1,window.memoryTrainer.start("single"))},window.startMemoryTrainerFromList=(u="hoeren1")=>{window.memoryTrainer&&(window.memoryTrainer.currentSkill=u,window.memoryTrainer.start("list"))},window.startMemoryTrainer=window.startMemoryTrainerForExam,console.log("🧠 Memory Trainer V4 (يدعم Hören, Lesen 1, Lesen 2, Lesen 3, Sprachbausteine 1 و Sprachbausteine 2) تم تحميله");
