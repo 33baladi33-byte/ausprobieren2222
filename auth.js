@@ -200,7 +200,6 @@ async function checkSessionAndInitialize() {
     }
 }
 
-// دالة مساعدة لإنشاء مستند للمستخدم في الحالات الاستثنائية
 async function createInitialUserDocument(user) {
     const deviceId = getDeviceId();
     const data = {
@@ -209,6 +208,7 @@ async function createInitialUserDocument(user) {
         firstname: '',
         lastname: '',
         plan: 'free',
+        studyPlan: false, // ✅ إضافة حقل studyPlan
         premiumUntil: null,
         session: { 
             deviceId: deviceId, 
@@ -251,6 +251,9 @@ function updateUI(user, data) {
 
     // حالة زائر غير مسجل
     if (!user) {
+        // ✅ إعادة تعيين studyPlan عند تسجيل الخروج
+        window.userStudyPlan = false;
+        
         if (profileEmailText) profileEmailText.textContent = 'غير مسجل';
         if (profileExpiryText) profileExpiryText.textContent = 'الوصول محدود لبعض الامتحانات';
         if (profileStatus) profileStatus.innerHTML = '';
@@ -428,13 +431,13 @@ async function handleSignup() {
         createdUser = userCredential.user;
         const deviceId = getDeviceId();
 
-        // ✅ إضافة firstname و lastname بشكل صحيح
-        const userData = {
+              const userData = {
             email: email,
             username: username,
             firstname: firstname,
             lastname: lastname,
             plan: 'free',
+            studyPlan: false, // ✅ إضافة حقل studyPlan
             premiumUntil: null,
             session: {
                 deviceId: deviceId,
