@@ -121,37 +121,24 @@
         }
     }
     
-    // ====== حساب Streak (يعتمد على completed المخزن في history ولا يستخدم الهدف الحالي) ======
+    // ====== حساب إجمالي الأيام الناجحة (Total Successful Days) ======
+    // يعتمد على completed المخزن في history، ولا يتأثر بتغيير الهدف
     function calculateStreak() {
         const data = loadStats();
         const history = data.history || [];
-        // بناء خريطة completed لكل يوم من history
-        const completedMap = {};
+        let totalSuccessful = 0;
         history.forEach(entry => {
             // إذا كان completed موجوداً، استخدمه
             if (entry.completed !== undefined) {
-                completedMap[entry.date] = entry.completed;
+                if (entry.completed === true) totalSuccessful++;
             } else {
                 // للأيام القديمة: نحسب completed من minutes و goal المخزنين
                 const goalAtDay = entry.goal || data.goal;
                 const minutes = entry.minutes || 0;
-                completedMap[entry.date] = minutes >= goalAtDay;
+                if (minutes >= goalAtDay) totalSuccessful++;
             }
         });
-
-        let streak = 0;
-        let currentDate = new Date();
-        currentDate.setDate(currentDate.getDate() - 1); // نبدأ من الأمس
-        for (let i = 0; i < 365; i++) {
-            const dateStr = currentDate.toISOString().split('T')[0];
-            if (completedMap[dateStr] === true) {
-                streak++;
-            } else {
-                break;
-            }
-            currentDate.setDate(currentDate.getDate() - 1);
-        }
-        return streak;
+        return totalSuccessful;
     }
     
     // ====== تحديث Streak فوراً عند تحقيق الهدف (يعتمد على completed المخزن) ======
