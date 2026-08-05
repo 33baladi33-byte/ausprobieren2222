@@ -55,8 +55,12 @@
         const container = document.getElementById('studyPlannerContainer');
         if (!container) return;
 
-        // 1. قفل أزرار الأقسام (planner-section-btn) داخل الخطة
+        // ===== 1. قفل أزرار الأقسام (planner-section-btn) - مع استثناء أدوات التحكم =====
         container.querySelectorAll('.planner-section-btn').forEach(btn => {
+            // 🟢 استثناء: إذا كان الزر داخل أدوات التحكم، لا نغلقه
+            const isInCustomize = btn.closest('#customWeightsContainer') || btn.closest('.planner-card')?.querySelector('#customWeightsContainer');
+            if (isInCustomize) return;
+            
             if (btn.dataset.studyPlanLocked) return;
             btn.dataset.studyPlanLocked = 'true';
             btn.classList.add('study-plan-locked');
@@ -70,8 +74,12 @@
             };
         });
 
-        // 2. قفل زر "فحص" داخل الخطة
-        container.querySelectorAll('.planner-check-btn, #plannerSetupBtn, #customCheckBtn, .planner-check-btn, .planner-section-btn[data-skill]').forEach(btn => {
+        // ===== 2. قفل زر "فحص" داخل الخطة (باستثناء أدوات التحكم) =====
+        container.querySelectorAll('.planner-check-btn, #plannerSetupBtn, .planner-check-btn, .planner-section-btn[data-skill]').forEach(btn => {
+            // 🟢 استثناء: إذا كان الزر داخل أدوات التحكم، لا نغلقه (سنقفل فقط customCheckBtn لاحقاً)
+            const isInCustomize = btn.closest('#customWeightsContainer') || btn.closest('.planner-card')?.querySelector('#customWeightsContainer');
+            if (isInCustomize) return;
+            
             if (btn.dataset.studyPlanLocked) return;
             btn.dataset.studyPlanLocked = 'true';
             btn.classList.add('study-plan-locked');
@@ -85,7 +93,7 @@
             };
         });
 
-        // 3. قفل زر "فحص" داخل أدوات التحكم (customCheckBtn)
+        // ===== 3. قفل زر "فحص" داخل أدوات التحكم (customCheckBtn) فقط =====
         const customCheckBtn = container.querySelector('#customCheckBtn');
         if (customCheckBtn && !customCheckBtn.dataset.studyPlanLocked) {
             customCheckBtn.dataset.studyPlanLocked = 'true';
@@ -99,7 +107,7 @@
             };
         }
 
-        // 4. قفل بطاقات الامتحانات داخل الخطة (exam-card)
+        // ===== 4. قفل بطاقات الامتحانات داخل الخطة (exam-card) =====
         container.querySelectorAll('.exam-card').forEach(card => {
             if (card.dataset.studyPlanLocked) return;
             card.dataset.studyPlanLocked = 'true';
@@ -114,11 +122,16 @@
             };
         });
 
-        // 5. قفل أي زر تنفيذي داخل الخطة (باستثناء أزرار الإعدادات والمعلومات)
+        // ===== 5. قفل أي زر تنفيذي داخل الخطة (باستثناء أزرار الإعدادات والمعلومات) =====
         container.querySelectorAll('.planner-card button, .planner-card .exam-card').forEach(el => {
             if (el.dataset.studyPlanLocked) return;
             const isNonExec = el.id === 'plannerSettingsBtn' || el.id === 'plannerInfoBtn';
             if (isNonExec) return;
+            
+            // 🟢 استثناء: إذا كان العنصر داخل أدوات التحكم، نتركه يعمل
+            const isInCustomize = el.closest('#customWeightsContainer') || el.closest('.planner-card')?.querySelector('#customWeightsContainer');
+            if (isInCustomize) return;
+            
             el.dataset.studyPlanLocked = 'true';
             el.classList.add('study-plan-locked');
             el.addEventListener('click', function(e) {
@@ -129,7 +142,7 @@
             });
         });
 
-        // 6. حماية إضافية: منع أي click على العناصر المقفلة من تنفيذ أي كود آخر
+        // ===== 6. حماية إضافية: منع أي click على العناصر المقفلة من تنفيذ أي كود آخر =====
         container.querySelectorAll('.study-plan-locked').forEach(el => {
             if (el.dataset.studyPlanLockedCapture) return;
             el.dataset.studyPlanLockedCapture = 'true';
