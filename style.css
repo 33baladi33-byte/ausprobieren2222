@@ -352,11 +352,12 @@ body {
     z-index: 100;
     transition: all 0.3s ease;
 }
-
 .left-side {
     display: flex;
+    flex-direction: row; /* يمنع أي انعكاس */
     align-items: center;
     gap: 12px;
+    /* نلغي أي تأثير للـ RTL على الترتيب، بحيث أول عنصر في HTML يظهر أولاً */
     direction: ltr;
 }
 
@@ -367,8 +368,8 @@ body {
 }
 
 .logo-icon {
-    width: 45px;
-    height: 45px;
+    width: 40px;   /* ✅ تم التغيير إلى 40px */
+    height: 40px;  /* ✅ تم التغيير إلى 40px */
     background: transparent;
     display: flex;
     align-items: center;
@@ -395,23 +396,8 @@ body {
 .notification-container {
     position: relative;
 }
-
 .notification-bell {
-    background: rgba(255,255,255,0.05);
-    border: 1px solid rgba(255,255,255,0.08);
-    font-size: 18px;
-    padding: 8px 12px;
-    border-radius: 25px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    color: #E5E7EB;
     position: relative;
-}
-
-.notification-bell:hover {
-    background: rgba(255,255,255,0.10);
-    border-color: rgba(255,255,255,0.15);
-    transform: scale(1.05);
 }
 .notification-badge {
     position: absolute;
@@ -598,40 +584,48 @@ body {
     transform: scale(1.02);
 }
 
-.btn-login-top {
-    padding: 8px 18px;
-    border: 1px solid rgba(255,255,255,0.15);
-    background: rgba(255,255,255,0.05);
-    border-radius: 25px;
-    font-weight: 500;
-    font-size: 13px;
-    cursor: pointer;
-    transition: 0.3s;
-    color: #E5E7EB;
-}
 
-.btn-login-top:hover {
-    background: rgba(255,255,255,0.10);
-    border-color: rgba(255,255,255,0.25);
-    color: #FFFFFF;
-}
+/* ===== زر الملف الشخصي - تصميم Apple Premium ===== */
 .profile-icon {
-    width: 40px;
-    height: 40px;
-    background: #1e293b;
+    width: 40px;   /* ✅ تم التغيير إلى 40px */
+    height: 40px;  /* ✅ تم التغيير إلى 40px */
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    transition: 0.3s;
-    color: #38bdf8;
-    font-size: 20px;
+    object-fit: cover;
+    transition: all 0.3s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.06);
+    flex-shrink: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-size: 0;
 }
 
 .profile-icon:hover {
-    background: #334155;
     transform: scale(1.05);
+    background: rgba(255, 255, 255, 0.15);
+    border-color: rgba(255, 255, 255, 0.25);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08), 0 0 25px rgba(56, 189, 248, 0.12);
+}
+
+.profile-icon:active {
+    transform: scale(0.94);
+    transition-duration: 0.05s;
+}
+
+body.dark-mode .profile-icon {
+    background: rgba(255, 255, 255, 0.06);
+    border-color: rgba(255, 255, 255, 0.08);
+}
+body.dark-mode .profile-icon:hover {
+    background: rgba(255, 255, 255, 0.12);
+    border-color: rgba(255, 255, 255, 0.15);
 }
 /* إخفاء زر تسجيل الدخول فقط في صفحات الامتحانات */
 body:has(#list.active) .btn-login-top,
@@ -645,36 +639,151 @@ body:has(#exam.active) .subscribe-text-btn:not([style*="display: none"]) {
     display: inline-flex !important;
 }
 
-/* أيقونة الملف الشخصي تظهر في صفحات الامتحانات */
+/* أيقونة الملف الشخصي تظهر في صفحات الامتحانات (بنفس تصميم Logo) */
 body:has(#list.active) .profile-icon,
 body:has(#exam.active) .profile-icon {
     display: flex !important;
 }
 
-/* في الصفحة الرئيسية: إخفاء أيقونة الملف الشخصي (تتحكم بها JavaScript) */
+/* في الصفحة الرئيسية: إخفاء أيقونة الملف الشخصي وزر Study Planner */
 #home .profile-icon {
     display: none !important;
 }
 
-.settings-icon-btn {
-    background: rgba(255,255,255,0.05);
-    border: 1px solid rgba(255,255,255,0.08);
-    font-size: 18px;
-    padding: 6px 12px;
-    border-radius: 25px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    color: #E5E7EB;
-    display: flex;
-    align-items: center;
-    gap: 5px;
+#home .study-planner-icon-btn {
+    display: none !important;
 }
 
-.settings-icon-btn:hover {
-    background: rgba(255,255,255,0.10);
-    border-color: rgba(255,255,255,0.15);
-    transform: scale(1.05);
+/* في صفحات القائمة والامتحان: إظهار زر Study Planner (نفس سلوك زر الملف الشخصي) */
+#list .study-planner-icon-btn,
+#exam .study-planner-icon-btn {
+    display: inline-flex !important;
 }
+
+/* إلغاء أي تأثير دائري سابق على هذه الأزرار */
+.profile-icon,
+.settings-icon-btn,
+.study-planner-icon-btn,
+.notification-bell,
+.study-session-btn {
+    border-radius: 12px !important;
+}
+
+/* ===== التصميم الموحد للأزرار الوظيفية (⚙️، 🎮، 🔔، ⏰) ===== */
+.settings-icon-btn,
+.study-planner-icon-btn,
+.notification-bell,
+.study-session-btn {
+    height: 35px;
+    padding: 0 12px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+    color: #E5E7EB;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    font-size: 16px;
+    gap: 5px;
+    font-family: inherit;
+    flex-shrink: 0;
+    position: relative;
+}
+
+.settings-icon-btn:hover,
+.study-planner-icon-btn:hover,
+.notification-bell:hover,
+.study-session-btn:hover {
+    background: rgba(255, 255, 255, 0.10);
+    border-color: rgba(255, 255, 255, 0.15);
+    transform: scale(1.04);
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.10);
+}
+
+.settings-icon-btn:active,
+.study-planner-icon-btn:active,
+.notification-bell:active,
+.study-session-btn:active {
+    transform: scale(0.95);
+    transition-duration: 0.05s;
+}
+
+/* ===== أيقونات الصور داخل الأزرار ===== */
+.icon-img {
+    width: 20px;
+    height: 20px;
+    display: block;
+    object-fit: contain;
+    pointer-events: none;
+    filter: brightness(0) invert(1);
+    opacity: 0.85;
+}
+
+.settings-icon-btn:hover .icon-img,
+.study-session-btn:hover .icon-img {
+    opacity: 1;
+}
+
+/* ===== أيقونة الجرس (Uiverse) ===== */
+.notification-bell .bell-icon {
+    width: 18px;
+    height: 18px;
+    fill: rgba(255, 255, 255, 0.75);
+    display: block;
+    transition: fill 0.2s ease;
+}
+
+.notification-bell:hover .bell-icon {
+    fill: rgba(255, 255, 255, 0.95);
+    animation: bellRing 0.9s both;
+}
+
+/* ===== Badge الإشعارات ===== */
+.notification-bell .notification-badge {
+    position: absolute;
+    top: -4px;
+    right: -4px;
+    background: #dc3545;
+    color: white;
+    font-size: 9px;
+    font-weight: bold;
+    min-width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 4px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+    z-index: 2;
+}
+
+/* ===== اهتزاز الجرس ===== */
+@keyframes bellRing {
+    0%, 100% {
+        transform-origin: top center;
+        transform: rotate(0deg);
+    }
+    15% {
+        transform: rotate(12deg);
+    }
+    30% {
+        transform: rotate(-10deg);
+    }
+    45% {
+        transform: rotate(6deg);
+    }
+    60% {
+        transform: rotate(-4deg);
+    }
+    75% {
+        transform: rotate(2deg);
+    }
+}
+
 
 body:has(#list.active) .top-bar,
 body:has(#exam.active) .top-bar {
@@ -806,11 +915,6 @@ body:has(#exam.active) .top-bar {
     color: white;
     transform: scale(1.02);
 }
-
-/* ========================================
-   WhatsApp Button
-   ======================================== */
-
 .whatsapp-float {
     position: fixed;
     bottom: 25px;
@@ -1257,18 +1361,19 @@ body:has(#exam.active) .top-bar {
 /* ========================================
    Exam List & Teile Styles
    ======================================== */
-
-/* تصميم أزرار الأقسام (Teile) - شريط أفقي حديث */
 .teile-row {
     display: flex !important;
     flex-wrap: nowrap !important;
     gap: 8px !important;
     overflow-x: auto !important;
     overflow-y: hidden !important;
+    padding: 0 !important;
     padding-bottom: 8px !important;
-    margin-bottom: 20px !important;
+    margin: 0 !important;
+    width: 100% !important;
     scrollbar-width: thin !important;
     -webkit-overflow-scrolling: touch !important;
+    justify-content: flex-start !important;
 }
 
 .teile-row::-webkit-scrollbar {
@@ -1283,6 +1388,23 @@ body:has(#exam.active) .top-bar {
 .teile-row::-webkit-scrollbar-thumb {
     background: #38bdf8 !important;
     border-radius: 10px !important;
+}
+
+/* ✅ تساوي المسافات على الشاشات الكبيرة (1080px فأكثر) */
+@media (min-width: 1080px) {
+    .teile-row {
+        justify-content: center !important;
+        padding: 0 !important;          /* إزالة أي padding جانبي */
+        margin: 0 !important;           /* إزالة أي margin جانبي */
+        width: 100% !important;         /* الحاوية تأخذ العرض الكامل */
+    }
+}
+
+/* ✅ المحاذاة إلى اليسار على الهواتف والشاشات الصغيرة */
+@media (max-width: 1079px) {
+    .teile-row {
+        justify-content: flex-start !important;
+    }
 }
 
 .teil-item {
@@ -1325,36 +1447,39 @@ body:has(#exam.active) .top-bar {
     padding: 20px;
     border-radius: 10px;
 }
-
-.back-home-btn {
-    background: #38bdf8;
-    color: #0a0e1a;
-    border: none;
-    padding: 12px 25px;
-    border-radius: 30px;
-    cursor: pointer;
-    margin-top: 30px;
-    font-weight: bold;
-}
-
-.back-home-btn:hover {
-    background: #0ea5e9;
-}
-
+/* ===== زر الرئيسية والعودة إلى القائمة (بعد التعديل) ===== */
+.back-home-btn,
 .back-list-btn {
-    background: #38bdf8;
-    color: #0a0e1a;
-    border: none;
-    padding: 12px 25px;
-    border-radius: 30px;
+    padding: 8px 24px;               /* ارتفاع أقل، عرض أكبر */
+    background: linear-gradient(135deg, #161922, #202534, #262D40);
+    border: 1px solid #4a5568;
+    border-radius: 14px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #B0B8C9;
     cursor: pointer;
-    font-weight: bold;
+    transition: all 0.25s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+    text-align: center;
+    font-family: inherit;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.04);
+    display: inline-block;
+    margin-top: 20px;
+    text-decoration: none;
 }
 
+/* Hover – سطوع وظل خفيف */
+.back-home-btn:hover,
 .back-list-btn:hover {
-    background: #0ea5e9;
+    filter: brightness(1.15);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    transform: translateY(-1px);
 }
 
+/* Pressed – تصغير بسيط */
+.back-home-btn:active,
+.back-list-btn:active {
+    transform: scale(0.98);
+}
 .arrow-back-btn {
     background: none !important;
     border: none !important;
@@ -1490,62 +1615,43 @@ body:has(#exam.active) .top-bar {
 }
 
 /* ========================================
-   ترتيب الأزرار في الجهة اليسرى
+   ترتيب الأزرار وهيكلة شريط (Left Side) حسب الصفحة
    ======================================== */
+/* 1. الصفحة الرئيسية (Home) */
+#home .profile-icon { display: none !important; }
+#home #studyPlannerBtn { display: none !important; }
 
-.left-side {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    direction: ltr;
-}
+/* نرتب زر الاشتراك وزر تسجيل الدخول في الرئيسية */
+#home .left-side #navSubscribeBtn { order: 1 !important; }
+#home .left-side #navLoginBtn { order: 2 !important; }
 
-/* ترتيب الأزرار من اليمين إلى اليسار في صفحات الامتحانات */
-body:has(#list.active) .left-side .profile-icon,
-body:has(#exam.active) .left-side .profile-icon {
-    order: 1;  /* 👤 أقصى اليمين */
-}
+/* 2. صفحة القائمة والامتحان (List & Exam) */
+/* نخفي زر تسجيل الدخول في القائمة والامتحان */
+body:has(#list.active) #navLoginBtn { display: none !important; }
+body:has(#exam.active) #navLoginBtn { display: none !important; }
 
-body:has(#list.active) .left-side .settings-icon-btn,
-body:has(#exam.active) .left-side .settings-icon-btn {
-    order: 2;  /* ⚙️ ثاني من اليمين */
-}
+/* نظهر أزرار الملف الشخصي والإعدادات وخطة اليوم وترتيبهم */
+body:has(#list.active) .profile-icon { display: flex !important; }
+body:has(#exam.active) .profile-icon { display: flex !important; }
 
-body:has(#list.active) .left-side .subscribe-text-btn,
-body:has(#exam.active) .left-side .subscribe-text-btn {
-    order: 3;  /* اشترك ثالث من اليمين */
-}
+body:has(#list.active) #settingsBtn { display: inline-flex !important; }
+body:has(#exam.active) #settingsBtn { display: inline-flex !important; }
 
-body:has(#list.active) .left-side .btn-login-top,
-body:has(#exam.active) .left-side .btn-login-top {
-    display: none !important;  /* إخفاء زر تسجيل الدخول في صفحات الامتحانات */
-}
+body:has(#list.active) #studyPlannerBtn { display: inline-flex !important; }
+body:has(#exam.active) #studyPlannerBtn { display: inline-flex !important; }
 
-/* ===== الصفحة الرئيسية فقط ===== */
+/* ترتيب البداية: (أقصى اليسار) -> 1-Profile -> 2-Settings -> 3-Planner -> 4-Subscribe */
+body:has(#list.active) .left-side .profile-icon { order: 1 !important; }
+body:has(#exam.active) .left-side .profile-icon { order: 1 !important; }
 
-.home-page .left-side .profile-icon {
-    display: none !important;  /* إخفاء أيقونة الملف الشخصي في الرئيسية */
-}
+body:has(#list.active) .left-side #settingsBtn { order: 2 !important; }
+body:has(#exam.active) .left-side #settingsBtn { order: 2 !important; }
 
-.home-page .left-side .subscribe-text-btn {
-    order: 1;
-}
+body:has(#list.active) .left-side #studyPlannerBtn { order: 3 !important; }
+body:has(#exam.active) .left-side #studyPlannerBtn { order: 3 !important; }
 
-.home-page .left-side .btn-login-top {
-    order: 2;
-}
-
-.home-page .left-side .settings-icon-btn {
-    order: 3;
-}
-
-.home-page .left-side .profile-icon {
-    order: 4;
-}
-
-/* ========================================
-   تحسينات الهواتف
-   ======================================== */
+body:has(#list.active) .left-side #navSubscribeBtn { order: 4 !important; }
+body:has(#exam.active) .left-side #navSubscribeBtn { order: 4 !important; }
 
 @media (max-width: 768px) {
     body, html {
@@ -1590,11 +1696,61 @@ body:has(#exam.active) .left-side .btn-login-top {
         font-size: 14px !important;
     }
     
-    .settings-icon-btn {
+    .settings-icon-btn,
+    .study-planner-icon-btn,
+    .notification-bell,
+    .study-session-btn {
+        height: 26px !important;
+        padding: 0 8px !important;
         font-size: 12px !important;
-        padding: 4px 8px !important;
+        gap: 3px !important;
+        border-radius: 10px !important;
+        min-width: auto !important;
+        width: auto !important;
+        flex-shrink: 0 !important;
+    }
+@media (min-width: 769px) {
+    /* توحيد جميع الأزرار الأربعة في الحاسوب */
+    .settings-icon-btn,
+    .study-planner-icon-btn,
+    .notification-bell,
+    .study-session-btn {
+        height: 35px !important;
+        padding: 0 12px !important;
+        font-size: 16px !important;
+        gap: 5px !important;
+        border-radius: 12px !important;
+        min-width: auto !important;
+        width: auto !important;
+        flex-shrink: 0 !important;
+    }
+}
+
+@media (max-width: 768px) {
+    .settings-icon-btn,
+    .study-planner-icon-btn,
+    .notification-bell,
+    .study-session-btn {
+        height: 26px !important;
+        padding: 0 8px !important;
+        font-size: 12px !important;
+        gap: 3px !important;
+        border-radius: 10px !important;
+        min-width: auto !important;
+        width: auto !important;
+        flex-shrink: 0 !important;
     }
     
+    .icon-img {
+        width: 16px !important;
+        height: 16px !important;
+    }
+    
+    .notification-bell .bell-icon {
+        width: 14px !important;
+        height: 14px !important;
+    }
+}
     /* أزرار الأقسام في الهاتف */
     .teile-row {
         gap: 6px !important;
@@ -2010,7 +2166,6 @@ body:has(#exam.active) .left-side .btn-login-top {
         color: #3b82f6 !important;
     }
 }
-
 /* للشاشات الصغيرة جداً */
 @media (max-width: 480px) {
     .teile-row {
@@ -2280,39 +2435,45 @@ body:has(#exam.active) .left-side .btn-login-top {
     color: #FFFFFF !important;
     transform: none !important;
 }
+
 /* ============================================
-   زر 💎 لماذا؟ - مع بطاقة منبثقة أنيقة
+   أيقونة Info الجديدة (علاش غتنجح معانا؟)
    ============================================ */
-
-.why-premium-btn {
-    background: rgba(35, 52, 84, 0.85);
-    border: 1px solid rgba(110, 170, 255, 0.22);
-    border-radius: 999px;
-    height: 42px;
-    padding: 0 14px;
-    font-size: 14px;
-    font-weight: 500;
-    color: #eef4ff;
-    cursor: pointer;
-    display: flex;
+.why-premium-icon-btn {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 25px;
+    width: 36px;
+    height: 36px;
+    display: inline-flex;
     align-items: center;
-    gap: 6px;
-    transition: all 0.2s ease;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    color: #E5E7EB;
+    padding: 0;
     font-family: inherit;
-    margin-left: 10px;
-    position: relative;
+    
+    /* ✅ الموضع المختار (كود 1) */
+    position: fixed !important;
+    top: 82px !important;
+    right: 30px !important;
+    z-index: 9999 !important;
 }
 
-.why-premium-btn:hover {
-    background: rgba(45, 65, 102, 0.95);
+.why-premium-icon-btn:hover {
+    background: rgba(255,255,255,0.10);
+    border-color: rgba(255,255,255,0.15);
+    transform: scale(1.05);
 }
 
-.why-premium-btn:active {
-    transform: scale(0.97);
+.why-premium-icon-btn .material-symbols-outlined {
+    font-size: 20px;
+    color: #E5E7EB;
 }
 
-/* البطاقة المنبثقة */
-.premium-info-card {
+/* البطاقة المنبثقة (نفس التصميم القديم) */
+.why-premium-icon-btn .premium-info-card {
     position: absolute;
     top: calc(100% + 8px);
     right: 0;
@@ -2329,10 +2490,11 @@ body:has(#exam.active) .left-side .btn-login-top {
     transition: all 0.22s ease;
     z-index: 1001;
     cursor: default;
+    text-align: right;
 }
 
 /* السهم الصغير */
-.premium-info-card::before {
+.why-premium-icon-btn .premium-info-card::before {
     content: '';
     position: absolute;
     top: -6px;
@@ -2346,52 +2508,57 @@ body:has(#exam.active) .left-side .btn-login-top {
     backdrop-filter: blur(10px);
 }
 
-/* أيقونة البطاقة */
-.premium-info-card .card-icon {
+.why-premium-icon-btn .premium-info-card .card-icon {
     font-size: 1rem;
     margin-left: 6px;
     color: #60a5fa;
 }
 
-/* نص البطاقة */
-.premium-info-card .card-text {
+.why-premium-icon-btn .premium-info-card .card-text {
     font-size: 13px;
     font-weight: 500;
     line-height: 1.7;
     color: #d7e1ee;
 }
 
-/* حالة الظهور */
-.why-premium-btn.active .premium-info-card {
+.why-premium-icon-btn.active .premium-info-card {
     opacity: 1;
     visibility: visible;
     transform: translateY(0) scale(1);
 }
 
-/* إخفاء زر 💎 لماذا؟ في الصفحة الرئيسية فقط */
-.home .why-premium-btn {
+/* ✅ إخفاء الأيقونة في الصفحة الرئيسية وداخل الامتحان (يتم التحكم به عبر JS) */
+#home .why-premium-icon-btn,
+#exam .why-premium-icon-btn {
     display: none !important;
 }
 
-/* للهواتف */
-@media (max-width: 768px) {
-    .why-premium-btn {
-        height: 36px;
-        padding: 0 10px;
-        font-size: 11px;
-        margin-left: 6px;
+/* ✅ إخفاء الأيقونة تماماً في الهواتف (أقل من 1080px) */
+@media (max-width: 1079px) {
+    .why-premium-icon-btn {
+        display: none !important;
     }
-    
-    .premium-info-card {
+}
+
+/* ✅ تنسيق الهواتف (يبقى للاحتياط لكنه لن يظهر بسبب الـ display:none أعلاه) */
+@media (max-width: 768px) {
+    .why-premium-icon-btn {
+        width: 32px;
+        height: 32px;
+    }
+    .why-premium-icon-btn .material-symbols-outlined {
+        font-size: 18px;
+    }
+    .why-premium-icon-btn .premium-info-card {
         width: 290px;
         right: -10px;
         padding: 12px 14px;
     }
-    
-    .premium-info-card .card-text {
+    .why-premium-icon-btn .premium-info-card .card-text {
         font-size: 11px;
     }
 }
+
 /* ============================================
    نافذة الاشتراك المنبثقة (Subscription Modal)
    ============================================ */
@@ -4621,3 +4788,1054 @@ body:has(#exam.active) .left-side .btn-login-top {
         transform: rotate(360deg);
     }
 }
+
+/* ============================================
+   نافذة خطة اليوم (Study Planner Modal)
+   ============================================ */
+
+#studyPlannerModal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(6px);
+    z-index: 15000;
+    justify-content: center;
+    align-items: center;
+}
+
+#studyPlannerModal .session-modal-content {
+    background: #f8f9fc;
+    border-radius: 20px;
+    max-width: 480px;
+    width: 90%;
+    padding: 28px 24px 24px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.06);
+    border: 1px solid rgba(0, 0, 0, 0.04);
+    position: relative;
+    margin: auto;
+}
+
+#studyPlannerContainer {
+    max-height: 60vh;
+    overflow-y: auto;
+    padding-right: 4px;
+}
+
+#studyPlannerContainer::-webkit-scrollbar {
+    width: 4px;
+}
+
+#studyPlannerContainer::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.05);
+    border-radius: 4px;
+}
+
+#studyPlannerContainer::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 4px;
+}
+
+/* الوضع الليلي للنافذة */
+body.dark-mode #studyPlannerModal .session-modal-content {
+    background: #14141e;
+    border-color: rgba(255, 255, 255, 0.04);
+}
+
+body.dark-mode #studyPlannerModal h3 {
+    color: #e8ecf0;
+}
+
+@media (max-width: 768px) {
+    #studyPlannerModal .session-modal-content {
+        padding: 20px 16px 16px;
+        max-width: 95%;
+    }
+}
+/* ============================================
+   تحسينات إضافية لنافذة المدرب (اختيارية)
+   ============================================ */
+
+@media (max-width: 480px) {
+    #studyPlannerModal .session-modal-content {
+        padding: 16px 12px 12px;
+    }
+}
+/* ============================================
+   خطة اليوم - التصميم النهائي
+   ============================================ */
+
+/* تنسيق الأيقونات */
+.material-symbols-outlined {
+    font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 20;
+    font-size: 18px;
+    color: #94a3b8;
+}
+
+/* الحاوية الرئيسية */
+.planner-card {
+    font-family: 'Segoe UI', 'SF Pro', -apple-system, BlinkMacSystemFont, sans-serif;
+    padding: 4px 0;
+    color: #1e293b;
+}
+
+/* الصف العلوي - التاريخ والمتبقي */
+.planner-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 14px;
+    border-bottom: 1px solid #eef2f6;
+    margin-bottom: 0;
+}
+
+.planner-date {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: #1e293b;
+}
+
+.planner-date .material-symbols-outlined {
+    font-size: 18px;
+    color: #94a3b8;
+}
+
+.planner-remaining {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: #1e293b;
+}
+
+.planner-remaining .material-symbols-outlined {
+    font-size: 18px;
+    color: #94a3b8;
+}
+
+.planner-remaining .days-number {
+    color: #2c3e66;
+    font-weight: 600;
+}
+
+/* العنوان الرئيسي */
+.planner-title {
+    text-align: center;
+    font-size: 1rem;
+    font-weight: 500;
+    color: #1e293b;
+    margin: 16px 0 2px 0;
+}
+
+.planner-subtitle {
+    text-align: center;
+    font-size: 0.75rem;
+    color: #94a3b8;
+    margin-bottom: 16px;
+}
+
+.planner-subtitle strong {
+    color: #2c3e66;
+    font-weight: 600;
+}
+
+/* قائمة الامتحانات */
+.exam-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+/* بطاقة الامتحان الواحدة */
+.exam-card {
+    background: #ffffff;
+    border-radius: 10px;
+    padding: 10px 14px;
+    border: 1px solid #eef2f6;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+}
+
+.exam-card:hover {
+    border-color: #cbd5e1;
+    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.05);
+    transform: translateY(-1px);
+}
+
+.exam-card:active {
+    transform: scale(0.99);
+}
+
+/* عنوان البطاقة */
+.exam-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 6px;
+}
+
+.exam-id {
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: #1e293b;
+}
+
+.exam-badge-new {
+    font-size: 0.55rem;
+    color: #94a3b8;
+    background: #f1f4f8;
+    padding: 0 8px;
+    border-radius: 8px;
+    border: 1px solid #e8ecf0;
+}
+
+/* صف المعلومات - الأيقونات والقيم */
+.exam-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.exam-info-item {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.7rem;
+    color: #64748b;
+}
+
+.exam-info-item .material-symbols-outlined {
+    font-size: 16px;
+    color: #94a3b8;
+}
+
+.exam-info-item .score-value {
+    font-weight: 500;
+}
+
+/* ===== ألوان النتيجة ===== */
+.score-red { color: #ef4444; }
+.score-orange { color: #f59e0b; }
+.score-yellow { color: #eab308; }
+.score-green { color: #22c55e; }
+
+/* ===== ألوان آخر مراجعة ===== */
+.review-green { color: #22c55e; }
+.review-lightgreen { color: #4ade80; }
+.review-gold { color: #eab308; }
+.review-red { color: #ef4444; }
+.review-gray { color: #94a3b8; }
+
+/* ===== الوضع الليلي ===== */
+body.dark-mode .planner-card {
+    color: #e8ecf0;
+}
+
+body.dark-mode .planner-header {
+    border-bottom-color: #2a2a3a;
+}
+
+body.dark-mode .planner-date,
+body.dark-mode .planner-remaining {
+    color: #e8ecf0;
+}
+
+body.dark-mode .planner-title {
+    color: #e8ecf0;
+}
+
+body.dark-mode .planner-subtitle {
+    color: #94a3b8;
+}
+
+body.dark-mode .exam-card {
+    background: #14141e;
+    border-color: #2a2a3a;
+}
+
+body.dark-mode .exam-card:hover {
+    border-color: #3a3a4a;
+}
+
+body.dark-mode .exam-id {
+    color: #e8ecf0;
+}
+
+body.dark-mode .exam-badge-new {
+    background: #1e1e2e;
+    color: #94a3b8;
+    border-color: #2a2a3a;
+}
+
+body.dark-mode .exam-info-item {
+    color: #94a3b8;
+}
+
+body.dark-mode .exam-info-item .material-symbols-outlined {
+    color: #64748b;
+}
+
+/* ===== الهواتف ===== */
+@media (max-width: 768px) {
+    .planner-card {
+        padding: 2px 0;
+    }
+    
+    .planner-date,
+    .planner-remaining {
+        font-size: 0.7rem;
+    }
+    
+    .planner-title {
+        font-size: 0.9rem;
+    }
+    
+    .exam-card {
+        padding: 8px 12px;
+    }
+    
+    .exam-id {
+        font-size: 0.75rem;
+    }
+    
+    .exam-info-item {
+        font-size: 0.6rem;
+        gap: 3px;
+    }
+    
+    .exam-info-item .material-symbols-outlined {
+        font-size: 14px;
+    }
+}
+
+
+
+
+/* ============================================
+   Study Planner - تدفق جديد
+   ============================================ */
+
+/* ===== البطاقة العامة ===== */
+.planner-card {
+    font-family: 'Segoe UI', 'SF Pro', -apple-system, BlinkMacSystemFont, sans-serif;
+    padding: 4px 0;
+    color: #1e293b;
+}
+
+/* ===== صفحة إدخال المعلومات ===== */
+.planner-welcome-title {
+    font-size: 1rem;
+    font-weight: 500;
+    text-align: center;
+    color: #1e293b;
+    margin-bottom: 20px;
+}
+
+.planner-input-row {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 18px;
+}
+
+.planner-input-group {
+    flex: 1;
+}
+
+.planner-input-group label {
+    display: block;
+    font-size: 0.65rem;
+    color: #94a3b8;
+    margin-bottom: 4px;
+    font-weight: 500;
+}
+
+.planner-input-group input[type="date"],
+.planner-input-group input[type="number"] {
+    width: 100%;
+    padding: 8px 10px;
+    border: 1px solid #e8ecf0;
+    border-radius: 8px;
+    font-size: 0.8rem;
+    color: #1e293b;
+    background: #ffffff;
+    font-family: inherit;
+    box-sizing: border-box;
+}
+
+.planner-input-group input:focus {
+    outline: none;
+    border-color: #2c3e66;
+    box-shadow: 0 0 0 2px rgba(44, 62, 102, 0.1);
+}
+
+.planner-check-btn {
+    display: block;
+    width: 100%;
+    padding: 10px;
+    background: #2c3e66;
+    color: white;
+    border: none;
+    border-radius: 30px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-family: inherit;
+}
+
+.planner-check-btn:hover {
+    background: #1a2a4a;
+}
+
+/* ===== Loader ===== */
+.planner-loader-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(4px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 99999;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+}
+
+.planner-loader-overlay.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+.planner-loader-spinner {
+    width: 48px;
+    height: 48px;
+    border: 3px solid rgba(255, 255, 255, 0.3);
+    border-top-color: #2c3e66;
+    border-radius: 50%;
+    animation: plannerSpin 0.8s linear infinite;
+    background: rgba(255, 255, 255, 0.8);
+    padding: 12px;
+    border-radius: 50%;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+@keyframes plannerSpin {
+    to { transform: rotate(360deg); }
+}
+
+/* ===== صفحة اختيار القسم ===== */
+.planner-section-title {
+    font-size: 0.95rem;
+    font-weight: 400;
+    text-align: center;
+    color: #1e293b;
+    margin: 16px 0 18px 0;
+}
+
+.planner-sections-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    margin-bottom: 8px;
+}
+
+.planner-sections-grid.two-col {
+    grid-template-columns: repeat(2, 1fr);
+}
+
+.planner-section-btn {
+    padding: 10px 6px;
+    background: linear-gradient(90deg, #161922 0%, #2D3138 50%, #161922 100%);
+    border: 1px solid #D5E0EC;
+    border-radius: 14px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #B0B8C9;
+    cursor: pointer;
+    transition: all 0.25s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+    text-align: center;
+    font-family: inherit;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.04);
+}
+
+.planner-section-btn:hover {
+    background: linear-gradient(90deg, #161922 0%, #2D3138 50%, #161922 100%);
+    border-color: #BFD3E8;
+    transform: translateY(-2px) scale(1.01);
+    color: #4F6F94;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+.planner-section-btn:active {
+    transform: scale(0.97) translateY(0px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.02);
+}
+/* ===== الشريط العلوي (الصفحة الرئيسية) ===== */
+.planner-top-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 2px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #eef2f6;
+    margin-bottom: 10px;
+}
+
+.planner-top-bar .left-icons {
+    display: flex;
+    gap: 8px;
+}
+.planner-top-bar .left-icons button {
+    background: none;
+    border: none;
+    font-size: 18px;
+    color: #94a3b8;
+    cursor: pointer;
+    padding: 0;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+}
+
+.planner-top-bar .left-icons button:hover {
+    background: #f1f4f8;
+    color: #2c3e66;
+}
+
+.planner-top-bar .right-date {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.8rem;
+    color: #1e293b;
+    font-weight: 500;
+}
+
+.planner-top-bar .right-date .material-symbols-outlined {
+    font-size: 18px;
+    color: #94a3b8;
+}
+
+/* ===== النوافذ المنبثقة (settings + info) ===== */
+.planner-popup-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(3px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 99998;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.25s ease;
+}
+
+.planner-popup-overlay.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+.planner-popup-card {
+    background: #ffffff;
+    border-radius: 16px;
+    padding: 24px 22px;
+    max-width: 360px;
+    width: 90%;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.06);
+    border: 1px solid #e8ecf0;
+    transform: scale(0.95);
+    transition: transform 0.2s ease;
+}
+
+.planner-popup-overlay.active .planner-popup-card {
+    transform: scale(1);
+}
+
+.planner-popup-title {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #1e293b;
+    margin-bottom: 12px;
+    text-align: center;
+}
+
+.planner-popup-body {
+    font-size: 0.8rem;
+    color: #64748b;
+    line-height: 1.6;
+    margin-bottom: 16px;
+}
+
+.planner-popup-close-btn {
+    display: block;
+    width: 100%;
+    padding: 8px;
+    background: #f1f4f8;
+    border: none;
+    border-radius: 30px;
+    font-size: 0.8rem;
+    color: #1e293b;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-family: inherit;
+}
+
+.planner-popup-close-btn:hover {
+    background: #e2e8f0;
+}
+
+/* ===== الوضع الليلي ===== */
+body.dark-mode .planner-input-group input {
+    background: #1e1e2e;
+    border-color: #2a2a3a;
+    color: #e8ecf0;
+}
+
+body.dark-mode .planner-check-btn {
+    background: #4a6fa5;
+}
+
+body.dark-mode .planner-check-btn:hover {
+    background: #5a7fb5;
+}
+
+body.dark-mode .planner-section-btn {
+    background: #1e1e2e;
+    border-color: #2a2a3a;
+    color: #e8ecf0;
+}
+
+body.dark-mode .planner-section-btn:hover {
+    background: #2a2a3a;
+    border-color: #3a3a4a;
+}
+
+body.dark-mode .planner-top-bar .left-icons button:hover {
+    background: #2a2a3a;
+}
+
+body.dark-mode .planner-top-bar .right-date {
+    color: #e8ecf0;
+}
+
+body.dark-mode .planner-popup-card {
+    background: #14141e;
+    border-color: #2a2a3a;
+}
+
+body.dark-mode .planner-popup-title {
+    color: #e8ecf0;
+}
+
+body.dark-mode .planner-popup-body {
+    color: #94a3b8;
+}
+
+body.dark-mode .planner-popup-close-btn {
+    background: #2a2a3a;
+    color: #e8ecf0;
+}
+
+body.dark-mode .planner-popup-close-btn:hover {
+    background: #3a3a4a;
+}
+
+body.dark-mode .planner-loader-spinner {
+    background: rgba(20, 20, 30, 0.9);
+    border-color: rgba(255, 255, 255, 0.2);
+    border-top-color: #4a6fa5;
+}
+
+body.dark-mode .planner-welcome-title {
+    color: #e8ecf0;
+}
+
+body.dark-mode .planner-section-title {
+    color: #e8ecf0;
+}
+/* ===== زر خطة اليوم الجديد (مع Border Animation) ===== */
+/* ===== زر خطة اليوم الجديد (مع Border Animation) ===== */
+.study-planner-icon-btn {
+    position: relative;
+    background: rgba(255, 255, 255, 0.05);
+    border: none;
+    background-clip: padding-box;
+    height: 40px;
+    padding: 0 14px;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+    
+    /* ✅ التعديل الجديد: تصغير الزر إلى 85% */
+    transform: scale(0.85);
+    transform-origin: center center;
+}
+
+/* ✅ إضافة هذا الكود لتصحيح حجم الزر عند التمرير عليه (Hover) */
+.study-planner-icon-btn:hover {
+    transform: scale(0.884) !important; /* 0.85 * 1.04 (لأن الحجم الأصلي في Hover هو 1.04) */
+}
+
+/* الصورة داخل الزر – ثابتة ولا تتحرك */
+.study-planner-icon-btn .planner-icon-img {
+    width: 20px;
+    height: 20px;
+    object-fit: contain;
+    display: block;
+    pointer-events: none;
+    border-radius: 4px;
+    animation: none;
+    transform: none;
+}
+
+/* ===== الإطار المتدرج الثابت (الحركة فقط في الألوان) ===== */
+.study-planner-icon-btn::before {
+    content: '';
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    right: -2px;
+    bottom: -2px;
+    border-radius: 14px;
+    z-index: -1;
+    padding: 2px;
+    background: linear-gradient(135deg, #7dd3fc, #60a5fa, #8b5cf6, #38bdf8, #7dd3fc);
+    background-size: 300% 300%;
+    animation: gradientMove 4s linear infinite;
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+}
+
+/* ===== Glow خفيف حول الإطار ===== */
+.study-planner-icon-btn::after {
+    content: '';
+    position: absolute;
+    top: -4px;
+    left: -4px;
+    right: -4px;
+    bottom: -4px;
+    border-radius: 16px;
+    z-index: -2;
+    box-shadow: 0 0 6px rgba(56, 189, 248, 0.2);
+    opacity: 0.5;
+    transition: opacity 0.3s ease, box-shadow 0.3s ease;
+    pointer-events: none;
+}
+
+/* Hover الخاص بالـ Glow */
+.study-planner-icon-btn:hover::after {
+    opacity: 1;
+    box-shadow: 0 0 12px rgba(56, 189, 248, 0.35);
+}
+
+/* أنيميشن التدرج اللوني */
+@keyframes gradientMove {
+    0% { background-position: 0% 0%; }
+    50% { background-position: 100% 100%; }
+    100% { background-position: 0% 0%; }
+}
+
+/* ===== التحكم في إظهار/إخفاء وموضع زر الرئيسية ===== */
+#backHomeBtn {
+    display: none !important;
+}
+
+body:has(#list.active) #backHomeBtn,
+body:has(#exam.active) #backHomeBtn {
+    display: block !important;
+    margin-top: 2px !important;
+    margin-bottom: 2px !important;
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+    position: relative;
+    width: fit-content;
+    transform: translateY(-8px);
+}
+
+/* ===== مسافة صغيرة جداً بين آخر امتحان والأزرار ===== */
+#examsList {
+    padding-bottom: 5px !important;
+}
+/* ===== إزالة أي هوامش من آخر عنصر في القائمة ===== */
+#examsList .item:last-child {
+    margin-bottom: 0px !important;
+    padding-bottom: 0px !important;
+}
+
+/* ✅ تنسيق سطر الخطة في الملف الشخصي */
+#profilePlannerRow .profile-planner-text-active {
+    color: #38bdf8 !important;
+    font-weight: 500;
+}
+#profilePlannerBtn:hover {
+    background: rgba(255, 255, 255, 0.15) !important;
+    border-color: rgba(255, 255, 255, 0.25) !important;
+    transform: scale(1.05);
+}
+/* ✅ أيقونة info في الملف الشخصي */
+#profilePlannerRow {
+    position: relative;
+}
+.planner-info-icon {
+    cursor: pointer;
+    font-size: 16px;
+    color: #94a3b8;
+    transition: color 0.2s ease;
+    margin-left: 4px;
+    user-select: none;
+}
+.planner-info-icon:hover {
+    color: #38bdf8;
+}
+.planner-tooltip {
+    display: none;
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    background: #1a1f2e;
+    color: #e2e8f0;
+    padding: 12px 16px;
+    border-radius: 10px;
+    font-size: 12px;
+    max-width: 240px;
+    min-width: 180px;
+    border: 1px solid #2a3042;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+    z-index: 10000;
+    text-align: right;
+    line-height: 1.6;
+    backdrop-filter: blur(8px);
+    pointer-events: none;
+}
+.planner-tooltip.visible {
+    display: block;
+}
+@media (max-width: 768px) {
+    .planner-tooltip {
+        max-width: 180px;
+        font-size: 11px;
+        padding: 10px 12px;
+        right: -10px;
+        min-width: 150px;
+    }
+}
+
+/* ============================================
+   LOGIN UNIVERS BUTTON (Uiverse Skin - Fully Scoped)
+   ============================================ */
+.login-uiverse-wrapper {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+}
+.login-uiverse-glow {
+    position: absolute;
+    inset: 0;
+    border-radius: 0.75rem;
+    background: linear-gradient(to right, #6366f1, #ec4899, #facc15);
+    filter: blur(16px);
+    opacity: 0.6;
+    transition: all 1s;
+    pointer-events: none;
+}
+.login-uiverse-wrapper:hover .login-uiverse-glow {
+    opacity: 1;
+    transition-duration: 0.2s;
+}
+.login-uiverse-btn {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+    border-radius: 0.75rem;
+    background-color: #111827;
+    color: white;
+    padding: 12px 24px;
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s;
+    gap: 8px;
+    white-space: nowrap;
+    font-family: inherit;
+    min-height: 44px;
+}
+.login-uiverse-btn:hover {
+    background-color: #1f2937;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    transform: translateY(-2px);
+}
+.login-uiverse-btn:active {
+    transform: scale(0.98);
+}
+.login-uiverse-arrow {
+    margin-top: 1px;
+    stroke: currentColor;
+    stroke-width: 2;
+    fill: none;
+}
+.login-uiverse-arrow-stroke {
+    transition: opacity 0.2s;
+    opacity: 0;
+}
+.login-uiverse-arrow-head {
+    transition: transform 0.2s;
+}
+.login-uiverse-wrapper:hover .login-uiverse-arrow-head {
+    transform: translateX(-3px);
+}
+.login-uiverse-wrapper:hover .login-uiverse-arrow-stroke {
+    opacity: 1;
+}
+
+@media (max-width: 768px) {
+    .login-uiverse-btn {
+        padding: 8px 14px;
+        font-size: 0.8rem;
+        min-height: 32px;
+        gap: 6px;
+    }
+}
+
+/* ============================================
+   SUBSCRIBE UNIVERS BUTTON (Uiverse Skin - Fully Scoped)
+   ============================================ */
+.subscribe-uiverse-btn {
+    position: relative;
+    padding: 12px 24px;
+    font-size: 16px;
+    background: #1a1a1a;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: all 0.3s ease;
+    height: 44px;
+    font-family: inherit;
+}
+.subscribe-uiverse-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4);
+}
+.subscribe-uiverse-icon-container {
+    position: relative;
+    width: 24px;
+    height: 24px;
+}
+.subscribe-uiverse-icon {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 24px;
+    height: 24px;
+    color: #22c55e;
+    opacity: 0;
+    visibility: hidden;
+}
+.subscribe-uiverse-default-icon {
+    opacity: 1;
+    visibility: visible;
+}
+/* Hover animations */
+.subscribe-uiverse-btn:hover .subscribe-uiverse-icon {
+    animation: none;
+}
+.subscribe-uiverse-btn:hover .subscribe-uiverse-wallet-icon {
+    opacity: 0;
+    visibility: hidden;
+}
+.subscribe-uiverse-btn:hover .subscribe-uiverse-card-icon {
+    animation: subscribeIconRotate 2.5s infinite;
+    animation-delay: 0s;
+}
+.subscribe-uiverse-btn:hover .subscribe-uiverse-payment-icon {
+    animation: subscribeIconRotate 2.5s infinite;
+    animation-delay: 0.5s;
+}
+.subscribe-uiverse-btn:hover .subscribe-uiverse-dollar-icon {
+    animation: subscribeIconRotate 2.5s infinite;
+    animation-delay: 1s;
+}
+.subscribe-uiverse-btn:hover .subscribe-uiverse-check-icon {
+    animation: subscribeIconRotate 2.5s infinite;
+    animation-delay: 1.5s;
+}
+/* Active state - show only checkmark */
+.subscribe-uiverse-btn:active .subscribe-uiverse-icon {
+    animation: none;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+}
+.subscribe-uiverse-btn:active .subscribe-uiverse-check-icon {
+    animation: subscribeCheckmarkAppear 0.6s ease forwards;
+    visibility: visible;
+}
+.subscribe-uiverse-text {
+    font-weight: 600;
+    font-family: system-ui, -apple-system, sans-serif;
+}
+@keyframes subscribeIconRotate {
+    0% { opacity: 0; visibility: hidden; transform: translateY(10px) scale(0.5); }
+    5% { opacity: 1; visibility: visible; transform: translateY(0) scale(1); }
+    15% { opacity: 1; visibility: visible; transform: translateY(0) scale(1); }
+    20% { opacity: 0; visibility: hidden; transform: translateY(-10px) scale(0.5); }
+    100% { opacity: 0; visibility: hidden; transform: translateY(-10px) scale(0.5); }
+}
+@keyframes subscribeCheckmarkAppear {
+    0% { opacity: 0; transform: scale(0.5) rotate(-45deg); }
+    50% { opacity: 0.5; transform: scale(1.2) rotate(0deg); }
+    100% { opacity: 1; transform: scale(1) rotate(0deg); }
+}
+@media (max-width: 768px) {
+    .subscribe-uiverse-btn {
+        padding: 8px 14px;
+        font-size: 14px;
+        height: 34px;
+        gap: 6px;
+    }
+    .subscribe-uiverse-icon-container {
+        width: 18px;
+        height: 18px;
+    }
+    .subscribe-uiverse-icon {
+        width: 18px;
+        height: 18px;
+    }
+}
+
+
