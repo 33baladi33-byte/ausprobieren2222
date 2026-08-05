@@ -16,15 +16,10 @@
         window.open(waUrl, '_blank');
     }
 
-     // دالة للتحقق مما إذا كان المستخدم لديه حق الوصول إلى الخطة (تعتمد على studyPlan + studyPlanUntil)
+    // دالة للتحقق مما إذا كان المستخدم لديه حق الوصول إلى الخطة
+    // يعتمد على window.userStudyPlan الذي يتم تحديثه في auth.js بنفس منطق Premium
     function hasStudyPlanAccess() {
-        const isActive = window.userStudyPlan === true;
-        const until = window.userStudyPlanUntil;
-        if (!isActive) return false;
-        if (!until) return false; // لا يوجد تاريخ انتهاء → غير مفعل
-        const expiryDate = new Date(until);
-        const now = new Date();
-        return expiryDate >= now;
+        return window.userStudyPlan === true;
     }
 
     // إضافة CSS للقفل (يتم إضافته مرة واحدة فقط)
