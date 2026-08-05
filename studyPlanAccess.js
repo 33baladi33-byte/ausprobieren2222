@@ -16,9 +16,15 @@
         window.open(waUrl, '_blank');
     }
 
-    // دالة للتحقق مما إذا كان المستخدم لديه حق الوصول إلى الخطة
+     // دالة للتحقق مما إذا كان المستخدم لديه حق الوصول إلى الخطة (تعتمد على studyPlan + studyPlanUntil)
     function hasStudyPlanAccess() {
-        return window.userStudyPlan === true;
+        const isActive = window.userStudyPlan === true;
+        const until = window.userStudyPlanUntil;
+        if (!isActive) return false;
+        if (!until) return false; // لا يوجد تاريخ انتهاء → غير مفعل
+        const expiryDate = new Date(until);
+        const now = new Date();
+        return expiryDate >= now;
     }
 
     // إضافة CSS للقفل (يتم إضافته مرة واحدة فقط)
@@ -167,11 +173,18 @@
             }, true);
         });
     }   
-    // دالة إعادة تطبيق القفل عند تغيير المحتوى
-    function applyStudyPlanLock() {
+     function applyStudyPlanLock() {
+        // تحديث المتغيرات العامة للتأكد من صلاحية التاريخ
+        if (window.userStudyPlanUntil) {
+            const now = new Date();
+            const expiry = new Date(window.userStudyPlanUntil);
+            // إذا انتهى التاريخ، نضبط window.userStudyPlan إلى false مؤقتاً (للقفل)
+            if (expiry < now) {
+                window.userStudyPlan = false;
+            }
+        }
         setTimeout(lockStudyPlanButtons, 50);
     }
-
     // مراقبة التغييرات في DOM لإعادة تطبيق القفل (داخل الحاوية فقط)
     function setupObserver() {
         const container = document.getElementById('studyPlannerContainer');
