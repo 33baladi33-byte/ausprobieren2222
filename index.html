@@ -4245,7 +4245,7 @@ document.addEventListener("DOMContentLoaded", function() {
             </div>
         </div>
 
-        <!-- ===== صفحة تعديل الهدف (تصميم حديث) ===== -->
+        <!-- ===== صفحة تعديل الهدف (بسيطة وصغيرة) ===== -->
         <div id="statsGoalContent" class="stats-inner-page" style="display:none;">
             <div class="stats-inner-header">
                 <button id="statsGoalBackBtn" class="stats-back-btn" title="رجوع">
@@ -4253,31 +4253,27 @@ document.addEventListener("DOMContentLoaded", function() {
                 </button>
                 <span class="stats-inner-title">تعديل الهدف</span>
             </div>
-            <div class="stats-inner-body" style="display:flex; flex-direction:column; align-items:center; padding:24px 20px 30px;">
+            <div class="stats-inner-body" style="display:flex; flex-direction:column; align-items:center; padding:16px 20px 20px;">
 
-                <!-- أيقونة الهدف -->
-                <div class="goal-icon-wrapper">
-                    <span class="material-symbols-outlined">target</span>
-                </div>
+                <!-- العنوان -->
+                <h3 style="font-size:1.1rem; font-weight:600; color:#1e293b; margin:0 0 16px 0; text-align:center;">حدد هدفك اليومي</h3>
 
-                <!-- العنوان والوصف -->
-                <h3 class="goal-title">حدد هدفك اليومي</h3>
-                <p class="goal-description">اختر المدة التي ترغب في دراستها اليوم لتحقيق هدفك</p>
-
-                <!-- زر اختيار المدة (بطاقة) -->
-                <div class="goal-selector" id="goalSelector">
-                    <span class="material-symbols-outlined clock-icon">schedule</span>
-                    <span class="goal-selector-text" id="goalSelectorText">2 ساعات</span>
-                    <span class="material-symbols-outlined arrow-icon">expand_more</span>
-                </div>
-
-                <!-- القائمة المنسدلة (خيارات المدة) -->
-                <div class="goal-dropdown" id="goalDropdown">
-                    <!-- سيتم تعبئتها بواسطة JavaScript من قيم الـ select -->
-                </div>
-
-                <!-- الـ select الأصلي (مخفي) -->
-                <select id="statsGoalSelect" style="display:none;">
+                <!-- قائمة اختيار المدة -->
+                <select id="statsGoalSelect" class="stats-goal-select" style="
+                    width: 100%;
+                    max-width: 220px;
+                    padding: 10px 14px;
+                    border-radius: 10px;
+                    border: 1px solid #d1d5db;
+                    background: #ffffff;
+                    font-size: 0.95rem;
+                    font-weight: 500;
+                    color: #1e293b;
+                    outline: none;
+                    cursor: pointer;
+                    direction: rtl;
+                    margin-bottom: 16px;
+                ">
                     <option value="30">30 دقيقة</option>
                     <option value="60">1 ساعة</option>
                     <option value="90">1 ساعة 30 دقيقة</option>
@@ -4293,31 +4289,27 @@ document.addEventListener("DOMContentLoaded", function() {
                 </select>
 
                 <!-- زر حفظ -->
-                <button id="statsGoalSaveBtn" class="goal-save-btn">
-                    <span class="material-symbols-outlined">save</span>
+                <button id="statsGoalSaveBtn" class="stats-inner-save" style="
+                    width: 100%;
+                    max-width: 220px;
+                    padding: 10px 0;
+                    border: none;
+                    border-radius: 30px;
+                    background: linear-gradient(135deg, #1a2a4a, #2c3e66);
+                    color: #ffffff;
+                    font-size: 0.95rem;
+                    font-weight: 600;
+                    cursor: pointer;
+                    transition: all 0.25s ease;
+                    box-shadow: 0 4px 12px rgba(26,42,74,0.2);
+                "
+                onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 20px rgba(26,42,74,0.3)';"
+                onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 12px rgba(26,42,74,0.2)';"
+                onmousedown="this.style.transform='scale(0.97)'"
+                onmouseup="this.style.transform='scale(1)'"
+                >
                     حفظ
                 </button>
-
-                <!-- بطاقة الإنجاز (نجحت في المهمة) -->
-                <div class="achievement-card">
-                    <div class="achievement-left">
-                        <div class="achievement-icon">
-                            <span class="material-symbols-outlined">emoji_events</span>
-                        </div>
-                        <div>
-                            <div class="achievement-label">نجحت في المهمة</div>
-                            <div class="achievement-value">
-                                <span id="statsStreakNumberGoal">0</span>
-                                <span class="achievement-unit">يوم</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="achievement-right">
-                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/>
-                        </svg>
-                    </div>
-                </div>
 
             </div>
         </div>
