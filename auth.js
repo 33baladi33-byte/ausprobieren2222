@@ -191,6 +191,25 @@ async function checkSessionAndInitialize() {
             }
         }
 
+        // 2.5) فحص انتهاء صلاحية Study Plan (نفس المنطق)
+        if (userData.studyPlan === true && userData.studyPlanUntil) {
+            const now = Date.now();
+            const expiry = new Date(userData.studyPlanUntil).getTime();
+
+            if (now > expiry) {
+                console.log('⏰ انتهت صلاحية الخطة اليومية. إلغاء التفعيل...');
+                userData.studyPlan = false;
+                userData.studyPlanUntil = null;
+                
+                await docRef.update({
+                    studyPlan: false,
+                    studyPlanUntil: null,
+                    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
+                showToast('⏰ انتهت صلاحية الخطة اليومية، تم إلغاء التفعيل.', 'info');
+            }
+        }
+
         // 3) تحديث الواجهة مباشرة بالبيانات الجاهزة
         updateUI(user, userData);
 
@@ -208,8 +227,9 @@ async function createInitialUserDocument(user) {
         firstname: '',
         lastname: '',
         plan: 'free',
-        studyPlan: false, // ✅ إضافة حقل studyPlan
         premiumUntil: null,
+        studyPlan: false,
+        studyPlanUntil: null,
         session: { 
             deviceId: deviceId, 
             loginAt: firebase.firestore.FieldValue.serverTimestamp() 
@@ -229,6 +249,7 @@ function updateUI(user, data) {
     
     // ✅ إضافة متغير studyPlan للحفاظ على الحالة
     window.userStudyPlan = data && data.studyPlan === true;
+    window.userStudyPlanUntil = data && data.studyPlanUntil || null;
 
     const profileEmail = document.getElementById('profileEmail');
     const profileEmailText = document.getElementById('profileEmailText');
@@ -253,6 +274,7 @@ function updateUI(user, data) {
     if (!user) {
         // ✅ إعادة تعيين studyPlan عند تسجيل الخروج
         window.userStudyPlan = false;
+        window.userStudyPlanUntil = null;
         
         if (profileEmailText) profileEmailText.textContent = 'غير مسجل';
         if (profileExpiryText) profileExpiryText.textContent = 'الوصول محدود لبعض الامتحانات';
@@ -431,14 +453,15 @@ async function handleSignup() {
         createdUser = userCredential.user;
         const deviceId = getDeviceId();
 
-              const userData = {
+          const userData = {
             email: email,
             username: username,
             firstname: firstname,
             lastname: lastname,
             plan: 'free',
-            studyPlan: false, // ✅ إضافة حقل studyPlan
             premiumUntil: null,
+            studyPlan: false,
+            studyPlanUntil: null,
             session: {
                 deviceId: deviceId,
                 loginAt: firebase.firestore.FieldValue.serverTimestamp()
