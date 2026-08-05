@@ -18,17 +18,22 @@ const teile = [
   { id: 9, name: "Schreiben", container: "schreiben", skill: "schreiben" },
   { id: 10, name: "Mündlich", container: "mündlich", skill: "mündlich" }
 ];
-// ===== دالة تحديد رقم الجزء حسب المهارة =====
-function getPartNumber(skill) {
-    const partMap = {
-        'hoeren1': 1, 'hoeren2': 2, 'hoeren3': 3,
-        'lesen1': 1, 'lesen2': 2, 'lesen3': 3,
-        'sprach1': 1, 'sprach2': 2,
-        'schreiben': 1,
-        'mündlich': 1, 'mündlich1': 1, 'mündlich2': 2, 'mündlich3': 3
-    };
-    return partMap[skill] || 1;
-}
+// ===== المتغيرات العامة للسياق (نسخة مبسطة) =====
+window.currentSkill = '';
+window.currentExamId = null;
+window.currentExamData = null;
+
+window.askAIContext = {
+    questionIndex: 0
+};
+
+// دالة تحديث السياق (مبسطة)
+window.updateAskAIContext = function(skill, examId) {
+    window.currentSkill = skill;
+    window.currentExamId = examId;
+    window.askAIContext.questionIndex = 0;
+    console.log('🔄 AskAI Context: skill=' + skill + ', exam=' + examId);
+};
 // متغير لمنع تكرار عرض القائمة الأولية
 let _initialListRendered = false;
 // دالة عرض القائمة الأولية (محاكاة الضغط على Hören 1) مع إعادة المحاولة وإعادة الرسم عند تغير الحالة
@@ -134,17 +139,21 @@ function isExamFree(skill, examNumber) {
   }
 }
 
-// ========== دالة حفظ آخر نتيجة ==========
 function saveExamResult(skill, examId, score) {
   try {
     const key = `exam_result_${skill}_${examId}`;
     localStorage.setItem(key, score.toString());
+    // حفظ السجل والتاريخ أيضاً
+    saveExamHistory(skill, examId, score);
+    // ✅ حفظ تاريخ آخر مراجعة في مفتاح مستقل
+    const lastReviewKey = `exam_last_review_${skill}_${examId}`;
+    const today = new Date().toISOString().slice(0, 10);
+    localStorage.setItem(lastReviewKey, today);
   } catch(e) {
     console.error("❌ خطأ في حفظ النتيجة:", e);
   }
 }
 
-// ========== دالة استرجاع آخر نتيجة ==========
 function getExamResult(skill, examId) {
   try {
     const key = `exam_result_${skill}_${examId}`;
@@ -163,7 +172,6 @@ function getResultColor(score) {
   return "#adb5bd";
 }
 
-// ========== دالة عرض النتيجة بجانب عنوان الامتحان ==========
 function createResultBadge(score) {
   if (score === null) return null;
   
@@ -172,17 +180,22 @@ function createResultBadge(score) {
   badge.textContent = `${score} / 25`;
   
   const isMobile = window.innerWidth <= 768;
+  const fs = isMobile ? '8px' : '11px';
+  const pad = isMobile ? '2px 5px' : '3px 8px';
+  const minW = isMobile ? '40px' : '55px';
+
   badge.style.cssText = `
-    font-size: ${isMobile ? '8px' : '11px'};
+    font-size: ${fs};
     font-weight: bold;
-    padding: ${isMobile ? '2px 5px' : '3px 8px'};
+    padding: ${pad};
     border-radius: 20px;
     color: white;
     background-color: ${getResultColor(score)};
-    margin-left: 8px;
     display: inline-block;
-    min-width: ${isMobile ? '40px' : '55px'};
+    min-width: ${minW};
     text-align: center;
+    line-height: 1.4;
+    margin-left: 6px;
   `;
   return badge;
 }
@@ -213,6 +226,63 @@ function incrementRetryCount(skill, examId) {
     saveRetryCount(skill, examId, newCount);
     return newCount;
 }
+
+// ========== دوال تاريخ آخر مراجعة وسجل النتائج ==========
+function saveExamHistory(skill, examId, score) {
+    try {
+        const historyKey = `exam_history_${skill}_${examId}`;
+        const history = getExamHistory(skill, examId);
+        const timestamp = new Date().toISOString();
+        history.push({ score: score, date: timestamp });
+        localStorage.setItem(historyKey, JSON.stringify(history));
+    } catch(e) {
+        console.error("❌ خطأ في حفظ سجل الامتحان:", e);
+    }
+}
+
+function getExamHistory(skill, examId) {
+    try {
+        const historyKey = `exam_history_${skill}_${examId}`;
+        const data = localStorage.getItem(historyKey);
+        return data ? JSON.parse(data) : [];
+    } catch(e) {
+        console.error("❌ خطأ في استرجاع سجل الامتحان:", e);
+        return [];
+    }
+}
+function getLastAttemptDate(skill, examId) {
+    // ✅ قراءة من المفتاح المستقل أولاً (أسرع وأبسط)
+    const lastReviewKey = `exam_last_review_${skill}_${examId}`;
+    const lastReview = localStorage.getItem(lastReviewKey);
+    if (lastReview) return lastReview;
+    
+    // ❗ للتوافق مع البيانات القديمة: إذا لم يوجد المفتاح، نقرأ من history
+    const history = getExamHistory(skill, examId);
+    if (history.length === 0) return null;
+    return history[history.length - 1].date;
+}
+
+function getAllScores(skill, examId) {
+    const history = getExamHistory(skill, examId);
+    return history.map(item => item.score);
+}
+function getLastReviewDays(skill, examId) {
+    // ✅ قراءة من المفتاح المستقل مباشرة
+    const lastReviewKey = `exam_last_review_${skill}_${examId}`;
+    const lastDate = localStorage.getItem(lastReviewKey);
+    if (!lastDate) return null;
+    
+    const now = new Date();
+    const last = new Date(lastDate);
+    // ضبط الوقت لتجنب مشاكل التوقيت
+    now.setHours(0, 0, 0, 0);
+    last.setHours(0, 0, 0, 0);
+    const diff = Math.floor((now - last) / (1000 * 3600 * 24));
+    return diff;
+}
+
+// تعديل دالة saveExamResult لتخزين التاريخ أيضاً
+// (نقوم بتعديل saveExamResult الأصلية، والتي سيتم استبدالها في التعديل التالي)
 // ========== عرض بطاقة Premium Access ==========
 function showLockedMessage(examTitle) {
     if (typeof window.showPremiumModal === 'function') {
@@ -1139,24 +1209,24 @@ const examsDatabase = {
     { id: 25, title: "Die Bundesländer", enabled: true, hasFile: true },
     { id: 26, title: "Bio-Siegels", enabled: true, hasFile: true },
     { id: 27, title: "Berufen (bonbon)", enabled: true, hasFile: true },
-    { id: 28, title: "Die Zahl der Arbeitslosen (مواضيع تركيا)", enabled: true, hasFile: true },
-    { id: 29, title: "BILD AM SONNTAG (مواضيع تركيا)", enabled: true, hasFile: true },
-    { id: 30, title: "Studentenparty in Frankreich (مواضيع تركيا)", enabled: true, hasFile: true },
-    { id: 31, title: "Deutsche Filmmuseum (مواضيع تركيا)", enabled: true, hasFile: true },
-    { id: 32, title: "Ein Treffen bei der Integrationsbeauftragten (مواضيع تركيا)", enabled: true, hasFile: true },
-    { id: 33, title: "die Konjunkturentwicklung negativ (مواضيع تركيا)", enabled: true, hasFile: true },
-    { id: 34, title: "internationalen Konferenz (مواضيع تركيا)", enabled: true, hasFile: true },
-    { id: 35, title: "Um Tickets zu gewinnen (مواضيع تركيا)", enabled: true, hasFile: true },
-    { id: 36, title: "Die tschechische Stadt Pilsen (مواضيع تركيا)", enabled: true, hasFile: true },
-    { id: 37, title: "Laut Statistischem Bundesamt (مواضيع تركيا)", enabled: true, hasFile: true },
-    { id: 38, title: "In Frankfurt haben Manager (مواضيع تركيا)", enabled: true, hasFile: true },
-    { id: 39, title: "Für die Polizei in Berlin (مواضيع تركيا)", enabled: true, hasFile: true },
-    { id: 40, title: "Die Sprecherin ist verheiratet (مواضيع تركيا)", enabled: true, hasFile: true },
-    { id: 41, title: "Bei der Sportveranstaltung (مواضيع تركيا)", enabled: true, hasFile: true },
-    { id: 42, title: "Das Bundesfamilienministerium (مواضيع تركيا)", enabled: true, hasFile: true },
-    { id: 43, title: "Meeresküsten (مواضيع تركيا)", enabled: true, hasFile: true },
-    { id: 44, title: "Bauern warnen (مواضيع تركيا)", enabled: true, hasFile: true },
-    { id: 45, title: "Nach Ansicht mancher (مواضيع تركيا)", enabled: true, hasFile: true }
+    { id: 28, title: "Die Zahl der Arbeitslosen (تركيا)", enabled: true, hasFile: true },
+    { id: 29, title: "BILD AM SONNTAG (تركيا)", enabled: true, hasFile: true },
+    { id: 30, title: "Studentenparty in Frankreich (تركيا)", enabled: true, hasFile: true },
+    { id: 31, title: "Deutsche Filmmuseum (تركيا)", enabled: true, hasFile: true },
+    { id: 32, title: "Ein Treffen bei der Integrationsbeauftragten (تركيا)", enabled: true, hasFile: true },
+    { id: 33, title: "die Konjunkturentwicklung negativ (تركيا)", enabled: true, hasFile: true },
+    { id: 34, title: "internationalen Konferenz (تركيا)", enabled: true, hasFile: true },
+    { id: 35, title: "Um Tickets zu gewinnen (تركيا)", enabled: true, hasFile: true },
+    { id: 36, title: "Die tschechische Stadt Pilsen (تركيا)", enabled: true, hasFile: true },
+    { id: 37, title: "Laut Statistischem Bundesamt (تركيا)", enabled: true, hasFile: true },
+    { id: 38, title: "In Frankfurt haben Manager (تركيا)", enabled: true, hasFile: true },
+    { id: 39, title: "Für die Polizei in Berlin (تركيا)", enabled: true, hasFile: true },
+    { id: 40, title: "Die Sprecherin ist verheiratet (تركيا)", enabled: true, hasFile: true },
+    { id: 41, title: "Bei der Sportveranstaltung (تركيا)", enabled: true, hasFile: true },
+    { id: 42, title: "Das Bundesfamilienministerium (تركيا)", enabled: true, hasFile: true },
+    { id: 43, title: "Meeresküsten (تركيا)", enabled: true, hasFile: true },
+    { id: 44, title: "Bauern warnen (تركيا)", enabled: true, hasFile: true },
+    { id: 45, title: "Nach Ansicht mancher (تركيا)", enabled: true, hasFile: true }
   ],
   hoeren2: [
     { id: 1, title: "Herr Gasser und Frau Janke", enabled: true, hasFile: true },
@@ -1190,24 +1260,24 @@ const examsDatabase = {
     { id: 29, title: "Meron Makeba", enabled: true, hasFile: true },
     { id: 30, title: "Frau Kedar Malta", enabled: true, hasFile: true },
     { id: 31, title: "Frau Keder aus Malta", enabled: true, hasFile: true },
-    { id: 32, title: "Nadine Wagner (مواضيع تركيا)", enabled: true, hasFile: true },
-    { id: 33, title: "Mirjam Pressier (مواضيع تركيا)", enabled: true, hasFile: true },
-    { id: 34, title: "Mirjam Pressier - ليدعت (مواضيع تركيا)", enabled: true, hasFile: true },
-    { id: 35, title: "Frau Pesina (مواضيع تركيا)", enabled: true, hasFile: true },
-    { id: 36, title: "Herr Werner (مواضيع تركيا)", enabled: true, hasFile: true },
-    { id: 37, title: "Wohnmobil (مواضيع تركيا)", enabled: true, hasFile: true },
-    { id: 38, title: "Straßenkinder - Die Kinder (Kids) (مواضيع تركيا)", enabled: true, hasFile: true },
-    { id: 39, title: "Familie - Eltern (مواضيع تركيا)", enabled: true, hasFile: true },
-    { id: 40, title: "Revolution Day (مواضيع تركيا)", enabled: true, hasFile: true },
-    { id: 41, title: "Bicycle (مواضيع تركيا)", enabled: true, hasFile: true },
-    { id: 42, title: "Die Radiosendung (مواضيع تركيا)", enabled: true, hasFile: true },
-    { id: 43, title: "psychische (مواضيع تركيا)", enabled: true, hasFile: true },
-    { id: 44, title: "Herr Kemper (مواضيع تركيا)", enabled: true, hasFile: true },
-    { id: 45, title: "Frau Hahn (مواضيع تركيا)", enabled: true, hasFile: true },
-    { id: 46, title: "Wohnmobilen (مواضيع تركيا)", enabled: true, hasFile: true },
-    { id: 47, title: "Bibliothek (مواضيع تركيا)", enabled: true, hasFile: true },
-    { id: 48, title: "Eisschwimmen (مواضيع تركيا)", enabled: true, hasFile: true },
-    { id: 49, title: "Die Ausbildung (مواضيع تركيا)", enabled: true, hasFile: true },
+    { id: 32, title: "Nadine Wagner (تركيا)", enabled: true, hasFile: true },
+    { id: 33, title: "Mirjam Pressier (تركيا)", enabled: true, hasFile: true },
+    { id: 34, title: "Mirjam Pressier - ليدعت (تركيا)", enabled: true, hasFile: true },
+    { id: 35, title: "Frau Pesina (تركيا)", enabled: true, hasFile: true },
+    { id: 36, title: "Herr Werner (تركيا)", enabled: true, hasFile: true },
+    { id: 37, title: "Wohnmobil (تركيا)", enabled: true, hasFile: true },
+    { id: 38, title: "Straßenkinder - Die Kinder (Kids) (تركيا)", enabled: true, hasFile: true },
+    { id: 39, title: "Familie - Eltern (تركيا)", enabled: true, hasFile: true },
+    { id: 40, title: "Revolution Day (تركيا)", enabled: true, hasFile: true },
+    { id: 41, title: "Bicycle (تركيا)", enabled: true, hasFile: true },
+    { id: 42, title: "Die Radiosendung (تركيا)", enabled: true, hasFile: true },
+    { id: 43, title: "psychische (تركيا)", enabled: true, hasFile: true },
+    { id: 44, title: "Herr Kemper (تركيا)", enabled: true, hasFile: true },
+    { id: 45, title: "Frau Hahn (تركيا)", enabled: true, hasFile: true },
+    { id: 46, title: "Wohnmobilen (تركيا)", enabled: true, hasFile: true },
+    { id: 47, title: "Bibliothek (تركيا)", enabled: true, hasFile: true },
+    { id: 48, title: "Eisschwimmen (تركيا)", enabled: true, hasFile: true },
+    { id: 49, title: "Die Ausbildung (تركيا)", enabled: true, hasFile: true },
     { id: 50, title: "Thomas", enabled: true, hasFile: true },
     { id: 51, title: "Frau Kiddar 3", enabled: true, hasFile: true },
     { id: 52, title: "Bio-Essen: Obst, Gemüse und Lieferung", enabled: true, hasFile: true },
@@ -1243,26 +1313,26 @@ const examsDatabase = {
     { id: 25, title: "Das Fest (ohne Frankfurt)", enabled: true, hasFile: true },
     { id: 26, title: "Das Fest (mit Frankfurt)", enabled: true, hasFile: true },
     { id: 27, title: "Radio Konzert", enabled: true, hasFile: true },
-    { id: 28, title: "Wanderung (مواضيع تركيا)", enabled: true, hasFile: true },
-    { id: 29, title: "Bayern Radio (مواضيع تركيا)", enabled: true, hasFile: true },
-    { id: 30, title: "Die Gruppe Die Prinzen (مواضيع تركيا)", enabled: true, hasFile: true },
-    { id: 31, title: "spätestens in Hannover (مواضيع تركيا)", enabled: true, hasFile: true },
-    { id: 32, title: "Für das Konzert mit Romano (مواضيع تركيا)", enabled: true, hasFile: true },
-    { id: 33, title: "Gartenausstellung KöGa (مواضيع تركيا)", enabled: true, hasFile: true },
-    { id: 34, title: "den Opel-Zoo (مواضيع تركيا)", enabled: true, hasFile: true },
-    { id: 35, title: "Der Christkindlesmarkt in Nürnberg (مواضيع تركيا)", enabled: true, hasFile: true },
-    { id: 36, title: "Das Geschäft für österreichische Spezialitäten (مواضيع تركيا)", enabled: true, hasFile: true },
-    { id: 37, title: "Alle Flüge der Fluglinie AirMer (مواضيع تركيا)", enabled: true, hasFile: true },
-    { id: 38, title: "Auto gewinnen (مواضيع تركيا)", enabled: true, hasFile: true },
-    { id: 39, title: "Die Fahrradtouren von Berlin (مواضيع تركيا)", enabled: true, hasFile: true },
-    { id: 40, title: "Die Literaturmesse für Kleinverleger (مواضيع تركيا)", enabled: true, hasFile: true },
-    { id: 41, title: "Fußballspiels im Ostpark (مواضيع تركيا)", enabled: true, hasFile: true },
-    { id: 42, title: "Das Treffen (مواضيع تركيا)", enabled: true, hasFile: true },
-    { id: 43, title: "im Frankfurter Zoo (مواضيع تركيا)", enabled: true, hasFile: true },
-    { id: 44, title: "Ein Teil der kostenlosen Veranstaltungen (مواضيع تركيا)", enabled: true, hasFile: true },
-    { id: 45, title: "Auf der Viktoriabrücke (مواضيع تركيا)", enabled: true, hasFile: true },
-    { id: 46, title: "Die Buchpräsentation (مواضيع تركيا)", enabled: true, hasFile: true },
-    { id: 47, title: "Beim Klassik-Radio (مواضيع تركيا)", enabled: true, hasFile: true },
+    { id: 28, title: "Wanderung (تركيا)", enabled: true, hasFile: true },
+    { id: 29, title: "Bayern Radio (تركيا)", enabled: true, hasFile: true },
+    { id: 30, title: "Die Gruppe Die Prinzen (تركيا)", enabled: true, hasFile: true },
+    { id: 31, title: "spätestens in Hannover (تركيا)", enabled: true, hasFile: true },
+    { id: 32, title: "Für das Konzert mit Romano (تركيا)", enabled: true, hasFile: true },
+    { id: 33, title: "Gartenausstellung KöGa (تركيا)", enabled: true, hasFile: true },
+    { id: 34, title: "den Opel-Zoo (تركيا)", enabled: true, hasFile: true },
+    { id: 35, title: "Der Christkindlesmarkt in Nürnberg (تركيا)", enabled: true, hasFile: true },
+    { id: 36, title: "Das Geschäft für österreichische Spezialitäten (تركيا)", enabled: true, hasFile: true },
+    { id: 37, title: "Alle Flüge der Fluglinie AirMer (تركيا)", enabled: true, hasFile: true },
+    { id: 38, title: "Auto gewinnen (تركيا)", enabled: true, hasFile: true },
+    { id: 39, title: "Die Fahrradtouren von Berlin (تركيا)", enabled: true, hasFile: true },
+    { id: 40, title: "Die Literaturmesse für Kleinverleger (تركيا)", enabled: true, hasFile: true },
+    { id: 41, title: "Fußballspiels im Ostpark (تركيا)", enabled: true, hasFile: true },
+    { id: 42, title: "Das Treffen (تركيا)", enabled: true, hasFile: true },
+    { id: 43, title: "im Frankfurter Zoo (تركيا)", enabled: true, hasFile: true },
+    { id: 44, title: "Ein Teil der kostenlosen Veranstaltungen (تركيا)", enabled: true, hasFile: true },
+    { id: 45, title: "Auf der Viktoriabrücke (تركيا)", enabled: true, hasFile: true },
+    { id: 46, title: "Die Buchpräsentation (تركيا)", enabled: true, hasFile: true },
+    { id: 47, title: "Beim Klassik-Radio (تركيا)", enabled: true, hasFile: true },
     { id: 48, title: "Sie Hören Den Anrufbeantworter-Buchhandlung", enabled: true, hasFile: true }
   ],
   schreiben: schreibenExams,
@@ -1292,11 +1362,15 @@ function renderTeileList() {
   if (!container) return;
   container.innerHTML = "";
   
+  // ✅ تحديد المحاذاة حسب حجم الشاشة
+  const isLargeScreen = window.innerWidth >= 1080;
+  const justifyContent = isLargeScreen ? 'center' : 'flex-start';
+  
   container.style.cssText = `
     display: flex;
     flex-wrap: wrap;
     gap: 10px;
-    justify-content: flex-start;
+    justify-content: ${justifyContent};
     align-items: center;
     margin-bottom: 30px;
   `;
@@ -1438,11 +1512,9 @@ function getFlattenedExamList(exams) {
     return flattened;
 }
 
-// ============================================
-// ✅ دالة renderExamListForSkill المعدلة (مع القواعد الجديدة)
-// ============================================
 async function renderExamListForSkill(skill, teilName) {
   currentSkill = skill;
+  window.currentSkill = skill;
   
   const container = document.getElementById("examsList");
   if (!container) return;
@@ -1454,7 +1526,7 @@ async function renderExamListForSkill(skill, teilName) {
   
   const headerDiv = document.createElement("div");
   headerDiv.className = "teil-header";
-  headerDiv.innerHTML = `<strong>📚 ${teilName || getTeilNameBySkill(skill)}</strong>`;
+  headerDiv.innerHTML = `<strong> ${teilName || getTeilNameBySkill(skill)}</strong>`;
   container.appendChild(headerDiv);
 
   if (SKILL_CONFIG[skill]) {
@@ -1464,7 +1536,6 @@ async function renderExamListForSkill(skill, teilName) {
   let targetSkill = skill;
   let targetExams = examsDatabase[skill] || [];
   
-  // معالجة Mündlich
   if (skill === "mündlich") {
     if (currentMündlichPart === 1) {
       targetSkill = "mündlich1";
@@ -1488,7 +1559,6 @@ async function renderExamListForSkill(skill, teilName) {
   const userStatus = await getUserStatusForExam();
   const isPremium = (userStatus === 'premium');
   
-  // إنشاء مجموعة من معرفات الإصدارات الفرعية لاستبعادها من العرض الرئيسي
   const versionIds = new Set();
   targetExams.forEach(exam => {
     if (exam.versions && exam.versions.length > 1) {
@@ -1500,13 +1570,11 @@ async function renderExamListForSkill(skill, teilName) {
     }
   });
   
-  // تصفية الامتحانات: نعرض فقط الامتحانات الأساسية (التي ليس معرفها ضمن versionIds)
   const mainExams = targetExams.filter(exam => !versionIds.has(exam.id));
   
   for (let i = 0; i < mainExams.length; i++) {
     const exam = mainExams[i];
     const examNumber = exam.id;
-    // ✅ استخدم دالة isExamFree بدلاً من الشرط القديم
     const isFreeExam = isExamFree(skill, examNumber);
     
     const div = document.createElement("div");
@@ -1527,14 +1595,50 @@ async function renderExamListForSkill(skill, teilName) {
     div.appendChild(titleSpan);
     
     displaySavedResult(targetSkill, exam.id, titleSpan, div);
-    // ✅ عرض عدد الإعادات بجانب عنوان الامتحان
-    const retryCount = getRetryCount(targetSkill, exam.id);
+
+
+     const retryCount = getRetryCount(targetSkill, exam.id);
     if (retryCount > 0) {
         const retrySpan = document.createElement('span');
         retrySpan.style.cssText = 'font-size:10px; color:#94a3b8; margin-right:6px;';
-        retrySpan.textContent = `🔄 ${retryCount}`;
+        retrySpan.innerHTML = `<span class="material-symbols-outlined" style="font-size:10px; color:#94a3b8; margin-right:2px; vertical-align:middle;">repeat</span> ${retryCount}`;
         titleSpan.appendChild(retrySpan);
     }
+    // ✅ عرض تاريخ آخر مراجعة
+    // ✅ عرض تاريخ آخر مراجعة
+// ✅ عرض تاريخ آخر مراجعة (مع استثناء Schreiben و Mündlich)
+
+
+    // ✅ عرض تاريخ آخر مراجعة (مع استثناء Schreiben و Mündlich)
+const forbiddenSkills = ['schreiben', 'mündlich1', 'mündlich2', 'mündlich3'];
+if (!forbiddenSkills.includes(targetSkill)) {
+    const reviewDays = getLastReviewDays(targetSkill, exam.id);
+    if (reviewDays !== null) {
+        const reviewSpan = document.createElement('span');
+        // تحديد اللون حسب عدد الأيام
+        let reviewColor = '#64748b';
+        if (reviewDays <= 3) {
+            reviewColor = '#22c55e'; // أخضر - حديث
+        } else if (reviewDays <= 5) {
+            reviewColor = '#f59e0b'; // برتقالي - يحتاج مراجعة
+        } else {
+            reviewColor = '#ef4444'; // أحمر - متأخر
+        }
+        reviewSpan.style.cssText = `font-size:10px; color:${reviewColor}; margin-right:6px;`;
+        if (reviewDays === 0) {
+            reviewSpan.innerHTML = `<span class="material-symbols-outlined" style="font-size:10px; color:${reviewColor}; margin-right:2px; vertical-align:middle;">calendar_month</span> اليوم`;
+        } else {
+            reviewSpan.innerHTML = `<span class="material-symbols-outlined" style="font-size:10px; color:${reviewColor}; margin-right:2px; vertical-align:middle;">calendar_month</span> منذ ${reviewDays} يوم`;
+        }
+        titleSpan.appendChild(reviewSpan);
+    } else {
+        // لم يُصحح أبداً
+        const reviewSpan = document.createElement('span');
+        reviewSpan.style.cssText = 'font-size:10px; color:#94a3b8; margin-right:6px;';
+        reviewSpan.innerHTML = `<span class="material-symbols-outlined" style="font-size:10px; color:#94a3b8; margin-right:2px; vertical-align:middle;">calendar_month</span> لم يُراجع`;
+        titleSpan.appendChild(reviewSpan);
+    }
+}
     const progress = getExamProgress(targetSkill, exam.id);
     if (progress > 0) {
       const progressSpan = document.createElement('span');
@@ -1694,7 +1798,7 @@ if (hasVersions) {
     }
     container.appendChild(div);
   }
-  
+
   createViewModeToggles();
   
   // ✅ الترتيب الطبيعي دائماً (بدون حفظ حالة)
@@ -1715,7 +1819,15 @@ if (hasVersions) {
   saveOriginalOrder();
   
   setupLockedNextButton();
+  
+  // ✅ إعادة تطبيق التلوين بعد إعادة الرسم (إذا كان الـ Toggle مفعلاً)
+  if (localStorage.getItem('plannerToggleState') === 'true') {
+      if (typeof window.applyExamColors === 'function') {
+          setTimeout(window.applyExamColors, 50);
+      }
+  }
 }
+
 function showVersionsPopup(exam, skill) {
   const overlay = document.createElement('div');
   overlay.id = 'versionsPopupAuto';
@@ -2032,25 +2144,20 @@ if (shortcutsBtn) {
 currentExamData = await response.json();
 window.currentExamData = currentExamData;
 window.currentExamId = examId;
+window.currentSkill = skill;
+
 if (window.memoryEngine) {
   window.memoryEngine.setExamData(currentExamData);
 }
 
-// ===== تحديث سياق Ask AI =====
-window.updateAskAIContext({
-    skill: skill,
-    part: getPartNumber(skill),
-    examNumber: examId,
-    questionText: currentExamData.title || examTitle,
-    paragraph: currentExamData.paragraph || currentExamData.text || '',
-    options: [],
-    userAnswer: '',
-    pageType: 'exam'
-});
+// ===== تحديث سياق Ask AI (نسخة مبسطة) =====
+window.updateAskAIContext(skill, examId);
     document.getElementById("home").classList.remove("active");
     document.getElementById("list").classList.remove("active");
     document.getElementById("exam").classList.add("active");
     document.getElementById("examTitle").innerHTML = currentExamData.title;
+    
+     // تم إزالة زر الرئيسية من صفحة الامتحان
         // ✅ إضافة عداد الإعادات
  // ✅ إضافة عداد الإعادات فقط في المهارات المسموحة
 const forbiddenSkills = ['schreiben', 'mündlich', 'mündlich1', 'mündlich2', 'mündlich3'];
@@ -2827,11 +2934,15 @@ function showTeil(teilNumber) {
     if (container) container.style.display = (idx + 1 === teilNumber) ? "block" : "none";
   });
 }
-
 function goHome() {
   document.getElementById("home").classList.add("active");
   document.getElementById("list").classList.remove("active");
   document.getElementById("exam").classList.remove("active");
+
+  // ✅ إخفاء زر الرئيسية عند العودة إلى الصفحة الرئيسية (الـ CSS سيتولى الأمر)
+  // ولكن نتركه للتأكد
+  const homeBtn = document.getElementById('backHomeBtn');
+  if (homeBtn) homeBtn.style.display = 'none';
 }
 function goList() {
   document.getElementById("home").classList.remove("active");
@@ -2842,6 +2953,11 @@ function goList() {
   
   // ✅ استخدم الدالة الجديدة بدلاً من setTimeout القديم
   window.renderInitialExamList();
+
+  // ✅ إظهار زر الرئيسية عند الدخول إلى صفحة القائمة (الـ CSS سيتولى الأمر)
+  // ولكن نتركه للتأكد
+  const homeBtn = document.getElementById('backHomeBtn');
+  if (homeBtn) homeBtn.style.display = 'block';
 }
 // ============================================
 // ✅ دالة buildTeil1 المُعدّلة - تعتمد على ID ثابت
@@ -2909,10 +3025,6 @@ function buildTeil1(questions) {
   resultDiv.style.display = "none";
   container.appendChild(resultDiv);
 }
-
-// ============================================
-// ✅ دالة checkTeil1 المُعدّلة - تعتمد على ID ثابت
-// ============================================
 function checkTeil1(questions, answers) {
   let score = 0;
   const total = questions.length;
@@ -2954,23 +3066,28 @@ function checkTeil1(questions, answers) {
   if (resultDiv) {
     resultDiv.innerHTML = "النتيجة: " + finalScore + " / 25";
     resultDiv.style.display = "block";
-    
-    // ✅ زيادة العداد وتحديث الواجهة
-    const retryCount = incrementRetryCount(currentSkill, currentExamId);
-    
-    // ✅ تحديث العداد في أعلى الصفحة (فوراً)
-    if (typeof window.updateRetryCounter === 'function') {
-        window.updateRetryCounter();
-    }
   }
   
+  // ✅ 1. حفظ النتيجة أولاً (هذا يكتب exam_last_review_*)
   saveExamResult(currentSkill, currentExamId, parseFloat(finalScore));
+  
+  // ✅ 2. زيادة عدد الإعادات
+  const retryCount = incrementRetryCount(currentSkill, currentExamId);
+  
+  // ✅ 3. تحديث البطاقات فوراً (بعد تغيير localStorage)
+  if (typeof window.updateRetryCounter === 'function') {
+      window.updateRetryCounter();
+  }
+  
+  // ✅ 4. إزالة تلوين هذا الامتحان بعد التصحيح (باستخدام الدالة الموحدة)
+  if (typeof window.removeColorFromExam === 'function') {
+      window.removeColorFromExam(currentExamId);
+  }
   
   if (document.getElementById("list").classList.contains("active")) {
     renderExamListForSkill(currentSkill, getTeilNameBySkill(currentSkill));
   }
 }
-
 window.saveExamResultGlobal = function(skill, examId, score) {
   saveExamResult(skill, examId, score);
   if (document.getElementById("list").classList.contains("active") && currentSkill === skill) {
@@ -2987,7 +3104,7 @@ document.addEventListener("DOMContentLoaded", function() {
     goList();
   };
   
-  if (backHomeBtn) backHomeBtn.onclick = function() { goHome(); };
+if (backHomeBtn) backHomeBtn.onclick = function() { goHome(); };
   if (backToListBtn) backToListBtn.onclick = function() { goList(); };
   
   if (backArrowFromExam) {
@@ -3623,7 +3740,19 @@ function setExamListMode(mode) {
 // تصدير openExam للاستخدام العالمي
 // ============================================
 window.openExam = openExam;
-
+// ===== تهيئة السياق إذا لم تكن موجودة =====
+if (!window.askAIContext) {
+    window.askAIContext = { questionIndex: 0 };
+}
+if (!window.currentSkill) {
+    window.currentSkill = '';
+}
+if (!window.currentExamId) {
+    window.currentExamId = null;
+}
+if (!window.currentExamData) {
+    window.currentExamData = null;
+}
 // ============================================
 // ✅ نظام Badge التعديلات - النسخة النهائية
 // ============================================
@@ -3776,6 +3905,7 @@ function showResetModal(skill, skillName) {
         // حذف بيانات المهارة فقط
         const LEVELS_KEY = 'memory_levels';
         try {
+            // 1. حذف مستويات الذاكرة
             const data = JSON.parse(localStorage.getItem(LEVELS_KEY) || '{}');
             const prefix = `${skill}_exam`;
             const newData = {};
@@ -3785,7 +3915,15 @@ function showResetModal(skill, skillName) {
                 }
             }
             localStorage.setItem(LEVELS_KEY, JSON.stringify(newData));
-            console.log(`✅ تم إعادة تعيين تقدم ${skillName}`);
+            
+            // 2. حذف المفاتيح المستقلة لآخر مراجعة
+            const allKeys = Object.keys(localStorage);
+            const lastReviewKeys = allKeys.filter(k => k.startsWith(`exam_last_review_${skill}_`));
+            for (const key of lastReviewKeys) {
+                localStorage.removeItem(key);
+            }
+            
+            console.log(`✅ تم إعادة تعيين تقدم ${skillName} (بما في ذلك تواريخ المراجعة المستقلة)`);
             overlay.remove();
             // إعادة تحميل الصفحة لتحديث الواجهة
             location.reload();
@@ -3796,8 +3934,219 @@ function showResetModal(skill, skillName) {
     });
 }
 console.log('✅ نظام Badge التعديلات (النسخة النهائية) تم تحميله');
-// ✅ تصدير متغيرات Lesen1 للاستخدام من engine.js
-window.matchingSelectedAnswers = matchingSelectedAnswers;
-window.matchingAvailableOptions = matchingAvailableOptions;
-window.currentMatchingExamData = currentMatchingExamData;
-window.renderMatchingQuestions = renderMatchingQuestions;
+
+// تصدير قواعد البيانات للملفات الأخرى
+window.examsDatabase = examsDatabase;
+window.teile = teile;
+
+// تصدير دوال سجل الامتحانات للمدرب الذكي
+window.saveExamHistory = saveExamHistory;
+window.getExamHistory = getExamHistory;
+window.getLastAttemptDate = getLastAttemptDate;
+window.getAllScores = getAllScores;
+window.saveExamResult = saveExamResult;
+window.getExamResult = getExamResult;
+window.getLastReviewDays = getLastReviewDays;
+
+// ============================================
+// ✅ دوال بطاقة الإعادات وآخر مراجعة داخل الامتحان
+// ============================================
+function addRetryCounterToExam() {
+    // ❌ إخفاء العداد في Schreiben و Mündlich
+    const forbiddenSkills = ['schreiben', 'mündlich', 'mündlich1', 'mündlich2', 'mündlich3'];
+    if (forbiddenSkills.includes(currentSkill)) {
+        const oldCounter = document.getElementById('retryCounterBox');
+        if (oldCounter) oldCounter.remove();
+        return;
+    }
+
+    // حذف القديم إن وجد
+    const oldCounter = document.getElementById('retryCounterBox');
+    if (oldCounter) oldCounter.remove();
+
+    // جلب البيانات
+    const retryCount = window.getRetryCount ? window.getRetryCount(currentSkill, currentExamId) : 0;
+    const reviewDays = window.getLastReviewDays ? window.getLastReviewDays(currentSkill, currentExamId) : null;
+
+    let reviewText = '';
+    if (reviewDays === null) {
+        reviewText = 'لم يُراجع';
+    } else if (reviewDays === 0) {
+        reviewText = 'اليوم';
+    } else {
+        reviewText = `منذ ${reviewDays} يوم`;
+    }
+
+    // الحاوية الرئيسية (عمودية)
+    const container = document.createElement('div');
+    container.id = 'retryCounterBox';
+    container.style.cssText = `
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 6px;
+        background: transparent;
+        margin-right: 0;
+        margin-left: auto;
+        flex-shrink: 0;
+    `;
+
+    // ===== البطاقة الأولى: آخر مراجعة (في الأعلى) =====
+    const reviewBox = document.createElement('div');
+    let reviewColor = '#64748b';
+    if (reviewDays === null) {
+        reviewColor = '#94a3b8';
+    } else if (reviewDays === 0) {
+        reviewColor = '#22c55e';
+    } else if (reviewDays <= 3) {
+        reviewColor = '#22c55e';
+    } else if (reviewDays <= 7) {
+        reviewColor = '#eab308';
+    } else {
+        reviewColor = '#ef4444';
+    }
+    reviewBox.innerHTML = `آخر مراجعة: <strong style="color:${reviewColor};font-weight:700;">${reviewText}</strong>`;
+    reviewBox.style.cssText = `
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        padding: 8px 16px;
+        font-size: 14px;
+        font-family: 'Segoe UI', Arial, sans-serif;
+        color: #1e293b;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+        white-space: nowrap;
+        width: 100%;
+        box-sizing: border-box;
+        text-align: right;
+    `;
+
+    // ===== البطاقة الثانية: الإعادات (في الأسفل) =====
+    const retryBox = document.createElement('div');
+    retryBox.innerHTML = `عاودت هذا الامتحان <strong style="color:#2563eb;font-weight:700;">${retryCount}</strong> ${retryCount === 1 ? 'مرة' : 'مرات'}`;
+    retryBox.style.cssText = `
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        padding: 8px 16px;
+        font-size: 14px;
+        font-family: 'Segoe UI', Arial, sans-serif;
+        color: #1e293b;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+        white-space: nowrap;
+        width: 100%;
+        box-sizing: border-box;
+        text-align: right;
+    `;
+
+    container.appendChild(reviewBox);
+    container.appendChild(retryBox);
+
+    // إضافة إلى الواجهة
+    const interleavingRow = document.getElementById('interleavingRow');
+    if (interleavingRow) {
+        interleavingRow.style.display = 'flex';
+        interleavingRow.style.alignItems = 'center';
+        interleavingRow.style.justifyContent = 'space-between';
+        interleavingRow.style.flexWrap = 'wrap';
+        interleavingRow.style.gap = '10px';
+        interleavingRow.appendChild(container);
+    } else {
+        const btnContainer = document.querySelector('#exam .exam-controls, .exam-controls, .controls-row, [style*="gap: 10px"]');
+        if (btnContainer) {
+            btnContainer.style.display = 'flex';
+            btnContainer.style.alignItems = 'center';
+            btnContainer.style.justifyContent = 'space-between';
+            btnContainer.style.flexWrap = 'wrap';
+            btnContainer.appendChild(container);
+        } else {
+            const containerEl = document.querySelector('#exam, .exam-content, .exam-box, .page.active');
+            if (containerEl) {
+                const wrapper = document.createElement('div');
+                wrapper.style.cssText = 'display: flex; flex-direction: column; align-items: flex-end; margin: 0 0 15px 0;';
+                wrapper.appendChild(container);
+                containerEl.prepend(wrapper);
+            }
+        }
+    }
+}
+
+function updateRetryCounter() {
+    // ❌ إخفاء العداد في Schreiben و Mündlich
+    const forbiddenSkills = ['schreiben', 'mündlich', 'mündlich1', 'mündlich2', 'mündlich3'];
+    if (forbiddenSkills.includes(currentSkill)) {
+        const oldCounter = document.getElementById('retryCounterBox');
+        if (oldCounter) oldCounter.remove();
+        return;
+    }
+
+    const container = document.getElementById('retryCounterBox');
+    if (!container) {
+        addRetryCounterToExam();
+        return;
+    }
+
+    // تحديث البيانات
+    const retryCount = window.getRetryCount ? window.getRetryCount(currentSkill, currentExamId) : 0;
+    const reviewDays = window.getLastReviewDays ? window.getLastReviewDays(currentSkill, currentExamId) : null;
+
+    let reviewText = '';
+    if (reviewDays === null) {
+        reviewText = 'لم يُراجع';
+    } else if (reviewDays === 0) {
+        reviewText = 'اليوم';
+    } else {
+        reviewText = `منذ ${reviewDays} يوم`;
+    }
+
+  
+    // 🔹 تحديث بطاقة الإعادات (البطاقة الثانية)
+    const retryBox = container.querySelectorAll('div')[1];
+    if (retryBox) {
+        retryBox.innerHTML = `عاودت هذا الامتحان <strong style="color:#2563eb;font-weight:700;">${retryCount}</strong> ${retryCount === 1 ? 'مرة' : 'مرات'}`;
+        retryBox.style.textAlign = 'right'; // ✅ محاذاة النص إلى اليمين
+    }
+
+    // 🔹 تحديث بطاقة آخر مراجعة (البطاقة الأولى)
+    // 🔹 تحديث بطاقة آخر مراجعة (البطاقة الأولى)
+    const reviewBox = container.querySelectorAll('div')[0];
+    if (reviewBox) {
+        let reviewColor = '#64748b';
+        if (reviewDays === null) {
+            reviewColor = '#94a3b8';
+        } else if (reviewDays === 0) {
+            reviewColor = '#22c55e';
+        } else if (reviewDays <= 3) {
+            reviewColor = '#22c55e';
+        } else if (reviewDays <= 7) {
+            reviewColor = '#eab308';
+        } else {
+            reviewColor = '#ef4444';
+        }
+        reviewBox.innerHTML = `آخر مراجعة: <strong style="color:${reviewColor};font-weight:700;">${reviewText}</strong>`;
+        reviewBox.style.textAlign = 'right'; // ✅ محاذاة النص إلى اليمين
+    }
+}
+
+// تصدير الدوال للاستخدام من openExam
+window.addRetryCounterToExam = addRetryCounterToExam;
+window.updateRetryCounter = updateRetryCounter;
+
+// تصدير متغيرات Lesen1 للاستخدام من engine.js (مع التحقق من وجودها)
+try {
+    if (typeof matchingSelectedAnswers !== 'undefined') {
+        window.matchingSelectedAnswers = matchingSelectedAnswers;
+    }
+    if (typeof matchingAvailableOptions !== 'undefined') {
+        window.matchingAvailableOptions = matchingAvailableOptions;
+    }
+    if (typeof currentMatchingExamData !== 'undefined') {
+        window.currentMatchingExamData = currentMatchingExamData;
+    }
+    if (typeof renderMatchingQuestions === 'function') {
+        window.renderMatchingQuestions = renderMatchingQuestions;
+    }
+} catch (e) {
+    // هذه المتغيرات ستُصدّر من engine.js لاحقاً
+    console.log('ℹ️ متغيرات Lesen1 ستُصدّر من engine.js');
+}
