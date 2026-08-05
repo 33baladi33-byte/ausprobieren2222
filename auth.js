@@ -226,6 +226,9 @@ async function createInitialUserDocument(user) {
 function updateUI(user, data) {
     // تحديث المخبأ للاستخدام في التقرير
     window._cachedUserData = data || null;
+    
+    // ✅ إضافة متغير studyPlan للحفاظ على الحالة
+    window.userStudyPlan = data && data.studyPlan === true;
 
     const profileEmail = document.getElementById('profileEmail');
     const profileEmailText = document.getElementById('profileEmailText');
@@ -341,6 +344,11 @@ function updateUI(user, data) {
     
     if (typeof window.toggleSessionButton === 'function') {
         setTimeout(window.toggleSessionButton, 50);
+    }
+    
+    // ✅ تطبيق قفل الخطة اليومية إذا كان متاحاً
+    if (typeof window.applyStudyPlanLock === 'function') {
+        setTimeout(window.applyStudyPlanLock, 100);
     }
 }
 // ============================================
