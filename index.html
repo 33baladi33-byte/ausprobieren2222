@@ -4253,8 +4253,23 @@ document.addEventListener("DOMContentLoaded", function() {
                 </button>
                 <span class="stats-inner-title">حدد هدفك اليومي</span>
             </div>
-            <div class="stats-inner-body">
-                <select id="statsGoalSelect" class="stats-goal-select">
+            <div class="stats-inner-body" style="display:flex; flex-direction:column; align-items:center; justify-content:center; gap:20px; padding:20px 10px;">
+                <select id="statsGoalSelect" class="stats-goal-select" style="
+                    width: 100%;
+                    max-width: 220px;
+                    padding: 12px 16px;
+                    border-radius: 12px;
+                    border: 1px solid #d1d5db;
+                    background: #ffffff;
+                    font-size: 1rem;
+                    font-weight: 500;
+                    color: #1e293b;
+                    outline: none;
+                    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+                    cursor: pointer;
+                    appearance: auto;
+                    direction: rtl;
+                ">
                     <option value="30">30 دقيقة</option>
                     <option value="60">1 ساعة</option>
                     <option value="90">1 ساعة 30 دقيقة</option>
@@ -4268,7 +4283,28 @@ document.addEventListener("DOMContentLoaded", function() {
                     <option value="420">7 ساعات</option>
                     <option value="480">8 ساعات</option>
                 </select>
-                <button id="statsGoalSaveBtn" class="stats-inner-save">حفظ</button>
+                <button id="statsGoalSaveBtn" class="stats-inner-save" style="
+                    width: 100%;
+                    max-width: 220px;
+                    padding: 12px 24px;
+                    border: none;
+                    border-radius: 40px;
+                    background: linear-gradient(135deg, #38bdf8, #0ea5e9);
+                    color: #0a0e1a;
+                    font-size: 1rem;
+                    font-weight: 600;
+                    cursor: pointer;
+                    transition: all 0.25s ease;
+                    box-shadow: 0 4px 12px rgba(56, 189, 248, 0.3);
+                    letter-spacing: 0.3px;
+                "
+                onmouseover="this.style.transform='scale(1.02)'; this.style.boxShadow='0 6px 20px rgba(56, 189, 248, 0.4)';"
+                onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='0 4px 12px rgba(56, 189, 248, 0.3)';"
+                onmousedown="this.style.transform='scale(0.98)'"
+                onmouseup="this.style.transform='scale(1)'"
+                >
+                    حفظ
+                </button>
             </div>
         </div>
 
