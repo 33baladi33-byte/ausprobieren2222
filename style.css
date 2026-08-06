@@ -2035,7 +2035,8 @@ body:has(#exam.active) .left-side #navSubscribeBtn { order: 4 !important; }
         border-radius: 12px !important;
         border: 2px solid rgba(56, 189, 248, 0.15);
     }
-    /* ===== قسم المميزات - عرض كامل للهاتف ===== */
+
+    /* ===== قسم المميزات - إصلاح كامل للهاتف مع منع التجاوز ===== */
     .features-section {
         padding: 40px 16px !important;
         margin-top: 30px !important;
@@ -2043,6 +2044,7 @@ body:has(#exam.active) .left-side #navSubscribeBtn { order: 4 !important; }
         background: linear-gradient(135deg, #f8fafc 0%, #ffffff 100%);
         width: 100% !important;
         max-width: 100% !important;
+        overflow-x: hidden !important;   /* 🔥 منع التجاوز الأفقي */
         box-sizing: border-box !important;
     }
 
@@ -2053,6 +2055,7 @@ body:has(#exam.active) .left-side #navSubscribeBtn { order: 4 !important; }
         max-width: 100% !important;
         padding: 0 !important;
         margin: 0 !important;
+        overflow-x: hidden !important;
         box-sizing: border-box !important;
     }
 
@@ -2063,6 +2066,7 @@ body:has(#exam.active) .left-side #navSubscribeBtn { order: 4 !important; }
         flex: 1 1 100% !important;
         text-align: center;
         padding: 0 !important;
+        overflow-x: hidden !important;
         box-sizing: border-box !important;
     }
 
@@ -2071,16 +2075,23 @@ body:has(#exam.active) .left-side #navSubscribeBtn { order: 4 !important; }
         margin-bottom: 16px;
         line-height: 1.3;
         width: 100% !important;
+        max-width: 100% !important;
         text-align: center;
+        overflow-wrap: break-word !important;
+        word-wrap: break-word !important;
+        hyphens: auto !important;
+        box-sizing: border-box !important;
     }
 
     .features-description {
         font-size: 0.85rem !important;
         line-height: 1.7;
-        padding: 0 4px;
+        padding: 0 4px !important;
         color: #475569;
         width: 100% !important;
         max-width: 100% !important;
+        overflow-wrap: break-word !important;
+        word-wrap: break-word !important;
         box-sizing: border-box !important;
     }
 
@@ -2088,7 +2099,7 @@ body:has(#exam.active) .left-side #navSubscribeBtn { order: 4 !important; }
         margin-bottom: 24px;
     }
 
-    /* حاوية الأزرار - عرض كامل وعمودي */
+    /* حاوية الأزرار - عمودية وعرض كامل */
     .features-content > div {
         display: flex !important;
         flex-direction: column !important;
@@ -2097,12 +2108,12 @@ body:has(#exam.active) .left-side #navSubscribeBtn { order: 4 !important; }
         gap: 12px !important;
         width: 100% !important;
         max-width: 100% !important;
-        box-sizing: border-box !important;
         padding: 0 !important;
         margin: 0 !important;
+        box-sizing: border-box !important;
     }
 
-    /* زر اشترك الآن - عرض كامل */
+    /* زر اشترك الآن */
     .features-btn {
         padding: 14px 24px !important;
         font-size: 0.95rem !important;
@@ -2114,6 +2125,7 @@ body:has(#exam.active) .left-side #navSubscribeBtn { order: 4 !important; }
         justify-content: center !important;
         box-sizing: border-box !important;
         flex: 0 0 auto !important;
+        white-space: nowrap !important;   /* منع التفاف النص داخل الزر */
     }
 
     /* زر 💡 طريقة الاشتراك */
@@ -2126,7 +2138,7 @@ body:has(#exam.active) .left-side #navSubscribeBtn { order: 4 !important; }
         box-sizing: border-box !important;
     }
 
-    /* زر عرض البطاقات - عرض كامل */
+    /* زر عرض البطاقات */
     .show-cards-btn {
         display: flex !important;
         align-items: center !important;
@@ -2147,6 +2159,7 @@ body:has(#exam.active) .left-side #navSubscribeBtn { order: 4 !important; }
         min-width: unset !important;
         box-sizing: border-box !important;
         flex: 0 0 auto !important;
+        white-space: nowrap !important;
     }
     
     .show-cards-btn:active {
