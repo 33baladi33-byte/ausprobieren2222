@@ -1944,7 +1944,7 @@ body:has(#exam.active) .left-side #navSubscribeBtn { order: 4 !important; }
         flex-shrink: 0 !important;
     }
     
-    /* زر التصحيح - نفس ألوان وتأثيرات الحاسوب مع حجم مناسب للهاتف */
+    /* زر التصحيح */
     .check-btn {
         padding: 10px 20px !important;
         font-size: 0.8rem !important;
@@ -1959,14 +1959,6 @@ body:has(#exam.active) .left-side #navSubscribeBtn { order: 4 !important; }
         cursor: pointer !important;
         transition: all 0.2s ease !important;
         box-shadow: 0 2px 8px rgba(56, 189, 248, 0.2) !important;
-        font-family: inherit !important;
-        letter-spacing: 0.3px !important;
-    }
-    
-    .check-btn:hover {
-        background: linear-gradient(135deg, #0ea5e9, #0284c7) !important;
-        box-shadow: 0 4px 16px rgba(56, 189, 248, 0.35) !important;
-        transform: translateY(-2px) !important;
     }
     
     .check-btn:active {
@@ -4636,53 +4628,6 @@ body:has(#exam.active) .left-side #navSubscribeBtn { order: 4 !important; }
     max-width: 380px;
     width: 100%;
     pointer-events: none;
-}
-
-/* ============================================
-   تصميم Chips المعلومات (النتيجة، الإعادات، الأيام، Memory)
-   ============================================ */
-.exam-info-chips {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px 8px;
-    margin-top: 6px;
-    margin-bottom: 2px;
-}
-
-.exam-chip {
-    background: #f1f5f9 !important;
-    border: 1px solid #e2e8f0 !important;
-    border-radius: 20px !important;
-    padding: 2px 12px !important;
-    font-size: 11px !important;
-    font-weight: 500 !important;
-    color: #1e293b !important;
-    line-height: 1.6 !important;
-    display: inline-flex !important;
-    align-items: center !important;
-    gap: 4px !important;
-    white-space: nowrap !important;
-    box-shadow: 0 1px 2px rgba(0,0,0,0.02) !important;
-    transition: all 0.15s ease !important;
-}
-
-.exam-chip.score { background: #eef2ff !important; border-color: #c7d2fe !important; }
-.exam-chip.attempts { background: #f3e8ff !important; border-color: #e9d5ff !important; }
-.exam-chip.days { background: #fce7f3 !important; border-color: #fbcfe8 !important; }
-.exam-chip.memory { background: #d1fae5 !important; border-color: #a7f3d0 !important; }
-
-/* تحسين الهاتف */
-@media (max-width: 768px) {
-    .exam-chip {
-        font-size: 9px !important;
-        padding: 1px 8px !important;
-        gap: 2px !important;
-        border-radius: 16px !important;
-    }
-    .exam-info-chips {
-        gap: 4px 6px !important;
-        margin-top: 4px !important;
-    }
 }
 .toast-item {
     background: #111827;
