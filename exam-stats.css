@@ -1,0 +1,76 @@
+/* ============================================
+   مؤشرات الإحصائيات في قائمة الامتحانات
+   ============================================ */
+
+.exam-info-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 10px;
+    margin-top: 4px;
+    margin-bottom: 2px;
+    align-items: center;
+}
+
+.exam-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    font-size: 10px;
+    font-weight: 400;
+    color: #64748b;
+    line-height: 1.5;
+}
+
+.exam-chip .material-symbols-outlined {
+    font-size: 14px !important;
+    color: #94a3b8 !important;
+}
+
+/* ألوان المؤشرات حسب القيمة */
+.chip-gray { color: #94a3b8; }
+.chip-gray .material-symbols-outlined { color: #94a3b8 !important; }
+
+.chip-orange { color: #f59e0b; }
+.chip-orange .material-symbols-outlined { color: #f59e0b !important; }
+
+.chip-green { color: #22c55e; }
+.chip-green .material-symbols-outlined { color: #22c55e !important; }
+
+/* تصغير حجم المؤشرات في قائمة الامتحانات فقط */
+#examsList .exam-chip {
+    font-size: 8px;
+    gap: 2px;
+}
+#examsList .exam-chip .material-symbols-outlined {
+    font-size: 12px !important;
+}
+
+/* للهواتف حتى عرض 350 بكسل */
+@media (max-width: 768px) {
+    #examsList .exam-chip {
+        font-size: 7px;
+        gap: 1px;
+    }
+    #examsList .exam-chip .material-symbols-outlined {
+        font-size: 10px !important;
+    }
+}
+@media (max-width: 480px) {
+    #examsList .exam-chip {
+        font-size: 6px;
+        gap: 1px;
+    }
+    #examsList .exam-chip .material-symbols-outlined {
+        font-size: 9px !important;
+    }
+}
+/* ضمان أصغر حجم للشاشات الضيقة جداً */
+@media (max-width: 350px) {
+    #examsList .exam-chip {
+        font-size: 5.5px;
+        gap: 0px;
+    }
+    #examsList .exam-chip .material-symbols-outlined {
+        font-size: 8px !important;
+    }
+}
