@@ -69,26 +69,10 @@ window.getUserStatusGlobal = function() {
     return _currentUserStatus;
 };
 
-// ============================================
-// دوال النوافذ والواجهات (UI Helpers)
-// ============================================
 function openAuthModal(form = 'login') {
     showForm(form);
     if (authModal) authModal.classList.add('active');
 }
-        closeAuthModalFunc();
-        showToast('✅ تم تسجيل الدخول بنجاح. مرحباً بك!', 'success');
-        updateUI(user, finalSnap.data());
-        
-        // ربط OneSignal بمستخدم مسجل
-        if (typeof OneSignal !== 'undefined' && OneSignal.User) {
-            try {
-                await OneSignal.User.login(user.uid);
-                console.log('✅ OneSignal: تم ربط المستخدم');
-            } catch(e) {
-                console.warn('⚠️ OneSignal: فشل ربط المستخدم', e);
-            }
-        }
 
 function showForm(form) {
     if (!loginForm || !signupForm || !resetForm) return;
