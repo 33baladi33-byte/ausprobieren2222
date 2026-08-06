@@ -295,6 +295,7 @@
         const completed = todayMinutes >= currentGoal;
 
         if (existingIndex !== -1) {
+            // ✅ تحديث اليوم الحالي فقط - لا نغير الأيام السابقة
             history[existingIndex].minutes = todayMinutes;
             history[existingIndex].completed = completed;
             history[existingIndex].goal = currentGoal;
@@ -950,6 +951,24 @@
         toggleSessionButton();
     }
     
+    // ====== تصحيح البيانات القديمة (مرة واحدة) ======
+    function fixOldData() {
+        const data = loadStats();
+        let needsUpdate = false;
+        data.history.forEach(entry => {
+            if (entry.completed === undefined) {
+                // إذا لم يكن completed موجوداً، نحسبه من minutes و goal المخزنين
+                const goalAtDay = entry.goal || data.goal;
+                entry.completed = entry.minutes >= goalAtDay;
+                needsUpdate = true;
+            }
+        });
+        if (needsUpdate) {
+            saveStats(data);
+            console.log('🔄 تم تصحيح البيانات القديمة بإضافة completed لكل يوم.');
+        }
+    }
+
     // ====== التهيئة ======
     function init() {
         setTimeout(() => {
@@ -963,6 +982,10 @@
             bindEvents();
             setupObserver();
             updateTotalDisplay();
+            
+            // ✅ تصحيح البيانات القديمة (مرة واحدة)
+            fixOldData();
+            
             // تصدير الدوال
             window.toggleSessionButton = toggleSessionButton;
             window.refreshStats = refreshAll;
