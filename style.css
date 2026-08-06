@@ -4771,51 +4771,39 @@ body:has(#exam.active) .left-side #navSubscribeBtn { order: 4 !important; }
 .zertiva-center-toast {
     display: none !important;
 }
-
 /* ============================================
-   تصميم Chips المعلومات (النتيجة، الإعادات، الأيام، Memory)
+   تصميم معلومات البطاقة (النتيجة، الإعادات، الأيام، Memory)
    ============================================ */
 .exam-info-chips {
     display: flex;
     flex-wrap: wrap;
-    gap: 6px 8px;
-    margin-top: 6px;
+    gap: 6px 10px;
+    margin-top: 4px;
     margin-bottom: 2px;
 }
 
 .exam-chip {
-    background: #f1f5f9 !important;
-    border: 1px solid #e2e8f0 !important;
-    border-radius: 20px !important;
-    padding: 2px 12px !important;
-    font-size: 11px !important;
-    font-weight: 500 !important;
-    color: #1e293b !important;
-    line-height: 1.6 !important;
-    display: inline-flex !important;
-    align-items: center !important;
-    gap: 4px !important;
-    white-space: nowrap !important;
-    box-shadow: 0 1px 2px rgba(0,0,0,0.02) !important;
-    transition: all 0.15s ease !important;
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    font-size: 10px;
+    font-weight: 400;
+    color: #64748b;
+    line-height: 1.5;
 }
 
-.exam-chip.score { background: #eef2ff !important; border-color: #c7d2fe !important; }
-.exam-chip.attempts { background: #f3e8ff !important; border-color: #e9d5ff !important; }
-.exam-chip.days { background: #fce7f3 !important; border-color: #fbcfe8 !important; }
-.exam-chip.memory { background: #d1fae5 !important; border-color: #a7f3d0 !important; }
+.exam-chip.score { color: #1565C0; font-weight: 500; }
+.exam-chip.attempts { color: #6A1B9A; font-weight: 500; }
+.exam-chip.days { color: #C62828; font-weight: 500; }
+.exam-chip.memory { color: #2E7D32; font-weight: 500; }
 
-/* تحسين الهاتف */
 @media (max-width: 768px) {
     .exam-chip {
-        font-size: 9px !important;
-        padding: 1px 8px !important;
-        gap: 2px !important;
-        border-radius: 16px !important;
+        font-size: 9px;
+        gap: 2px;
     }
     .exam-info-chips {
-        gap: 4px 6px !important;
-        margin-top: 4px !important;
+        gap: 4px 8px;
     }
 }
 /* ========================================
