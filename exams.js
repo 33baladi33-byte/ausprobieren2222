@@ -1595,48 +1595,44 @@ async function renderExamListForSkill(skill, teilName) {
     div.appendChild(titleSpan);
     
     displaySavedResult(targetSkill, exam.id, titleSpan, div);
-// إنشاء حاوية Chips (تتضمن جميع المعلومات الأربع)
+// إنشاء حاوية المعلومات
 const chipsContainer = document.createElement('div');
 chipsContainer.className = 'exam-info-chips';
 
-// 1. النتيجة
+// Chip النتيجة
 const scoreChip = document.createElement('span');
 scoreChip.className = 'exam-chip score';
 const score = getExamResult(targetSkill, exam.id);
-scoreChip.textContent = score !== null ? `🏆 ${score}/25` : '🏆 —';
+scoreChip.innerHTML = `<span class="material-symbols-outlined">bar_chart</span> ${score !== null ? score+'/25' : '—'}`;
 chipsContainer.appendChild(scoreChip);
 
-// 2. عدد الإعادات
+// Chip الإعادات
 const retryChip = document.createElement('span');
 retryChip.className = 'exam-chip attempts';
 const retryCount = getRetryCount(targetSkill, exam.id);
-retryChip.textContent = `🔄 ${retryCount}`;
+retryChip.innerHTML = `<span class="material-symbols-outlined">repeat</span> ${retryCount}`;
 chipsContainer.appendChild(retryChip);
 
-// 3. منذ كم يوم
+// Chip الأيام
 const daysChip = document.createElement('span');
 daysChip.className = 'exam-chip days';
 const reviewDays = getLastReviewDays(targetSkill, exam.id);
 if (reviewDays !== null) {
-    daysChip.textContent = reviewDays === 0 ? '📅 اليوم' : `📅 منذ ${reviewDays} يوم`;
+    daysChip.innerHTML = `<span class="material-symbols-outlined">calendar_month</span> ${reviewDays === 0 ? 'اليوم' : `منذ ${reviewDays} يوم`}`;
 } else {
-    daysChip.textContent = '📅 —';
+    daysChip.innerHTML = `<span class="material-symbols-outlined">calendar_month</span> —`;
 }
 chipsContainer.appendChild(daysChip);
 
-// 4. نسبة Memory Trainer (نحسبها مرة واحدة فقط)
-const progress = getExamProgress(targetSkill, exam.id);
+// Chip Memory
 const memoryChip = document.createElement('span');
 memoryChip.className = 'exam-chip memory';
-memoryChip.textContent = `🧠 ${progress}%`;
+const progress = getExamProgress(targetSkill, exam.id);
+memoryChip.innerHTML = `<span class="material-symbols-outlined">auto_awesome</span> ${progress}%`;
 chipsContainer.appendChild(memoryChip);
 
-// إضافة الـ Chips إلى البطاقة
+// إضافة المعلومات إلى البطاقة
 div.appendChild(chipsContainer);
-
-// (تم حذف الأجزاء المكررة التي كانت تعرض تاريخ المراجعة و progress بشكل منفصل)
-// أصبحت جميع المعلومات معروضة داخل الـ Chips فقط.
-    
 // التحقق من وجود تعديلات
 const hasVersions = exam.versions && exam.versions.length > 1;
 
@@ -1850,19 +1846,19 @@ function showVersionsPopup(exam, skill) {
       const reviewDays = getLastReviewDays(skill, v.id);
       const progress = getExamProgress(skill, v.id);
       
-      // نفس المعلومات بنفس تصميم القائمة (بدون خلفيات أو حدود)
+      // نفس المعلومات بنفس تصميم القاعدة (أيقونات Material)
       let chipsHtml = `
-        <span class="exam-chip score">🏆 ${savedScore !== null ? savedScore+'/25' : '—'}</span>
-        <span class="exam-chip attempts">🔄 ${retryCount}</span>
-        <span class="exam-chip days">📅 ${reviewDays !== null ? (reviewDays === 0 ? 'اليوم' : `منذ ${reviewDays} يوم`) : '—'}</span>
-        <span class="exam-chip memory">🧠 ${progress}%</span>
+        <span class="exam-chip score"><span class="material-symbols-outlined">bar_chart</span> ${savedScore !== null ? savedScore+'/25' : '—'}</span>
+        <span class="exam-chip attempts"><span class="material-symbols-outlined">repeat</span> ${retryCount}</span>
+        <span class="exam-chip days"><span class="material-symbols-outlined">calendar_month</span> ${reviewDays !== null ? (reviewDays === 0 ? 'اليوم' : `منذ ${reviewDays} يوم`) : '—'}</span>
+        <span class="exam-chip memory"><span class="material-symbols-outlined">auto_awesome</span> ${progress}%</span>
       `;
       
       return `
-        <div style="background: #0f1421; border-radius: 12px; padding: 12px 14px; margin-bottom: 8px; border-left: 3px solid #4a6fa5; text-align: right; cursor: pointer; transition: background 0.2s ease;" 
+        <div style="background: #0f1421; border-radius: 12px; padding: 10px 14px; margin-bottom: 8px; border-left: 3px solid #4a6fa5; text-align: right; cursor: pointer; transition: background 0.2s ease;" 
              onclick="closeVersionsPopupAndOpen('${skill}', ${v.id}, '${v.file}', '${v.title}')">
-          <div style="font-size: 13px; font-weight: 500; color: #e2e8f0; margin-bottom: 6px;">${v.title}</div>
-          <div class="exam-info-chips" style="display: flex; flex-wrap: wrap; gap: 6px 10px; margin-top: 4px; justify-content: flex-start;">
+          <div style="font-size: 13px; font-weight: 500; color: #e2e8f0; margin-bottom: 4px;">${v.title}</div>
+          <div class="exam-info-chips" style="display: flex; flex-wrap: wrap; gap: 4px 10px; margin-top: 4px; justify-content: flex-start;">
             ${chipsHtml}
           </div>
         </div>
@@ -1893,6 +1889,13 @@ function showVersionsPopup(exam, skill) {
     }
   });
 }
+
+// دالة مساعدة لفتح الإصدار من داخل النافذة المنبثقة
+window.closeVersionsPopupAndOpen = function(skill, id, file, title) {
+  const popup = document.getElementById('versionsPopupAuto');
+  if (popup) popup.remove();
+  window.openExam(id, title, skill, file);
+};
 
 // دالة مساعدة لفتح الإصدار من داخل النافذة المنبثقة
 window.closeVersionsPopupAndOpen = function(skill, id, file, title) {
