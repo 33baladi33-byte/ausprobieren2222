@@ -1671,8 +1671,9 @@ if (!forbiddenSkills.includes(targetSkill)) {
         titleSpan.appendChild(reviewSpan);
     }
 }
-    const progress = getExamProgress(targetSkill, exam.id);
-    if (progress > 0) {
+    // ✅ استخدام `miniProgress` بدلاً من `progress` لتجنب التعارض
+    const miniProgress = getExamProgress(targetSkill, exam.id);
+    if (miniProgress > 0) {
       const progressSpan = document.createElement('span');
       progressSpan.className = 'exam-progress-mini';
       progressSpan.style.cssText = `
@@ -1684,7 +1685,7 @@ if (!forbiddenSkills.includes(targetSkill)) {
         padding: 2px 6px;
         border-radius: 10px;
       `;
-      progressSpan.textContent = `${progress}%`;
+      progressSpan.textContent = `${miniProgress}%`;
       titleSpan.appendChild(progressSpan);
     }
     
