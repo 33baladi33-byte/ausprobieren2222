@@ -1808,6 +1808,7 @@ if (hasVersions) {
       }
   }
 }
+
 function showVersionsPopup(exam, skill) {
   const overlay = document.createElement('div');
   overlay.id = 'versionsPopupAuto';
@@ -1849,7 +1850,7 @@ function showVersionsPopup(exam, skill) {
       const reviewDays = getLastReviewDays(skill, v.id);
       const progress = getExamProgress(skill, v.id);
       
-      // بناء الـ Chips بنفس تصميم البطاقات العادية
+      // نفس المعلومات بنفس تصميم القائمة (بدون خلفيات أو حدود)
       let chipsHtml = `
         <span class="exam-chip score">🏆 ${savedScore !== null ? savedScore+'/25' : '—'}</span>
         <span class="exam-chip attempts">🔄 ${retryCount}</span>
@@ -1861,7 +1862,7 @@ function showVersionsPopup(exam, skill) {
         <div style="background: #0f1421; border-radius: 12px; padding: 12px 14px; margin-bottom: 8px; border-left: 3px solid #4a6fa5; text-align: right; cursor: pointer; transition: background 0.2s ease;" 
              onclick="closeVersionsPopupAndOpen('${skill}', ${v.id}, '${v.file}', '${v.title}')">
           <div style="font-size: 13px; font-weight: 500; color: #e2e8f0; margin-bottom: 6px;">${v.title}</div>
-          <div style="display: flex; flex-wrap: wrap; gap: 4px 6px; justify-content: flex-start;">
+          <div class="exam-info-chips" style="display: flex; flex-wrap: wrap; gap: 6px 10px; margin-top: 4px; justify-content: flex-start;">
             ${chipsHtml}
           </div>
         </div>
@@ -1892,6 +1893,13 @@ function showVersionsPopup(exam, skill) {
     }
   });
 }
+
+// دالة مساعدة لفتح الإصدار من داخل النافذة المنبثقة
+window.closeVersionsPopupAndOpen = function(skill, id, file, title) {
+  const popup = document.getElementById('versionsPopupAuto');
+  if (popup) popup.remove();
+  window.openExam(id, title, skill, file);
+};
 
 // دالة مساعدة لفتح الإصدار من داخل النافذة المنبثقة
 window.closeVersionsPopupAndOpen = function(skill, id, file, title) {
