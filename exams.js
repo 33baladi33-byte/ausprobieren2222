@@ -1896,12 +1896,12 @@ function showVersionsPopup(exam, skill) {
   getUserStatusForExam().then(userStatus => {
     const isPremium = (userStatus === 'premium');
 
-  let versionsHtml = exam.versions.map((v, i) => {
+let versionsHtml = exam.versions.map((v, i) => {
   const savedScore = getExamResult(skill, v.id);
   const retryCount = getRetryCount(skill, v.id);
   const reviewDays = getLastReviewDays(skill, v.id);
-  const memoryProgress = getExamProgress(skill, v.id);
-  
+  const memoryProgress = getExamProgress(skill, v.id);  // ✅ اسم فريد
+
   let scoreHtml = '';
   if (savedScore !== null) {
     const color = getResultColor(savedScore);
