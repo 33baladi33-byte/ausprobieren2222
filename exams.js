@@ -1671,9 +1671,8 @@ if (!forbiddenSkills.includes(targetSkill)) {
         titleSpan.appendChild(reviewSpan);
     }
 }
-     // ✅ استخدام اسم مختلف لتجنب التعارض
-    const miniProgress = getExamProgress(targetSkill, exam.id);
-    if (miniProgress > 0) {
+    const progress = getExamProgress(targetSkill, exam.id);
+    if (progress > 0) {
       const progressSpan = document.createElement('span');
       progressSpan.className = 'exam-progress-mini';
       progressSpan.style.cssText = `
@@ -1685,7 +1684,7 @@ if (!forbiddenSkills.includes(targetSkill)) {
         padding: 2px 6px;
         border-radius: 10px;
       `;
-      progressSpan.textContent = `${miniProgress}%`;
+      progressSpan.textContent = `${progress}%`;
       titleSpan.appendChild(progressSpan);
     }
     
@@ -1901,8 +1900,8 @@ let versionsHtml = exam.versions.map((v, i) => {
   const savedScore = getExamResult(skill, v.id);
   const retryCount = getRetryCount(skill, v.id);
   const reviewDays = getLastReviewDays(skill, v.id);
-  const memoryProgress = getExamProgress(skill, v.id);  // ✅ اسم فريد
-
+  const progress = getExamProgress(skill, v.id);
+  
   let scoreHtml = '';
   if (savedScore !== null) {
     const color = getResultColor(savedScore);
@@ -1920,8 +1919,8 @@ let versionsHtml = exam.versions.map((v, i) => {
   }
   
   let progressHtml = '';
-  if (memoryProgress > 0) {
-    progressHtml = `<span style="font-size:10px; color:#1565C0; margin-left:6px;">🧠 ${memoryProgress}%</span>`;
+  if (progress > 0) {
+    progressHtml = `<span style="font-size:10px; color:#1565C0; margin-left:6px;">🧠 ${progress}%</span>`;
   }
   
   // البطاقة المعدلة مع المعلومات الأربع
