@@ -61,6 +61,26 @@
     border-color: #2c3e66;
     color: #2c3e66;
 }
+
+/* تحسين أزرار التخليط واللعبة في الهاتف */
+@media (max-width: 768px) {
+    .interleaving-icon-btn {
+        width: 36px !important;
+        height: 36px !important;
+        border-radius: 10px !important;
+        border: 1.5px solid #e2e8f0 !important;
+        background: #f8fafc !important;
+    }
+    
+    .interleaving-icon-btn .material-symbols-outlined {
+        font-size: 18px !important;
+    }
+    
+    .interleaving-icon-btn:active {
+        transform: scale(0.95) !important;
+        background: #eef2f6 !important;
+    }
+}
     /* أزرار المساعدة والتدريب الموحدة */
 .memory-btn {
     border: none;
@@ -83,6 +103,22 @@
 }
 .btn-blue {
     background: linear-gradient(135deg, #007bff, #0056b3);
+}
+
+/* تحسين زر المساعدة في الهاتف */
+@media (max-width: 768px) {
+    .memory-btn {
+        font-size: 12px !important;
+        padding: 8px 14px !important;
+        border-radius: 25px !important;
+        min-height: 36px !important;
+        margin-left: 4px !important;
+        gap: 4px !important;
+    }
+    
+    .memory-btn:active {
+        transform: scale(0.96) !important;
+    }
 }
 
 /* ========================================
@@ -579,23 +615,7 @@
         }
     }
         
-        .notification-empty {
-            padding: 24px 16px !important;
-            font-size: 12px !important;
-        }
-        
-        .notification-show-all,
-        .notification-show-less {
-            padding: 10px 12px !important;
-        }
-        
-        .show-all-btn,
-        .show-less-btn {
-            font-size: 11px !important;
-            padding: 8px 12px !important;
-            min-height: 36px !important;
-        }
-    }
+
     /* ============================================
    Banner تحسين تجربة الهاتف - يظهر فقط في الهواتف
    ============================================ */
