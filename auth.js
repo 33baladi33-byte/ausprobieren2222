@@ -69,10 +69,14 @@ window.getUserStatusGlobal = function() {
     return _currentUserStatus;
 };
 
+// ============================================
+// دوال النوافذ والواجهات (UI Helpers)
+// ============================================
 function openAuthModal(form = 'login') {
     showForm(form);
     if (authModal) authModal.classList.add('active');
 }
+// تم إزالة الكود الزائد الذي كان مكرراً هنا
 
 function showForm(form) {
     if (!loginForm || !signupForm || !resetForm) return;
@@ -368,7 +372,9 @@ function updateUI(user, data) {
         setTimeout(window.applyStudyPlanLock, 100);
     }
 }
-
+// ============================================
+// دوال المصادقة (Login, Signup, Logout, Reset)
+// ============================================
 async function handleLogin() {
     const email = authEmail.value.trim();
     const password = authPassword.value;
