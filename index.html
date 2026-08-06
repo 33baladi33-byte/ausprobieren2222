@@ -461,17 +461,23 @@
     }
 }
 
-    /* ===== نافذة الإشعارات - تحسين الهاتف (بدون التأثير على زر الجرس) ===== */
+    /* ===== نافذة الإشعارات - تحسين الهاتف (مع إصلاح العرض) ===== */
     @media (max-width: 768px) {
         .notification-dropdown {
+            left: 50% !important;
+            transform: translateX(-50%) !important;
+            right: auto !important;
             width: 92% !important;
-            max-width: 340px !important;
-            right: 4% !important;
-            left: 4% !important;
+            max-width: 360px !important;
+            min-width: 280px !important;
             top: 52px !important;
             border-radius: 18px !important;
-            max-height: 360px !important;
+            max-height: 380px !important;
             box-shadow: 0 20px 45px rgba(0,0,0,0.35) !important;
+            border: 1px solid rgba(56, 189, 248, 0.15) !important;
+            box-sizing: border-box !important;
+            flex-shrink: 0 !important;
+            overflow: auto !important;
         }
         
         .notification-dropdown::before {
@@ -491,12 +497,14 @@
         
         .notification-list {
             max-height: 280px !important;
+            padding: 4px 0 !important;
         }
         
         .notification-item {
             padding: 12px 14px !important;
             font-size: 0.75rem !important;
             gap: 10px !important;
+            border-bottom: 1px solid rgba(255,255,255,0.05) !important;
         }
         
         .notification-item .notification-icon {
@@ -507,14 +515,18 @@
         
         .notification-item .notification-title {
             font-size: 13px !important;
+            font-weight: 600 !important;
+            margin-bottom: 2px !important;
         }
         
         .notification-item .notification-message {
             font-size: 11px !important;
+            line-height: 1.4 !important;
         }
         
         .notification-item .notification-time {
             font-size: 9px !important;
+            margin-top: 2px !important;
         }
         
         .mark-all-read {
