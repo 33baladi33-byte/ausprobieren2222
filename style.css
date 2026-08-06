@@ -6693,8 +6693,8 @@ body.dark-mode .planner-section-title {
     display: none !important;
 }
 
-body:has(#list.active) #backHomeBtn,
-body:has(#exam.active) #backHomeBtn {
+/* ✅ يظهر فقط في صفحة القائمة (وليس في الامتحان) */
+body:has(#list.active) #backHomeBtn {
     display: block !important;
     margin-top: 2px !important;
     margin-bottom: 2px !important;
