@@ -1595,28 +1595,25 @@ async function renderExamListForSkill(skill, teilName) {
     div.appendChild(titleSpan);
     
     displaySavedResult(targetSkill, exam.id, titleSpan, div);
-
-
-// إنشاء حاوية Chips
+// إنشاء حاوية Chips (تتضمن جميع المعلومات الأربع)
 const chipsContainer = document.createElement('div');
 chipsContainer.className = 'exam-info-chips';
-chipsContainer.style.cssText = 'display: flex; flex-wrap: wrap; gap: 4px 6px; margin-top: 4px;';
 
-// Chip النتيجة
+// 1. النتيجة
 const scoreChip = document.createElement('span');
 scoreChip.className = 'exam-chip score';
 const score = getExamResult(targetSkill, exam.id);
 scoreChip.textContent = score !== null ? `🏆 ${score}/25` : '🏆 —';
 chipsContainer.appendChild(scoreChip);
 
-// Chip الإعادات
+// 2. عدد الإعادات
 const retryChip = document.createElement('span');
 retryChip.className = 'exam-chip attempts';
 const retryCount = getRetryCount(targetSkill, exam.id);
 retryChip.textContent = `🔄 ${retryCount}`;
 chipsContainer.appendChild(retryChip);
 
-// Chip الأيام
+// 3. منذ كم يوم
 const daysChip = document.createElement('span');
 daysChip.className = 'exam-chip days';
 const reviewDays = getLastReviewDays(targetSkill, exam.id);
@@ -1627,66 +1624,18 @@ if (reviewDays !== null) {
 }
 chipsContainer.appendChild(daysChip);
 
-// Chip Memory
+// 4. نسبة Memory Trainer (نحسبها مرة واحدة فقط)
+const progress = getExamProgress(targetSkill, exam.id);
 const memoryChip = document.createElement('span');
 memoryChip.className = 'exam-chip memory';
-const progress = getExamProgress(targetSkill, exam.id);
 memoryChip.textContent = `🧠 ${progress}%`;
 chipsContainer.appendChild(memoryChip);
 
 // إضافة الـ Chips إلى البطاقة
 div.appendChild(chipsContainer);
-    // ✅ عرض تاريخ آخر مراجعة
-    // ✅ عرض تاريخ آخر مراجعة
-// ✅ عرض تاريخ آخر مراجعة (مع استثناء Schreiben و Mündlich)
 
-
-    // ✅ عرض تاريخ آخر مراجعة (مع استثناء Schreiben و Mündlich)
-const forbiddenSkills = ['schreiben', 'mündlich1', 'mündlich2', 'mündlich3'];
-if (!forbiddenSkills.includes(targetSkill)) {
-    const reviewDays = getLastReviewDays(targetSkill, exam.id);
-    if (reviewDays !== null) {
-        const reviewSpan = document.createElement('span');
-        // تحديد اللون حسب عدد الأيام
-        let reviewColor = '#64748b';
-        if (reviewDays <= 3) {
-            reviewColor = '#22c55e'; // أخضر - حديث
-        } else if (reviewDays <= 5) {
-            reviewColor = '#f59e0b'; // برتقالي - يحتاج مراجعة
-        } else {
-            reviewColor = '#ef4444'; // أحمر - متأخر
-        }
-        reviewSpan.style.cssText = `font-size:10px; color:${reviewColor}; margin-right:6px;`;
-        if (reviewDays === 0) {
-            reviewSpan.innerHTML = `<span class="material-symbols-outlined" style="font-size:10px; color:${reviewColor}; margin-right:2px; vertical-align:middle;">calendar_month</span> اليوم`;
-        } else {
-            reviewSpan.innerHTML = `<span class="material-symbols-outlined" style="font-size:10px; color:${reviewColor}; margin-right:2px; vertical-align:middle;">calendar_month</span> منذ ${reviewDays} يوم`;
-        }
-        titleSpan.appendChild(reviewSpan);
-    } else {
-        // لم يُصحح أبداً
-        const reviewSpan = document.createElement('span');
-        reviewSpan.style.cssText = 'font-size:10px; color:#94a3b8; margin-right:6px;';
-        reviewSpan.innerHTML = `<span class="material-symbols-outlined" style="font-size:10px; color:#94a3b8; margin-right:2px; vertical-align:middle;">calendar_month</span> لم يُراجع`;
-        titleSpan.appendChild(reviewSpan);
-    }
-}
-    const progress = getExamProgress(targetSkill, exam.id);
-    if (progress > 0) {
-      const progressSpan = document.createElement('span');
-      progressSpan.className = 'exam-progress-mini';
-      progressSpan.style.cssText = `
-        font-size: 10px;
-        color: #1565C0;
-        margin-left: 8px;
-        font-weight: 500;
-        background: #f0f7ff;
-        padding: 2px 6px;
-        border-radius: 10px;
-      `;
-      progressSpan.textContent = `${progress}%`;
-      titleSpan.appendChild(progressSpan);
-    }
+// (تم حذف الأجزاء المكررة التي كانت تعرض تاريخ المراجعة و progress بشكل منفصل)
+// أصبحت جميع المعلومات معروضة داخل الـ Chips فقط.
     
 // التحقق من وجود تعديلات
 const hasVersions = exam.versions && exam.versions.length > 1;
