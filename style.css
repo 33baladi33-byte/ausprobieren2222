@@ -2233,65 +2233,66 @@ body:has(#exam.active) .left-side #navSubscribeBtn { order: 4 !important; }
     }
 
     /* ===== النوافذ المنبثقة - تحسين الهاتف ===== */
-    
-     /* --- الملف الشخصي - حجم مناسب للهاتف --- */
+
+
+    /* --- الملف الشخصي - حجم مناسب للهاتف --- */
     .profile-dropdown {
         left: 10px !important;
         right: 10px !important;
         top: 56px !important;
         min-width: unset !important;
-        width: 90% !important;
-        max-width: 320px !important;
-        padding: 14px 18px !important;
-        border-radius: 18px !important;
-        box-shadow: 0 12px 35px rgba(0,0,0,0.35) !important;
+        width: 88% !important;
+        max-width: 280px !important;
+        padding: 12px 14px !important;
+        border-radius: 16px !important;
+        box-shadow: 0 12px 30px rgba(0,0,0,0.3) !important;
         margin: 0 auto !important;
     }
     
     .profile-dropdown .profile-email {
-        font-size: 13px !important;
-        padding-bottom: 10px !important;
-        margin-bottom: 8px !important;
+        font-size: 12px !important;
+        padding-bottom: 8px !important;
+        margin-bottom: 6px !important;
         display: flex !important;
         align-items: center !important;
-        gap: 6px !important;
+        gap: 4px !important;
         flex-wrap: wrap !important;
     }
     
     .profile-dropdown .profile-email .material-symbols-outlined {
-        font-size: 18px !important;
+        font-size: 16px !important;
     }
     
     .profile-dropdown .profile-email #profileEmailText {
-        font-size: 13px !important;
+        font-size: 12px !important;
         word-break: break-word !important;
     }
     
     .profile-dropdown .profile-expiry {
-        font-size: 12px !important;
-        padding: 6px 0 !important;
+        font-size: 11px !important;
+        padding: 4px 0 !important;
         display: flex !important;
         align-items: center !important;
-        gap: 6px !important;
+        gap: 4px !important;
         flex-wrap: wrap !important;
     }
     
     .profile-dropdown .profile-expiry .material-symbols-outlined {
-        font-size: 16px !important;
+        font-size: 14px !important;
     }
     
     .profile-dropdown .profile-status {
-        font-size: 12px !important;
-        padding-top: 8px !important;
-        margin-top: 6px !important;
+        font-size: 11px !important;
+        padding-top: 6px !important;
+        margin-top: 4px !important;
         display: flex !important;
         align-items: center !important;
-        gap: 6px !important;
+        gap: 4px !important;
     }
     
     .profile-dropdown .profile-uid {
-        font-size: 11px !important;
-        padding: 6px 0 !important;
+        font-size: 10px !important;
+        padding: 4px 0 !important;
         flex-wrap: wrap !important;
         gap: 4px !important;
         display: flex !important;
@@ -2299,55 +2300,55 @@ body:has(#exam.active) .left-side #navSubscribeBtn { order: 4 !important; }
     }
     
     .profile-dropdown .profile-uid .uid-value {
-        font-size: 10px !important;
+        font-size: 9px !important;
         word-break: break-all !important;
-        max-width: 120px !important;
+        max-width: 100px !important;
     }
     
     .profile-dropdown .profile-report-btn {
-        font-size: 12px !important;
-        padding: 10px 12px !important;
-        margin-top: 8px !important;
-        min-height: 44px !important;
-        border-radius: 30px !important;
+        font-size: 11px !important;
+        padding: 8px 10px !important;
+        margin-top: 6px !important;
+        min-height: 38px !important;
+        border-radius: 25px !important;
         display: flex !important;
         align-items: center !important;
         justify-content: center !important;
-        gap: 8px !important;
+        gap: 6px !important;
     }
     
     .profile-dropdown .profile-logout {
-        font-size: 13px !important;
-        padding: 10px 12px !important;
-        margin-top: 8px !important;
-        min-height: 44px !important;
-        border-radius: 30px !important;
+        font-size: 12px !important;
+        padding: 8px 10px !important;
+        margin-top: 6px !important;
+        min-height: 38px !important;
+        border-radius: 25px !important;
     }
     
     #dropdownUpgradeBtn {
-        font-size: 13px !important;
-        padding: 10px 12px !important;
-        margin-top: 8px !important;
-        min-height: 44px !important;
-        border-radius: 30px !important;
+        font-size: 12px !important;
+        padding: 8px 10px !important;
+        margin-top: 6px !important;
+        min-height: 38px !important;
+        border-radius: 25px !important;
     }
     
     #profilePlannerRow {
-        padding: 6px 0 !important;
-        font-size: 11px !important;
+        padding: 4px 0 !important;
+        font-size: 10px !important;
         display: flex !important;
         align-items: center !important;
-        gap: 6px !important;
+        gap: 4px !important;
         flex-wrap: wrap !important;
     }
     
     .planner-tooltip {
-        max-width: 150px !important;
-        font-size: 10px !important;
-        padding: 8px 10px !important;
+        max-width: 130px !important;
+        font-size: 9px !important;
+        padding: 6px 8px !important;
         right: -5px !important;
-        min-width: 120px !important;
-        border-radius: 10px !important;
+        min-width: 100px !important;
+        border-radius: 8px !important;
     }
     
     /* --- نافذة تسجيل الدخول --- */
