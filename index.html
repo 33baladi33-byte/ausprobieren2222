@@ -460,7 +460,8 @@
         display: block !important;
     }
 }
-    /* ===== نافذة الإشعارات - تحسين الهاتف ===== */
+
+    /* ===== نافذة الإشعارات - تحسين الهاتف (بدون التأثير على زر الجرس) ===== */
     @media (max-width: 768px) {
         .notification-dropdown {
             width: 92% !important;
@@ -517,11 +518,29 @@
         }
         
         .mark-all-read {
-            font-size: 0.65rem !important;
+            font-size: 0.7rem !important;
             padding: 6px 12px !important;
             min-height: 32px !important;
             border-radius: 20px !important;
         }
+        
+        .notification-empty {
+            padding: 24px 16px !important;
+            font-size: 12px !important;
+        }
+        
+        .notification-show-all,
+        .notification-show-less {
+            padding: 10px 12px !important;
+        }
+        
+        .show-all-btn,
+        .show-less-btn {
+            font-size: 11px !important;
+            padding: 8px 12px !important;
+            min-height: 36px !important;
+        }
+    }
         
         .notification-empty {
             padding: 24px 16px !important;
