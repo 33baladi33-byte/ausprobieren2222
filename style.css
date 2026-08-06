@@ -2648,3 +2648,59 @@ body:has(#exam.active) .left-side #navSubscribeBtn { order: 4 !important; }
     }
     
     .profile-dropdown .profile-expiry .material-symbols-outlined {
+/* ============================================
+   Daily Summary Modal - ملخص أداء الأمس
+   ============================================ */
+
+#dailySummaryModal {
+    font-family: 'Segoe UI', 'Poppins', Arial, sans-serif;
+}
+
+#dailySummaryModal .daily-summary-chart-container {
+    background: #fafbfc;
+    border-radius: 12px;
+    padding: 8px 4px;
+    margin: 4px 0;
+}
+
+#dailySummaryModal canvas {
+    display: block;
+    margin: 0 auto;
+    border-radius: 8px;
+    background: #ffffff;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+}
+
+#dailySummaryModal .exam-list {
+    margin-top: 14px;
+    padding-top: 12px;
+    border-top: 1px solid #eef2f6;
+    text-align: right;
+    direction: rtl;
+    font-size: 0.8rem;
+    line-height: 1.8;
+    color: #334155;
+}
+
+#dailySummaryModal .exam-list strong {
+    font-weight: 600;
+    color: #1e293b;
+    margin-left: 4px;
+}
+
+#dailySummaryModal .exam-list .category {
+    margin-bottom: 4px;
+}
+
+@media (max-width: 480px) {
+    #dailySummaryModal .modal-content {
+        padding: 20px 16px;
+    }
+    #dailySummaryModal h3 {
+        font-size: 1rem;
+    }
+    #dailySummaryModal canvas {
+        max-width: 100%;
+        height: auto;
+    }
+}
