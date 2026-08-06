@@ -384,9 +384,7 @@ function updateUI(user, data) {
         setTimeout(window.applyStudyPlanLock, 100);
     }
 }
-// ============================================
-// دوال المصادقة (Login, Signup, Logout, Reset)
-// ============================================
+
 async function handleLogin() {
     const email = authEmail.value.trim();
     const password = authPassword.value;
