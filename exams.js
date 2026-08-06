@@ -1896,11 +1896,11 @@ function showVersionsPopup(exam, skill) {
   getUserStatusForExam().then(userStatus => {
     const isPremium = (userStatus === 'premium');
 
-let versionsHtml = exam.versions.map((v, i) => {
+  let versionsHtml = exam.versions.map((v, i) => {
   const savedScore = getExamResult(skill, v.id);
   const retryCount = getRetryCount(skill, v.id);
   const reviewDays = getLastReviewDays(skill, v.id);
-  const progress = getExamProgress(skill, v.id);
+  const memoryProgress = getExamProgress(skill, v.id);
   
   let scoreHtml = '';
   if (savedScore !== null) {
@@ -1919,8 +1919,8 @@ let versionsHtml = exam.versions.map((v, i) => {
   }
   
   let progressHtml = '';
-  if (progress > 0) {
-    progressHtml = `<span style="font-size:10px; color:#1565C0; margin-left:6px;">🧠 ${progress}%</span>`;
+  if (memoryProgress > 0) {
+    progressHtml = `<span style="font-size:10px; color:#1565C0; margin-left:6px;">🧠 ${memoryProgress}%</span>`;
   }
   
   // البطاقة المعدلة مع المعلومات الأربع
