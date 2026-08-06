@@ -1859,7 +1859,6 @@ if (hasVersions) {
       }
   }
 }
-
 function showVersionsPopup(exam, skill) {
   const overlay = document.createElement('div');
   overlay.id = 'versionsPopupAuto';
@@ -1883,7 +1882,7 @@ function showVersionsPopup(exam, skill) {
     background: #1a1f2e;
     border-radius: 20px;
     padding: 28px 24px;
-    max-width: 340px;
+    max-width: 380px;
     width: 90%;
     box-shadow: 0 20px 40px rgba(0,0,0,0.3);
     border: 1px solid #2a3042;
@@ -1892,53 +1891,39 @@ function showVersionsPopup(exam, skill) {
     text-align: center;
   `;
   
-  // الحصول على حالة المستخدم للتحقق من Premium
   getUserStatusForExam().then(userStatus => {
     const isPremium = (userStatus === 'premium');
 
-let versionsHtml = exam.versions.map((v, i) => {
-  const savedScore = getExamResult(skill, v.id);
-  const retryCount = getRetryCount(skill, v.id);
-  const reviewDays = getLastReviewDays(skill, v.id);
-  const progress = getExamProgress(skill, v.id);
-  
-  let scoreHtml = '';
-  if (savedScore !== null) {
-    const color = getResultColor(savedScore);
-    scoreHtml = `<span style="font-size:11px; color:${color}; font-weight:bold; margin-left:8px;">${savedScore} / 25</span>`;
-  }
-  
-  let retryHtml = `<span style="font-size:10px; color:#94a3b8; margin-left:6px;">🔄 ${retryCount}</span>`;
-  
-  let reviewHtml = '';
-  if (reviewDays !== null) {
-    const color = reviewDays <= 3 ? '#22c55e' : reviewDays <= 7 ? '#eab308' : '#ef4444';
-    reviewHtml = `<span style="font-size:10px; color:${color}; margin-left:6px;">📅 منذ ${reviewDays} يوم</span>`;
-  } else {
-    reviewHtml = `<span style="font-size:10px; color:#94a3b8; margin-left:6px;">📅 لم يُراجع</span>`;
-  }
-  
-  let progressHtml = '';
-  if (progress > 0) {
-    progressHtml = `<span style="font-size:10px; color:#1565C0; margin-left:6px;">🧠 ${progress}%</span>`;
-  }
-  
-  // البطاقة المعدلة مع المعلومات الأربع
-  return `
-    <div style="...">
-      <span style="...">${v.title}</span>
-      ${scoreHtml}
-      ${retryHtml}
-      ${reviewHtml}
-      ${progressHtml}
-    </div>
-  `;
-}).join('');
+    let versionsHtml = exam.versions.map((v, i) => {
+      const savedScore = getExamResult(skill, v.id);
+      const retryCount = getRetryCount(skill, v.id);
+      const reviewDays = getLastReviewDays(skill, v.id);
+      const progress = getExamProgress(skill, v.id);
+      
+      // بناء الـ Chips بنفس تصميم البطاقات العادية
+      let chipsHtml = `
+        <span class="exam-chip score">🏆 ${savedScore !== null ? savedScore+'/25' : '—'}</span>
+        <span class="exam-chip attempts">🔄 ${retryCount}</span>
+        <span class="exam-chip days">📅 ${reviewDays !== null ? (reviewDays === 0 ? 'اليوم' : `منذ ${reviewDays} يوم`) : '—'}</span>
+        <span class="exam-chip memory">🧠 ${progress}%</span>
+      `;
+      
+      return `
+        <div style="background: #0f1421; border-radius: 12px; padding: 12px 14px; margin-bottom: 8px; border-left: 3px solid #4a6fa5; text-align: right; cursor: pointer; transition: background 0.2s ease;" 
+             onclick="closeVersionsPopupAndOpen('${skill}', ${v.id}, '${v.file}', '${v.title}')">
+          <div style="font-size: 13px; font-weight: 500; color: #e2e8f0; margin-bottom: 6px;">${v.title}</div>
+          <div style="display: flex; flex-wrap: wrap; gap: 4px 6px; justify-content: flex-start;">
+            ${chipsHtml}
+          </div>
+        </div>
+      `;
+    }).join('');
     
     modal.innerHTML = `
       <h4 style="margin:0 0 16px 0; font-size:16px; font-weight:600; color:#a8b5d9;">📋 هذا الامتحان له ${exam.versions.length} تعديلات</h4>
       <div style="border-top:1px solid #2a3042; margin-bottom:14px;"></div>
       ${versionsHtml}
+      <button onclick="this.closest('#versionsPopupAuto').remove()" style="margin-top:14px; background: #334155; border: none; padding: 8px 24px; border-radius: 30px; color: #e2e8f0; cursor: pointer; font-weight: 500; width:100%;">إغلاق</button>
     `;
     
     overlay.appendChild(modal);
@@ -1958,6 +1943,13 @@ let versionsHtml = exam.versions.map((v, i) => {
     }
   });
 }
+
+// دالة مساعدة لفتح الإصدار من داخل النافذة المنبثقة
+window.closeVersionsPopupAndOpen = function(skill, id, file, title) {
+  const popup = document.getElementById('versionsPopupAuto');
+  if (popup) popup.remove();
+  window.openExam(id, title, skill, file);
+};
 
 // ============================================
 // ✅ دالة setupLockedNextButton المعدلة - تدعم الإصدارات والقواعد الجديدة
