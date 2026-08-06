@@ -712,24 +712,22 @@ function getDailyGoal() {
 }
 
 function getStreak() {
-    const data = getLocalJSON('stats_daily_data', {});
-    const goal = data.goal || 120;
-    if (goal <= 0) return 0;
-    let streak = 0;
-    let currentDate = new Date();
-    currentDate.setDate(currentDate.getDate() - 1);
-    for (let i = 0; i < 365; i++) {
-        const dateStr = currentDate.toISOString().split('T')[0];
-        const key = `session_total_${dateStr}`;
-        const minutes = parseInt(localStorage.getItem(key)) || 0;
-        if (minutes >= goal) {
-            streak++;
+    // إجمالي الأيام الناجحة (يعتمد على completed المخزن في history)
+    const data = getLocalJSON('stats_daily_data', { history: [] });
+    const history = data.history || [];
+    let totalSuccessful = 0;
+    history.forEach(entry => {
+        // إذا كان completed موجوداً، استخدمه مباشرة
+        if (entry.completed !== undefined) {
+            if (entry.completed === true) totalSuccessful++;
         } else {
-            break;
+            // للأيام القديمة (قبل إضافة completed): نحسبها من goal و minutes المخزنين
+            const goalAtDay = entry.goal || data.goal || 120;
+            const minutes = entry.minutes || 0;
+            if (minutes >= goalAtDay) totalSuccessful++;
         }
-        currentDate.setDate(currentDate.getDate() - 1);
-    }
-    return streak;
+    });
+    return totalSuccessful;
 }
 
 function getHistory() {
