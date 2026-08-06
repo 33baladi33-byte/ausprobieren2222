@@ -4439,8 +4439,6 @@ document.addEventListener("DOMContentLoaded", function() {
     </div>
 </div>
 
-<!-- ===== زر الرئيسية (يظهر في أسفل صفحات القائمة والامتحان فقط) ===== -->
-<button id="backHomeBtn" class="back-home-btn">الرئيسية</button>
 
 <!-- ===== نافذة جلسة المراجعة (البطاقة الجديدة المتكاملة) ===== -->
 <div id="studySessionModal" class="session-modal">
@@ -5320,6 +5318,42 @@ document.addEventListener("DOMContentLoaded", function() {
         userInput.focus();
     }
 
+// ============================================
+// 🔒 قفل زر Send الخاص بالذكاء الاصطناعي (لغير المشتركين)
+// ============================================
+window.applyAISendLock = function() {
+    const btn = document.getElementById('askAISendBtn');
+    if (!btn) return;
+    const status = window.getUserStatusGlobal ? window.getUserStatusGlobal() : 'free';
+    if (status !== 'premium') {
+        btn.innerHTML = '🔒';
+        btn.style.background = '#e2e8f0';
+        btn.style.color = '#94a3b8';
+        btn.style.cursor = 'pointer';
+        btn.title = 'اشترك لاستخدام المساعد الذكي';
+        btn.style.fontSize = '18px';
+        btn.style.border = '1px solid #cbd5e1';
+        btn.style.borderRadius = '50%';
+        btn.style.width = '44px';
+        btn.style.height = '44px';
+    } else {
+        btn.innerHTML = '<span class="material-symbols-outlined" style="font-size: 22px;">send</span>';
+        btn.style.background = '#38bdf8';
+        btn.style.color = '#0a0e1a';
+        btn.style.border = 'none';
+        btn.style.borderRadius = '50%';
+        btn.style.width = '44px';
+        btn.style.height = '44px';
+        btn.title = 'إرسال';
+        btn.style.fontSize = '';
+    }
+};
+
+// استدعاء الدالة عند تحميل الصفحة
+document.addEventListener('DOMContentLoaded', function() {
+    setTimeout(window.applyAISendLock, 200);
+});
+
     // ===== ربط الأحداث =====
     floatingBtn.addEventListener('click', toggleChat);
     closeBtn.addEventListener('click', toggleChat);
@@ -5332,7 +5366,16 @@ document.addEventListener("DOMContentLoaded", function() {
         }
     });
 
-    console.log('✅ Ask AI جاهز (يدعم 6 مزودات + حد يومي 15 رسالة + Prompt مختصر)');
+console.log('✅ Ask AI جاهز (يدعم 6 مزودات + حد يومي 15 رسالة + Prompt مختصر)');
+
+// ربط تطبيق القفل مع تغيير حالة المستخدم (يُستدعى من auth.js)
+if (typeof window.updateUI === 'function') {
+    const originalUpdateUI = window.updateUI;
+    window.updateUI = function(user, data) {
+        originalUpdateUI(user, data);
+        setTimeout(window.applyAISendLock, 50);
+    };
+}
 })();
 
 function updateProfilePlannerStatus() {
