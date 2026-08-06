@@ -1671,7 +1671,7 @@ if (!forbiddenSkills.includes(targetSkill)) {
         titleSpan.appendChild(reviewSpan);
     }
 }
-    // ✅ استخدام `miniProgress` بدلاً من `progress` لتجنب التعارض
+     // ✅ استخدام اسم مختلف لتجنب التعارض
     const miniProgress = getExamProgress(targetSkill, exam.id);
     if (miniProgress > 0) {
       const progressSpan = document.createElement('span');
