@@ -26,8 +26,7 @@
 <link rel="shortcut icon" type="image/webp" href="images/favicon.webp">
 <link rel="stylesheet" href="style.css">
 <link rel="stylesheet" href="studySession.css">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&icon_names=bar_chart,repeat,calendar_month" />
-
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&icon_names=bar_chart,repeat,calendar_month" />    
     
@@ -5331,55 +5330,6 @@ document.addEventListener("DOMContentLoaded", function() {
         if (isOpen && !chatWindow.contains(e.target) && e.target !== floatingBtn) {
             toggleChat();
         }
-    });
-
-    // ============================================
-    // 🔒 قفل زر Send الخاص بالذكاء الاصطناعي (لغير المشتركين)
-    // ============================================
-    window.applyAISendLock = function() {
-        const btn = document.getElementById('askAISendBtn');
-        if (!btn) return;
-        const status = window.getUserStatusGlobal ? window.getUserStatusGlobal() : 'free';
-        if (status !== 'premium') {
-            // تصميم الزر المغلق (مطابق لزر الخطة اليومية)
-            btn.innerHTML = '🔒';
-            btn.style.background = 'rgba(255,255,255,0.05)';
-            btn.style.border = '1px solid rgba(255,255,255,0.08)';
-            btn.style.borderRadius = '12px';
-            btn.style.color = '#E5E7EB';
-            btn.style.width = '44px';
-            btn.style.height = '44px';
-            btn.style.fontSize = '18px';
-            btn.style.cursor = 'pointer';
-            btn.style.boxShadow = '0 2px 8px rgba(0,0,0,0.06)';
-            btn.style.transition = 'all 0.2s cubic-bezier(0.2, 0.9, 0.4, 1.1)';
-            btn.style.display = 'flex';
-            btn.style.alignItems = 'center';
-            btn.style.justifyContent = 'center';
-            btn.title = 'اشترك لاستخدام المساعد الذكي';
-        } else {
-            // تصميم الزر المفتوح (الأصلي)
-            btn.innerHTML = '<span class="material-symbols-outlined" style="font-size: 22px;">send</span>';
-            btn.style.background = '#38bdf8';
-            btn.style.border = 'none';
-            btn.style.borderRadius = '50%';
-            btn.style.color = '#0a0e1a';
-            btn.style.width = '44px';
-            btn.style.height = '44px';
-            btn.style.fontSize = '';
-            btn.style.cursor = 'pointer';
-            btn.style.boxShadow = '';
-            btn.style.transition = 'all 0.2s';
-            btn.style.display = 'flex';
-            btn.style.alignItems = 'center';
-            btn.style.justifyContent = 'center';
-            btn.title = 'إرسال';
-        }
-    };
-
-    // استدعاء الدالة عند تحميل الصفحة
-    document.addEventListener('DOMContentLoaded', function() {
-        setTimeout(window.applyAISendLock, 200);
     });
 
     console.log('✅ Ask AI جاهز (يدعم 6 مزودات + حد يومي 15 رسالة + Prompt مختصر)');
