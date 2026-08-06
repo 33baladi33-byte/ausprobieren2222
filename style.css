@@ -354,10 +354,9 @@ body {
 }
 .left-side {
     display: flex;
-    flex-direction: row; /* يمنع أي انعكاس */
+    flex-direction: row;
     align-items: center;
     gap: 12px;
-    /* نلغي أي تأثير للـ RTL على الترتيب، بحيث أول عنصر في HTML يظهر أولاً */
     direction: ltr;
 }
 
@@ -368,8 +367,8 @@ body {
 }
 
 .logo-icon {
-    width: 40px;   /* ✅ تم التغيير إلى 40px */
-    height: 40px;  /* ✅ تم التغيير إلى 40px */
+    width: 40px;
+    height: 40px;
     background: transparent;
     display: flex;
     align-items: center;
@@ -587,8 +586,8 @@ body {
 
 /* ===== زر الملف الشخصي - تصميم Apple Premium ===== */
 .profile-icon {
-    width: 40px;   /* ✅ تم التغيير إلى 40px */
-    height: 40px;  /* ✅ تم التغيير إلى 40px */
+    width: 40px;
+    height: 40px;
     background: rgba(255, 255, 255, 0.08);
     backdrop-filter: blur(6px);
     -webkit-backdrop-filter: blur(6px);
@@ -1394,9 +1393,9 @@ body:has(#exam.active) .top-bar {
 @media (min-width: 1080px) {
     .teile-row {
         justify-content: center !important;
-        padding: 0 !important;          /* إزالة أي padding جانبي */
-        margin: 0 !important;           /* إزالة أي margin جانبي */
-        width: 100% !important;         /* الحاوية تأخذ العرض الكامل */
+        padding: 0 !important;
+        margin: 0 !important;
+        width: 100% !important;
     }
 }
 
@@ -1450,7 +1449,7 @@ body:has(#exam.active) .top-bar {
 /* ===== زر الرئيسية والعودة إلى القائمة (بعد التعديل) ===== */
 .back-home-btn,
 .back-list-btn {
-    padding: 8px 24px;               /* ارتفاع أقل، عرض أكبر */
+    padding: 8px 24px;
     background: linear-gradient(135deg, #161922, #202534, #262D40);
     border: 1px solid #4a5568;
     border-radius: 14px;
@@ -1888,9 +1887,9 @@ body:has(#exam.active) .left-side #navSubscribeBtn { order: 4 !important; }
     #home {
         padding: 20px 16px 0 16px !important;
         background: #0a0e1a;
-        min-height: auto !important;        /* 🔥 إزالة الارتفاع الثابت */
-        overflow: visible !important;       /* 🔥 إلغاء القص */
-        padding-bottom: 30px !important;    /* مسافة أسفل الصفحة */
+        min-height: auto !important;
+        overflow: visible !important;
+        padding-bottom: 30px !important;
     }
 
     /* إزالة تأثير الخلفية الزائد */
@@ -2144,25 +2143,21 @@ body:has(#exam.active) .left-side #navSubscribeBtn { order: 4 !important; }
         box-sizing: border-box !important;
     }
 
-    /* زر عرض البطاقات */
+    /* زر عرض البطاقات - تحسين الهاتف */
     .show-cards-btn {
-        display: flex !important;
-        align-items: center !important;
-        justify-content: center !important;
-        gap: 8px !important;
-        padding: 14px 20px !important;
-        font-size: 0.85rem !important;
-        font-weight: 500 !important;
-        color: #475569 !important;
+        display: inline-flex !important;
         background: #f8fafc !important;
         border: 1px solid #e2e8f0 !important;
         border-radius: 50px !important;
-        cursor: pointer !important;
+        padding: 12px 20px !important;
+        font-size: 0.8rem !important;
+        font-weight: 500 !important;
+        color: #475569 !important;
         transition: all 0.2s ease !important;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02) !important;
+        min-height: 48px !important;
         width: 100% !important;
-        max-width: 100% !important;
-        min-width: unset !important;
+        justify-content: center !important;
+        gap: 8px !important;
         box-sizing: border-box !important;
         flex: 0 0 auto !important;
         white-space: nowrap !important;
@@ -2171,6 +2166,17 @@ body:has(#exam.active) .left-side #navSubscribeBtn { order: 4 !important; }
     .show-cards-btn:active {
         background: #e2e8f0 !important;
         transform: scale(0.97) !important;
+    }
+    
+    /* نافذة البطاقات المنبثقة */
+    .premium-card-popup {
+        max-width: 280px !important;
+        padding: 12px !important;
+        border-radius: 24px !important;
+    }
+    
+    .premium-card-popup img {
+        border-radius: 18px !important;
     }
 
     /* البطاقات المصورة - إخفاء */
@@ -2225,8 +2231,82 @@ body:has(#exam.active) .left-side #navSubscribeBtn { order: 4 !important; }
         padding: 4px 10px !important;
         font-size: 11px !important;
     }
+
+    /* ===== النوافذ المنبثقة - تحسين الهاتف ===== */
     
-    /* النوافذ المنبثقة */
+    /* --- الملف الشخصي --- */
+    .profile-dropdown {
+        left: 10px !important;
+        right: 10px !important;
+        top: 56px !important;
+        min-width: unset !important;
+        width: auto !important;
+        max-width: 100% !important;
+        padding: 12px 16px !important;
+        border-radius: 16px !important;
+    }
+    
+    .profile-dropdown .profile-email {
+        font-size: 13px !important;
+        padding-bottom: 10px !important;
+        margin-bottom: 8px !important;
+    }
+    
+    .profile-dropdown .profile-expiry {
+        font-size: 12px !important;
+        padding: 6px 0 !important;
+    }
+    
+    .profile-dropdown .profile-status {
+        font-size: 12px !important;
+        padding-top: 8px !important;
+        margin-top: 6px !important;
+    }
+    
+    .profile-dropdown .profile-uid {
+        font-size: 11px !important;
+        padding: 6px 0 !important;
+        flex-wrap: wrap !important;
+        gap: 4px !important;
+    }
+    
+    .profile-dropdown .profile-uid .uid-value {
+        font-size: 10px !important;
+        word-break: break-all !important;
+    }
+    
+    .profile-dropdown .profile-report-btn {
+        font-size: 12px !important;
+        padding: 10px 12px !important;
+        margin-top: 8px !important;
+    }
+    
+    .profile-dropdown .profile-logout {
+        font-size: 13px !important;
+        padding: 10px 12px !important;
+        margin-top: 8px !important;
+    }
+    
+    #dropdownUpgradeBtn {
+        font-size: 13px !important;
+        padding: 10px 12px !important;
+        margin-top: 8px !important;
+    }
+    
+    #profilePlannerRow {
+        padding: 6px 0 !important;
+        font-size: 11px !important;
+    }
+    
+    .planner-tooltip {
+        max-width: 160px !important;
+        font-size: 10px !important;
+        padding: 8px 10px !important;
+        right: -5px !important;
+        min-width: 130px !important;
+    }
+    
+    /* --- نافذة تسجيل الدخول --- */
     .login-popup-content {
         padding: 18px !important;
         width: 260px !important;
@@ -2246,25 +2326,433 @@ body:has(#exam.active) .left-side #navSubscribeBtn { order: 4 !important; }
         font-size: 12px !important;
     }
     
+    /* --- نافذة الإعدادات --- */
     .settings-modal-content {
-        padding: 15px !important;
-        max-width: 280px !important;
+        padding: 18px 16px !important;
+        max-width: 320px !important;
+        width: 92% !important;
+        border-radius: 24px !important;
     }
     
-    /* نافذة التقييمات */
-    .widget-bubble {
-        padding: 4px 10px !important;
+    .settings-modal-header {
+        margin-bottom: 14px !important;
+        padding-bottom: 10px !important;
     }
     
-    .widget-text {
+    .settings-modal-header h3 {
+        font-size: 1rem !important;
+    }
+    
+    .settings-desc {
+        font-size: 0.75rem !important;
+        margin-bottom: 16px !important;
+    }
+    
+    .font-size-controls {
+        gap: 14px !important;
+        margin-bottom: 14px !important;
+    }
+    
+    .font-size-btn {
+        font-size: 1rem !important;
+        padding: 6px 14px !important;
+        min-width: 44px !important;
+        min-height: 44px !important;
+    }
+    
+    .font-size-value {
+        font-size: 0.85rem !important;
+        padding: 4px 12px !important;
+        min-width: 50px !important;
+        text-align: center !important;
+    }
+    
+    .reset-font-btn {
+        font-size: 0.75rem !important;
+        padding: 10px 16px !important;
+        min-height: 44px !important;
+    }
+    
+    .reading-mode-btn {
+        font-size: 0.8rem !important;
+        padding: 10px 16px !important;
+        min-height: 44px !important;
+        border-radius: 30px !important;
+    }
+
+    /* --- نافذة الإشعارات --- */
+    .notification-dropdown {
+        width: 92% !important;
+        max-width: 340px !important;
+        right: 4% !important;
+        left: 4% !important;
+        top: 52px !important;
+        border-radius: 18px !important;
+        max-height: 360px !important;
+        box-shadow: 0 20px 45px rgba(0,0,0,0.35) !important;
+    }
+    
+    .notification-dropdown::before {
+        display: none !important;
+    }
+    
+    .notification-header {
+        font-size: 0.8rem !important;
+        padding: 12px 16px !important;
+        flex-wrap: wrap !important;
+        gap: 6px !important;
+    }
+    
+    .notification-header span {
+        font-size: 13px !important;
+    }
+    
+    .notification-list {
+        max-height: 280px !important;
+    }
+    
+    .notification-item {
+        padding: 12px 14px !important;
+        font-size: 0.75rem !important;
+        gap: 10px !important;
+    }
+    
+    .notification-item .notification-icon {
+        font-size: 16px !important;
+        min-width: 24px !important;
+        margin-left: 6px !important;
+    }
+    
+    .notification-item .notification-title {
+        font-size: 13px !important;
+    }
+    
+    .notification-item .notification-message {
+        font-size: 11px !important;
+    }
+    
+    .notification-item .notification-time {
+        font-size: 9px !important;
+    }
+    
+    .mark-all-read {
+        font-size: 0.65rem !important;
+        padding: 6px 12px !important;
+        min-height: 32px !important;
+        border-radius: 20px !important;
+    }
+    
+    .notification-empty {
+        padding: 24px 16px !important;
+        font-size: 12px !important;
+    }
+    
+    .notification-show-all,
+    .notification-show-less {
+        padding: 10px 12px !important;
+    }
+    
+    .show-all-btn,
+    .show-less-btn {
+        font-size: 11px !important;
+        padding: 8px 12px !important;
+        min-height: 36px !important;
+    }
+
+    /* --- نافذة الخطة اليومية --- */
+    #studyPlannerModal .session-modal-content {
+        padding: 16px 12px 18px !important;
+        max-width: 96% !important;
+        width: 96% !important;
+        border-radius: 20px !important;
+        max-height: 90vh !important;
+        overflow-y: auto !important;
+    }
+    
+    #studyPlannerModal .session-modal-content::-webkit-scrollbar {
+        width: 3px !important;
+    }
+    
+    .planner-welcome-title {
+        font-size: 0.85rem !important;
+        margin-bottom: 16px !important;
+        padding: 0 4px !important;
+    }
+    
+    .planner-input-row {
+        flex-direction: column !important;
+        gap: 10px !important;
+        margin-bottom: 14px !important;
+    }
+    
+    .planner-input-group label {
         font-size: 0.6rem !important;
+        margin-bottom: 2px !important;
     }
     
-    .widget-slide {
+    .planner-input-group input[type="date"],
+    .planner-input-group input[type="number"] {
+        font-size: 0.75rem !important;
+        padding: 10px 12px !important;
+        min-height: 44px !important;
+        border-radius: 12px !important;
+    }
+    
+    .planner-check-btn {
+        font-size: 0.8rem !important;
+        padding: 12px !important;
+        min-height: 48px !important;
+        border-radius: 30px !important;
+    }
+    
+    .planner-section-title {
+        font-size: 0.8rem !important;
+        margin: 8px 0 14px 0 !important;
+        padding: 0 4px !important;
+        line-height: 1.5 !important;
+    }
+    
+    .planner-sections-grid {
+        gap: 6px !important;
+        margin-bottom: 6px !important;
+    }
+    
+    .planner-sections-grid .planner-section-btn {
+        font-size: 0.7rem !important;
+        padding: 12px 4px !important;
+        min-height: 44px !important;
+        border-radius: 12px !important;
+    }
+    
+    .planner-sections-grid.two-col .planner-section-btn {
+        font-size: 0.7rem !important;
+        padding: 12px 4px !important;
+        min-height: 44px !important;
+    }
+    
+    #customSystemBtn {
+        font-size: 0.75rem !important;
+        padding: 12px 0 !important;
+        min-height: 44px !important;
+        margin-top: 8px !important;
+    }
+    
+    .planner-top-bar {
+        padding-top: 2px !important;
+        padding-bottom: 8px !important;
+        margin-bottom: 8px !important;
+        flex-wrap: wrap !important;
+        gap: 6px !important;
+    }
+    
+    .planner-top-bar .left-icons button {
+        font-size: 16px !important;
+        padding: 6px !important;
+        min-height: 36px !important;
+        min-width: 36px !important;
+    }
+    
+    .planner-top-bar .right-date {
+        font-size: 0.65rem !important;
+        gap: 4px !important;
+    }
+    
+    .planner-top-bar .right-date .material-symbols-outlined {
+        font-size: 16px !important;
+    }
+    
+    .planner-card .planner-header {
+        padding-bottom: 10px !important;
+        flex-wrap: wrap !important;
+        gap: 6px !important;
+    }
+    
+    .planner-card .planner-date {
+        font-size: 0.65rem !important;
+        gap: 4px !important;
+    }
+    
+    .planner-card .planner-date .material-symbols-outlined {
+        font-size: 16px !important;
+    }
+    
+    .planner-card .planner-remaining {
+        font-size: 0.65rem !important;
+        gap: 4px !important;
+    }
+    
+    .planner-card .planner-remaining .material-symbols-outlined {
+        font-size: 16px !important;
+    }
+    
+    .planner-card .planner-title {
+        font-size: 0.85rem !important;
+        margin: 10px 0 2px 0 !important;
+    }
+    
+    .planner-card .planner-subtitle {
+        font-size: 0.65rem !important;
+        margin-bottom: 12px !important;
+    }
+    
+    .planner-card .exam-list {
+        gap: 6px !important;
+    }
+    
+    .planner-card .exam-card {
+        padding: 10px 12px !important;
+        border-radius: 12px !important;
+        flex-wrap: wrap !important;
+        gap: 6px !important;
+    }
+    
+    .planner-card .exam-card > span:first-child {
+        font-size: 0.75rem !important;
+        white-space: normal !important;
+        word-break: break-word !important;
+        flex: 1 1 100% !important;
+        text-align: center !important;
+    }
+    
+    .planner-card .exam-card > div {
+        gap: 8px !important;
+        flex-wrap: wrap !important;
+        justify-content: center !important;
+        width: 100% !important;
+    }
+    
+    .planner-card .exam-card .exam-info-item {
+        font-size: 0.6rem !important;
+        gap: 3px !important;
+    }
+    
+    .planner-card .exam-card .exam-info-item .material-symbols-outlined {
+        font-size: 14px !important;
+    }
+    
+    .planner-toggle-wrapper {
+        padding: 4px 10px !important;
+        margin: 4px 0 6px 0 !important;
+        border-radius: 10px !important;
+        justify-content: center !important;
+    }
+    
+    .ios-toggle-container {
         width: 40px !important;
-        height: 40px !important;
+        height: 24px !important;
     }
     
+    .ios-toggle-slider {
+        width: 20px !important;
+        height: 20px !important;
+        top: 2px !important;
+        left: 2px !important;
+    }
+    
+    .ios-toggle-container input:checked + .ios-toggle-label .ios-toggle-slider {
+        left: calc(100% - 22px) !important;
+    }
+
+    /* --- نافذة تسجيل الدخول (Auth Modal) --- */
+    #authModal .settings-modal-content {
+        padding: 20px 16px !important;
+        max-width: 340px !important;
+        width: 92% !important;
+        border-radius: 24px !important;
+    }
+    
+    #authModal .settings-modal-header h3 {
+        font-size: 1rem !important;
+    }
+    
+    #authModal .settings-modal-body label {
+        font-size: 12px !important;
+    }
+    
+    #authModal .settings-modal-body input {
+        font-size: 14px !important;
+        padding: 10px 12px !important;
+        min-height: 44px !important;
+        border-radius: 12px !important;
+    }
+    
+    #authModal .password-wrapper .password-toggle-icon {
+        font-size: 20px !important;
+        width: 22px !important;
+        height: 22px !important;
+        left: 12px !important;
+    }
+    
+    #authModal .settings-modal-body button {
+        font-size: 14px !important;
+        padding: 12px !important;
+        min-height: 48px !important;
+        border-radius: 12px !important;
+    }
+    
+    #authModal .settings-modal-body div[style*="display:flex; justify-content:space-between"] {
+        font-size: 12px !important;
+        gap: 8px !important;
+        flex-wrap: wrap !important;
+    }
+
+    /* ========================================
+       نافذة طريقة الاشتراك - تحسين الهاتف
+    ======================================== */
+    .subscribe-guide-modal .modal-container {
+        width: 94% !important;
+        max-width: 400px !important;
+        max-height: 90vh !important;
+        border-radius: 24px !important;
+    }
+    
+    .subscribe-guide-modal .modal-header {
+        padding: 14px 16px !important;
+    }
+    
+    .subscribe-guide-modal .modal-header h3 {
+        font-size: 1rem !important;
+        gap: 6px !important;
+    }
+    
+    .subscribe-guide-modal .close-modal-btn {
+        font-size: 24px !important;
+    }
+    
+    .subscribe-slider-container {
+        padding: 20px 10px !important;
+    }
+    
+    .subscribe-slide {
+        width: 180px !important;
+        margin-right: 12px !important;
+    }
+    
+    .subscribe-slide img {
+        border-radius: 16px !important;
+    }
+    
+    .subscribe-slide-caption {
+        font-size: 0.65rem !important;
+        margin-top: 6px !important;
+        padding: 0 4px !important;
+    }
+    
+    .slider-nav-btn {
+        width: 36px !important;
+        height: 36px !important;
+        font-size: 1.2rem !important;
+        border-radius: 50% !important;
+    }
+    
+    .slider-nav-prev {
+        left: 2px !important;
+    }
+    
+    .slider-nav-next {
+        right: 2px !important;
+    }
+
     /* ========================================
        إصلاح ألوان الـ Select في الهاتف لـ Lesen Teil 1 و Teil 3
     ======================================== */
@@ -2750,7 +3238,6 @@ body:has(#exam.active) .left-side #navSubscribeBtn { order: 4 !important; }
     padding: 0;
     font-family: inherit;
     
-    /* ✅ الموضع المختار (كود 1) */
     position: fixed !important;
     top: 82px !important;
     right: 30px !important;
@@ -2768,7 +3255,6 @@ body:has(#exam.active) .left-side #navSubscribeBtn { order: 4 !important; }
     color: #E5E7EB;
 }
 
-/* البطاقة المنبثقة (نفس التصميم القديم) */
 .why-premium-icon-btn .premium-info-card {
     position: absolute;
     top: calc(100% + 8px);
@@ -2789,7 +3275,6 @@ body:has(#exam.active) .left-side #navSubscribeBtn { order: 4 !important; }
     text-align: right;
 }
 
-/* السهم الصغير */
 .why-premium-icon-btn .premium-info-card::before {
     content: '';
     position: absolute;
@@ -2823,20 +3308,17 @@ body:has(#exam.active) .left-side #navSubscribeBtn { order: 4 !important; }
     transform: translateY(0) scale(1);
 }
 
-/* ✅ إخفاء الأيقونة في الصفحة الرئيسية وداخل الامتحان (يتم التحكم به عبر JS) */
 #home .why-premium-icon-btn,
 #exam .why-premium-icon-btn {
     display: none !important;
 }
 
-/* ✅ إخفاء الأيقونة تماماً في الهواتف (أقل من 1080px) */
 @media (max-width: 1079px) {
     .why-premium-icon-btn {
         display: none !important;
     }
 }
 
-/* ✅ تنسيق الهواتف (يبقى للاحتياط لكنه لن يظهر بسبب الـ display:none أعلاه) */
 @media (max-width: 768px) {
     .why-premium-icon-btn {
         width: 32px;
@@ -2975,7 +3457,6 @@ body:has(#exam.active) .left-side #navSubscribeBtn { order: 4 !important; }
     background: rgba(255, 255, 255, 0.15);
     color: #FFFFFF;
 }
-/* تحسين البطاقة */
 .subscription-card {
     background: linear-gradient(135deg, #1A1D27 0%, #252A35 50%, #1A1D27 100%);
     border-radius: 24px;
@@ -3356,7 +3837,6 @@ body:has(#exam.active) .left-side #navSubscribeBtn { order: 4 !important; }
     transform: translateY(-1px);
 }
 
-/* للهواتف */
 @media (max-width: 768px) {
     .welcome-card {
         padding: 14px 16px;
@@ -3702,7 +4182,6 @@ body:has(#exam.active) .left-side #navSubscribeBtn { order: 4 !important; }
     width: 100%;
     pointer-events: none;
 }
-/* باقي الأنماط المفقودة 🔽 */
 .toast-item {
     background: #111827;
     border-radius: 14px;
@@ -3766,7 +4245,6 @@ body:has(#exam.active) .left-side #navSubscribeBtn { order: 4 !important; }
     color: #94a3b8;
 }
 
-/* ألوان الأيقونات */
 .toast-item.success .toast-icon {
     color: #22c55e;
 }
@@ -3783,7 +4261,6 @@ body:has(#exam.active) .left-side #navSubscribeBtn { order: 4 !important; }
     color: #38bdf8;
 }
 
-/* Animation */
 @keyframes toastSlideIn {
     0% {
         opacity: 0;
@@ -3806,7 +4283,6 @@ body:has(#exam.active) .left-side #navSubscribeBtn { order: 4 !important; }
     }
 }
 
-/* للهواتف */
 @media (max-width: 768px) {
     .toast-container {
         top: 10px;
@@ -3836,7 +4312,6 @@ body:has(#exam.active) .left-side #navSubscribeBtn { order: 4 !important; }
     }
 }
 
-/* إزالة Toast القديم نهائياً */
 .zertiva-center-toast {
     display: none !important;
 }
@@ -3844,7 +4319,6 @@ body:has(#exam.active) .left-side #navSubscribeBtn { order: 4 !important; }
    MEMORY TRAINER V3 - تحسينات السرعة V2
    ======================================== */
 
-/* الخلفية - أخف وأسرع */
 .memory-trainer-overlay {
     position: fixed;
     top: 0;
@@ -3870,7 +4344,6 @@ body:has(#exam.active) .left-side #navSubscribeBtn { order: 4 !important; }
     to { opacity: 1; transform: translateY(0); }
 }
 
-/* حاوية البطاقة - تستخدم مرة واحدة */
 .memory-trainer-card-container {
     width: 100%;
     display: flex;
@@ -3879,7 +4352,6 @@ body:has(#exam.active) .left-side #navSubscribeBtn { order: 4 !important; }
     animation: memorySlideUp 0.12s ease;
 }
 
-/* البطاقات - تصميم أنيق وسريع */
 .memory-trainer-intro,
 .memory-trainer-card,
 .memory-trainer-recall,
@@ -3915,14 +4387,12 @@ body:has(#exam.active) .left-side #navSubscribeBtn { order: 4 !important; }
     border-color: #86EFAC;
 }
 
-/* أيقونات */
 .memory-trainer-icon {
     font-size: 26px;
     display: block;
     margin-bottom: 4px;
 }
 
-/* عناوين */
 .memory-trainer-intro h2,
 .memory-trainer-results h2 {
     color: #1565C0;
@@ -3942,7 +4412,6 @@ body:has(#exam.active) .left-side #navSubscribeBtn { order: 4 !important; }
     margin-bottom: 10px;
 }
 
-/* التقدم */
 .memory-trainer-header {
     display: flex;
     justify-content: space-between;
@@ -3964,7 +4433,6 @@ body:has(#exam.active) .left-side #navSubscribeBtn { order: 4 !important; }
     color: #2D6A4F;
 }
 
-/* المحتوى */
 .memory-trainer-hint {
     font-size: 14px;
     color: #4A7C59;
@@ -3991,10 +4459,6 @@ body:has(#exam.active) .left-side #navSubscribeBtn { order: 4 !important; }
     font-weight: 500;
     margin-bottom: 10px;
 }
-
-/* ============================================
-   خيارات مع Hover فوري (0.08s)
-   ============================================ */
 
 .memory-trainer-options {
     display: flex;
@@ -4028,7 +4492,6 @@ body:has(#exam.active) .left-side #navSubscribeBtn { order: 4 !important; }
     opacity: 0.7;
 }
 
-/* ألوان التصحيح الصامتة */
 .memory-trainer-option.correct {
     border-color: #28a745 !important;
     background-color: #d4edda !important;
@@ -4038,10 +4501,6 @@ body:has(#exam.active) .left-side #navSubscribeBtn { order: 4 !important; }
     border-color: #e67e22 !important;
     background-color: #fef0e0 !important;
 }
-
-/* ============================================
-   أزرار
-   ============================================ */
 
 .memory-trainer-btn {
     padding: 8px 20px;
@@ -4080,10 +4539,6 @@ body:has(#exam.active) .left-side #navSubscribeBtn { order: 4 !important; }
     margin-top: 4px;
 }
 
-/* ============================================
-   إحصائيات
-   ============================================ */
-
 .memory-trainer-stats {
     display: flex;
     justify-content: space-around;
@@ -4114,10 +4569,6 @@ body:has(#exam.active) .left-side #navSubscribeBtn { order: 4 !important; }
     margin-top: 2px;
 }
 
-/* ============================================
-   شريط التقدم - مستطيل أبيض، border خفيف، radius 6px
-   ============================================ */
-
 .memory-progress-bar-container {
     display: flex;
     align-items: center;
@@ -4126,12 +4577,10 @@ body:has(#exam.active) .left-side #navSubscribeBtn { order: 4 !important; }
     margin: 4px 0 8px 0;
 }
 
-/* إخفاء التسمية القديمة */
 .memory-progress-label {
     display: none !important;
 }
 
-/* الشريط داخل مستطيل أبيض */
 .memory-progress-track {
     flex: 1;
     min-width: 60px;
@@ -4145,7 +4594,6 @@ body:has(#exam.active) .left-side #navSubscribeBtn { order: 4 !important; }
     padding: 1px;
 }
 
-/* التعبئة بتدرج أزرق */
 .memory-progress-fill {
     height: 100%;
     border-radius: 6px;
@@ -4154,7 +4602,6 @@ body:has(#exam.active) .left-side #navSubscribeBtn { order: 4 !important; }
     width: 0%;
 }
 
-/* النسبة على اليمين */
 .memory-progress-percent {
     font-size: 12px;
     font-weight: 600;
@@ -4164,7 +4611,6 @@ body:has(#exam.active) .left-side #navSubscribeBtn { order: 4 !important; }
     font-variant-numeric: tabular-nums;
 }
 
-/* أزرار التحكم - صغيرة وهادئة */
 .memory-progress-btn {
     background: none;
     border: none;
@@ -4185,10 +4631,6 @@ body:has(#exam.active) .left-side #navSubscribeBtn { order: 4 !important; }
 .memory-progress-btn.reset {
     font-size: 13px;
 }
-
-/* ============================================
-   مستطيل التقدم في شاشة البداية (من القائمة)
-   ============================================ */
 
 .memory-trainer-intro .progress-box {
     background: #FFFFFF;
@@ -4220,10 +4662,6 @@ body:has(#exam.active) .left-side #navSubscribeBtn { order: 4 !important; }
     min-width: 35px;
     text-align: right;
 }
-
-/* ============================================
-   للهواتف
-   ============================================ */
 
 @media (max-width: 640px) {
     .memory-trainer-intro,
@@ -4284,7 +4722,6 @@ body:has(#exam.active) .left-side #navSubscribeBtn { order: 4 !important; }
    Sentence Puzzle - أداة ترتيب الجمل (النسخة النهائية)
    ============================================ */
 
-/* أيقونة الجملة */
 .sentence-puzzle-icon {
     font-size: 16px;
     cursor: pointer;
@@ -4301,7 +4738,6 @@ body:has(#exam.active) .left-side #navSubscribeBtn { order: 4 !important; }
     transform: scale(1.1);
 }
 
-/* نافذة الترتيب */
 #sentencePuzzleOverlay {
     position: fixed;
     top: 0;
@@ -4333,7 +4769,6 @@ body:has(#exam.active) .left-side #navSubscribeBtn { order: 4 !important; }
     border: 1px solid #e8edf4;
 }
 
-/* الخانات - أفقي */
 .sentence-slot {
     flex: 1;
     min-width: 100px;
@@ -4365,7 +4800,6 @@ body:has(#exam.active) .left-side #navSubscribeBtn { order: 4 !important; }
     color: #1e293b;
 }
 
-/* البطاقات - أفقي ومستطيلة */
 .sentence-card {
     flex: 1;
     min-width: 120px;
@@ -4398,10 +4832,6 @@ body:has(#exam.active) .left-side #navSubscribeBtn { order: 4 !important; }
 .sentence-card[data-placed="true"] {
     display: none;
 }
-
-/* ============================================
-   للهواتف
-   ============================================ */
 
 @media (max-width: 768px) {
     #sentencePuzzleCard {
@@ -4571,7 +5001,6 @@ body:has(#exam.active) .left-side #navSubscribeBtn { order: 4 !important; }
     font-weight: 600;
 }
 
-/* طبقة وضع القراءة */
 #readingModeOverlay {
     position: fixed;
     top: 0;
@@ -4585,7 +5014,6 @@ body:has(#exam.active) .left-side #navSubscribeBtn { order: 4 !important; }
 }
 
 
-/* Toast الإشعار */
 @keyframes toastFadeIn {
     0% {
         opacity: 0;
@@ -4633,7 +5061,6 @@ body:has(#exam.active) .left-side #navSubscribeBtn { order: 4 !important; }
     transition: all 0.2s ease;
 }
 
-/* للهواتف */
 @media (max-width: 768px) {
     .view-mode-toggle-btn {
         width: 26px;
@@ -4649,10 +5076,9 @@ body:has(#exam.active) .left-side #navSubscribeBtn { order: 4 !important; }
    أزرار تبديل شكل القائمة
    ============================================ */
 
-/* الزر الأول (leaderboard ↔ 123) */
 .view-mode-toggle-btn-1 {
     position: absolute;
-    right: 40px;   /* ← جنب الزر الثاني */
+    right: 40px;
     top: 26%;
     transform: translateY(-50%);
     width: 30px;
@@ -4684,10 +5110,9 @@ body:has(#exam.active) .left-side #navSubscribeBtn { order: 4 !important; }
     transition: all 0.2s ease;
 }
 
-/* الزر الثاني (view_day ↔ grid_view ↔ view_module) */
 .view-mode-toggle-btn-2 {
     position: absolute;
-    right: 5px;    /* ← أقصى اليمين */
+    right: 5px;
     top: 26%;
     transform: translateY(-50%);
     width: 30px;
@@ -4719,7 +5144,6 @@ body:has(#exam.active) .left-side #navSubscribeBtn { order: 4 !important; }
     transition: all 0.2s ease;
 }
 
-/* للهواتف */
 @media (max-width: 768px) {
     .view-mode-toggle-btn-1,
     .view-mode-toggle-btn-2 {
@@ -4771,7 +5195,6 @@ body:has(#exam.active) .left-side #navSubscribeBtn { order: 4 !important; }
     transform: scale(0.95);
 }
 
-/* للهواتف */
 @media (max-width: 768px) {
     .version-badge {
         height: 18px;
@@ -4863,7 +5286,6 @@ body:has(#exam.active) .left-side #navSubscribeBtn { order: 4 !important; }
     text-align: left;
 }
 
-/* أنيميشن */
 @keyframes versionsFadeIn {
     from { opacity: 0; }
     to { opacity: 1; }
@@ -4874,7 +5296,6 @@ body:has(#exam.active) .left-side #navSubscribeBtn { order: 4 !important; }
     to { transform: scale(1); opacity: 1; }
 }
 
-/* للهواتف */
 @media (max-width: 768px) {
     #versionsPopup .versions-modal {
         padding: 20px 16px;
@@ -4937,7 +5358,6 @@ body:has(#exam.active) .left-side #navSubscribeBtn { order: 4 !important; }
     font-weight: 600 !important;
 }
 
-/* للهواتف */
 @media (max-width: 768px) {
     .custom-badge {
         height: 18px !important;
@@ -4983,7 +5403,6 @@ body:has(#exam.active) .left-side #navSubscribeBtn { order: 4 !important; }
     font-size: 22px;
 }
 
-/* Popover */
 .shortcuts-popover {
     position: fixed;
     top: 68px;
@@ -5048,7 +5467,6 @@ body:has(#exam.active) .left-side #navSubscribeBtn { order: 4 !important; }
     color: #94a3b8;
 }
 
-/* Animation */
 @keyframes popoverFadeIn {
     from {
         opacity: 0;
@@ -5060,7 +5478,6 @@ body:has(#exam.active) .left-side #navSubscribeBtn { order: 4 !important; }
     }
 }
 
-/* إظهار/إخفاء الزر يتم التحكم فيه عبر JS */
 #shortcutsToggleBtn {
     display: none;
 }
@@ -5135,7 +5552,6 @@ body:has(#exam.active) .left-side #navSubscribeBtn { order: 4 !important; }
     border-radius: 4px;
 }
 
-/* الوضع الليلي للنافذة */
 body.dark-mode #studyPlannerModal .session-modal-content {
     background: #14141e;
     border-color: rgba(255, 255, 255, 0.04);
@@ -5151,10 +5567,6 @@ body.dark-mode #studyPlannerModal h3 {
         max-width: 95%;
     }
 }
-/* ============================================
-   تحسينات إضافية لنافذة المدرب (اختيارية)
-   ============================================ */
-
 @media (max-width: 480px) {
     #studyPlannerModal .session-modal-content {
         padding: 16px 12px 12px;
@@ -5164,21 +5576,18 @@ body.dark-mode #studyPlannerModal h3 {
    خطة اليوم - التصميم النهائي
    ============================================ */
 
-/* تنسيق الأيقونات */
 .material-symbols-outlined {
     font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 20;
     font-size: 18px;
     color: #94a3b8;
 }
 
-/* الحاوية الرئيسية */
 .planner-card {
     font-family: 'Segoe UI', 'SF Pro', -apple-system, BlinkMacSystemFont, sans-serif;
     padding: 4px 0;
     color: #1e293b;
 }
 
-/* الصف العلوي - التاريخ والمتبقي */
 .planner-header {
     display: flex;
     justify-content: space-between;
@@ -5221,7 +5630,6 @@ body.dark-mode #studyPlannerModal h3 {
     font-weight: 600;
 }
 
-/* العنوان الرئيسي */
 .planner-title {
     text-align: center;
     font-size: 1rem;
@@ -5242,14 +5650,12 @@ body.dark-mode #studyPlannerModal h3 {
     font-weight: 600;
 }
 
-/* قائمة الامتحانات */
 .exam-list {
     display: flex;
     flex-direction: column;
     gap: 8px;
 }
 
-/* بطاقة الامتحان الواحدة */
 .exam-card {
     background: #ffffff;
     border-radius: 10px;
@@ -5270,7 +5676,6 @@ body.dark-mode #studyPlannerModal h3 {
     transform: scale(0.99);
 }
 
-/* عنوان البطاقة */
 .exam-header {
     display: flex;
     justify-content: space-between;
@@ -5293,7 +5698,6 @@ body.dark-mode #studyPlannerModal h3 {
     border: 1px solid #e8ecf0;
 }
 
-/* صف المعلومات - الأيقونات والقيم */
 .exam-info {
     display: flex;
     align-items: center;
@@ -5318,20 +5722,17 @@ body.dark-mode #studyPlannerModal h3 {
     font-weight: 500;
 }
 
-/* ===== ألوان النتيجة ===== */
 .score-red { color: #ef4444; }
 .score-orange { color: #f59e0b; }
 .score-yellow { color: #eab308; }
 .score-green { color: #22c55e; }
 
-/* ===== ألوان آخر مراجعة ===== */
 .review-green { color: #22c55e; }
 .review-lightgreen { color: #4ade80; }
 .review-gold { color: #eab308; }
 .review-red { color: #ef4444; }
 .review-gray { color: #94a3b8; }
 
-/* ===== الوضع الليلي ===== */
 body.dark-mode .planner-card {
     color: #e8ecf0;
 }
@@ -5380,7 +5781,6 @@ body.dark-mode .exam-info-item .material-symbols-outlined {
     color: #64748b;
 }
 
-/* ===== الهواتف ===== */
 @media (max-width: 768px) {
     .planner-card {
         padding: 2px 0;
@@ -5420,14 +5820,12 @@ body.dark-mode .exam-info-item .material-symbols-outlined {
    Study Planner - تدفق جديد
    ============================================ */
 
-/* ===== البطاقة العامة ===== */
 .planner-card {
     font-family: 'Segoe UI', 'SF Pro', -apple-system, BlinkMacSystemFont, sans-serif;
     padding: 4px 0;
     color: #1e293b;
 }
 
-/* ===== صفحة إدخال المعلومات ===== */
 .planner-welcome-title {
     font-size: 1rem;
     font-weight: 500;
@@ -5492,7 +5890,6 @@ body.dark-mode .exam-info-item .material-symbols-outlined {
     background: #1a2a4a;
 }
 
-/* ===== Loader ===== */
 .planner-loader-overlay {
     position: fixed;
     top: 0;
@@ -5532,7 +5929,6 @@ body.dark-mode .exam-info-item .material-symbols-outlined {
     to { transform: rotate(360deg); }
 }
 
-/* ===== صفحة اختيار القسم ===== */
 .planner-section-title {
     font-size: 0.95rem;
     font-weight: 400;
@@ -5579,7 +5975,6 @@ body.dark-mode .exam-info-item .material-symbols-outlined {
     transform: scale(0.97) translateY(0px);
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.02);
 }
-/* ===== الشريط العلوي (الصفحة الرئيسية) ===== */
 .planner-top-bar {
     display: flex;
     justify-content: space-between;
@@ -5628,7 +6023,6 @@ body.dark-mode .exam-info-item .material-symbols-outlined {
     color: #94a3b8;
 }
 
-/* ===== النوافذ المنبثقة (settings + info) ===== */
 .planner-popup-overlay {
     position: fixed;
     top: 0;
@@ -5700,7 +6094,6 @@ body.dark-mode .exam-info-item .material-symbols-outlined {
     background: #e2e8f0;
 }
 
-/* ===== الوضع الليلي ===== */
 body.dark-mode .planner-input-group input {
     background: #1e1e2e;
     border-color: #2a2a3a;
@@ -5769,8 +6162,6 @@ body.dark-mode .planner-welcome-title {
 body.dark-mode .planner-section-title {
     color: #e8ecf0;
 }
-/* ===== زر خطة اليوم الجديد (مع Border Animation) ===== */
-/* ===== زر خطة اليوم الجديد (مع Border Animation) ===== */
 .study-planner-icon-btn {
     position: relative;
     background: rgba(255, 255, 255, 0.05);
@@ -5786,17 +6177,14 @@ body.dark-mode .planner-section-title {
     justify-content: center;
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
     
-    /* ✅ التعديل الجديد: تصغير الزر إلى 85% */
     transform: scale(0.85);
     transform-origin: center center;
 }
 
-/* ✅ إضافة هذا الكود لتصحيح حجم الزر عند التمرير عليه (Hover) */
 .study-planner-icon-btn:hover {
-    transform: scale(0.884) !important; /* 0.85 * 1.04 (لأن الحجم الأصلي في Hover هو 1.04) */
+    transform: scale(0.884) !important;
 }
 
-/* الصورة داخل الزر – ثابتة ولا تتحرك */
 .study-planner-icon-btn .planner-icon-img {
     width: 20px;
     height: 20px;
@@ -5808,7 +6196,6 @@ body.dark-mode .planner-section-title {
     transform: none;
 }
 
-/* ===== الإطار المتدرج الثابت (الحركة فقط في الألوان) ===== */
 .study-planner-icon-btn::before {
     content: '';
     position: absolute;
@@ -5829,7 +6216,6 @@ body.dark-mode .planner-section-title {
     pointer-events: none;
 }
 
-/* ===== Glow خفيف حول الإطار ===== */
 .study-planner-icon-btn::after {
     content: '';
     position: absolute;
@@ -5845,20 +6231,17 @@ body.dark-mode .planner-section-title {
     pointer-events: none;
 }
 
-/* Hover الخاص بالـ Glow */
 .study-planner-icon-btn:hover::after {
     opacity: 1;
     box-shadow: 0 0 12px rgba(56, 189, 248, 0.35);
 }
 
-/* أنيميشن التدرج اللوني */
 @keyframes gradientMove {
     0% { background-position: 0% 0%; }
     50% { background-position: 100% 100%; }
     100% { background-position: 0% 0%; }
 }
 
-/* ===== التحكم في إظهار/إخفاء وموضع زر الرئيسية ===== */
 #backHomeBtn {
     display: none !important;
 }
@@ -5876,17 +6259,14 @@ body:has(#exam.active) #backHomeBtn {
     transform: translateY(-8px);
 }
 
-/* ===== مسافة صغيرة جداً بين آخر امتحان والأزرار ===== */
 #examsList {
     padding-bottom: 5px !important;
 }
-/* ===== إزالة أي هوامش من آخر عنصر في القائمة ===== */
 #examsList .item:last-child {
     margin-bottom: 0px !important;
     padding-bottom: 0px !important;
 }
 
-/* ✅ تنسيق سطر الخطة في الملف الشخصي */
 #profilePlannerRow .profile-planner-text-active {
     color: #38bdf8 !important;
     font-weight: 500;
@@ -5896,7 +6276,6 @@ body:has(#exam.active) #backHomeBtn {
     border-color: rgba(255, 255, 255, 0.25) !important;
     transform: scale(1.05);
 }
-/* ✅ أيقونة info في الملف الشخصي */
 #profilePlannerRow {
     position: relative;
 }
@@ -6066,7 +6445,6 @@ body:has(#exam.active) #backHomeBtn {
     opacity: 1;
     visibility: visible;
 }
-/* Hover animations */
 .subscribe-uiverse-btn:hover .subscribe-uiverse-icon {
     animation: none;
 }
@@ -6090,7 +6468,6 @@ body:has(#exam.active) #backHomeBtn {
     animation: subscribeIconRotate 2.5s infinite;
     animation-delay: 1.5s;
 }
-/* Active state - show only checkmark */
 .subscribe-uiverse-btn:active .subscribe-uiverse-icon {
     animation: none;
     opacity: 0;
@@ -6205,7 +6582,6 @@ body:has(#exam.active) #backHomeBtn {
     transform: rotate(180deg);
 }
 
-/* القائمة المنسدلة */
 .goal-dropdown {
     width: 100%;
     max-width: 280px;
@@ -6286,7 +6662,6 @@ body:has(#exam.active) #backHomeBtn {
     font-size: 20px;
 }
 
-/* بطاقة الإنجاز */
 .achievement-card {
     width: 100%;
     max-width: 280px;
@@ -6346,7 +6721,6 @@ body:has(#exam.active) #backHomeBtn {
     opacity: 0.5;
 }
 
-/* Responsive */
 @media (max-width: 480px) {
     .goal-selector, .goal-dropdown, .goal-save-btn, .achievement-card {
         max-width: 100%;
