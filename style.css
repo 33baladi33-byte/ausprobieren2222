@@ -430,9 +430,10 @@ body {
     overflow: hidden;
     flex-direction: column;
     border: 1px solid rgba(56, 189, 248, 0.2);
-    box-sizing: border-box !important;  /* 🔥 إضافة هذه الخاصية */
-    flex-shrink: 0 !important;         /* 🔥 منع الانكماش */
-    min-width: 280px !important;       /* 🔥 ضمان عرض مناسب */
+    box-sizing: border-box !important;
+    flex-shrink: 0 !important;
+    min-width: 280px !important;
+    /* إزالة أي left أو transform من القاعدة الأساسية، سيتم التحكم بها في media query */
 }
 
 .notification-dropdown.active {
