@@ -1595,7 +1595,8 @@ async function renderExamListForSkill(skill, teilName) {
     div.appendChild(titleSpan);
     
     displaySavedResult(targetSkill, exam.id, titleSpan, div);
-// إنشاء حاوية المعلومات
+
+   // إنشاء حاوية المعلومات
 const chipsContainer = document.createElement('div');
 chipsContainer.className = 'exam-info-chips';
 
@@ -1627,8 +1628,8 @@ chipsContainer.appendChild(daysChip);
 // Chip Memory
 const memoryChip = document.createElement('span');
 memoryChip.className = 'exam-chip memory';
-const progress = getExamProgress(targetSkill, exam.id);
-memoryChip.innerHTML = `<span class="material-symbols-outlined">auto_awesome</span> ${progress}%`;
+const memoryProgress = getExamProgress(targetSkill, exam.id);
+memoryChip.innerHTML = `<span class="material-symbols-outlined">auto_awesome</span> ${memoryProgress}%`;
 chipsContainer.appendChild(memoryChip);
 
 // إضافة المعلومات إلى البطاقة
@@ -1889,21 +1890,6 @@ function showVersionsPopup(exam, skill) {
     }
   });
 }
-
-// دالة مساعدة لفتح الإصدار من داخل النافذة المنبثقة
-window.closeVersionsPopupAndOpen = function(skill, id, file, title) {
-  const popup = document.getElementById('versionsPopupAuto');
-  if (popup) popup.remove();
-  window.openExam(id, title, skill, file);
-};
-
-// دالة مساعدة لفتح الإصدار من داخل النافذة المنبثقة
-window.closeVersionsPopupAndOpen = function(skill, id, file, title) {
-  const popup = document.getElementById('versionsPopupAuto');
-  if (popup) popup.remove();
-  window.openExam(id, title, skill, file);
-};
-
 // دالة مساعدة لفتح الإصدار من داخل النافذة المنبثقة
 window.closeVersionsPopupAndOpen = function(skill, id, file, title) {
   const popup = document.getElementById('versionsPopupAuto');
