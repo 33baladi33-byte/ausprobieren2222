@@ -242,7 +242,6 @@ async function createInitialUserDocument(user) {
     await db.collection('users').doc(user.uid).set(data);
     return data;
 }
-
 function updateUI(user, data) {
     // تحديث المخبأ للاستخدام في التقرير
     window._cachedUserData = data || null;
@@ -302,6 +301,11 @@ function updateUI(user, data) {
         const reportBtn = document.getElementById('downloadReportBtn');
         if (reportBtn) {
             reportBtn.style.display = 'flex';
+        }
+        
+        // تحديث زر الذكاء الاصطناعي حسب الحالة
+        if (typeof window.applyAISendLock === 'function') {
+            setTimeout(window.applyAISendLock, 50);
         }
         return;
     }
@@ -374,6 +378,11 @@ function updateUI(user, data) {
     // ✅ تطبيق قفل الخطة اليومية إذا كان متاحاً
     if (typeof window.applyStudyPlanLock === 'function') {
         setTimeout(window.applyStudyPlanLock, 100);
+    }
+    
+    // تحديث زر الذكاء الاصطناعي حسب الحالة
+    if (typeof window.applyAISendLock === 'function') {
+        setTimeout(window.applyAISendLock, 50);
     }
 }
 // ============================================
