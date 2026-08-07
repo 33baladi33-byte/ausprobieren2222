@@ -2588,13 +2588,13 @@ function applyExamListView(mode) {
         // ===== 4. الإحصائيات =====
         item.querySelectorAll('.exam-chip').forEach(chip => {
             chip.style.cssText = `
-                font-size: ${8 * contentMultiplier}px;
+                font-size: ${(8 * contentMultiplier) + 2}px;
                 line-height: 1;
             `;
             const icon = chip.querySelector('.material-symbols-outlined');
             if (icon) {
                 icon.style.cssText = `
-                    font-size: ${(8 * contentMultiplier) + 2}px !important;
+                    font-size: ${(8 * contentMultiplier) + 4}px !important;
                     line-height: 1;
                 `;
             }
