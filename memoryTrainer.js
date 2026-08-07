@@ -44,90 +44,10 @@ class MemoryTrainer {
         this.currentSkill = 'hoeren1';
         this.currentExamId = 1;
 
-         // ✅ خريطة لتخزين sharedOptions لكل امتحان (خاص بـ Lesen 1 و 3 فقط)
+        // ✅ خريطة لتخزين sharedOptions لكل امتحان (خاص بـ Lesen 1 و 3 فقط)
         this.examSharedOptionsMap = {};
-
-        // ✅ مفاتيح حفظ التقدم في localStorage
-        this.PROGRESS_KEY_PREFIX = 'memory_progress_';
     }
 
-    // ============================================
-    // دوال حفظ واسترجاع التقدم (خاصة بوضع list)
-    // ============================================
-
-    getProgressKey(skill) {
-        return this.PROGRESS_KEY_PREFIX + skill;
-    }
-
-    saveProgress(skill, index, queue) {
-        if (!skill) return;
-        try {
-            // حفظ القائمة كمعرفات فريدة لتجنب تخزين كائنات كبيرة
-            const queueIds = queue.map(item => {
-                // بناء معرف فريد للسؤال: skill_examId_questionIndex
-                const examId = item.examId || 1;
-                const qIndex = item.questionIndex !== undefined ? item.questionIndex : 0;
-                return `${skill}_${examId}_${qIndex}`;
-            });
-            const data = {
-                index: index,
-                queue: queueIds,
-                timestamp: Date.now()
-            };
-            localStorage.setItem(this.getProgressKey(skill), JSON.stringify(data));
-        } catch (e) {
-            console.warn('⚠️ فشل حفظ تقدم Memory Trainer:', e);
-        }
-    }
-
-    loadProgress(skill) {
-        try {
-            const raw = localStorage.getItem(this.getProgressKey(skill));
-            if (!raw) return null;
-            const data = JSON.parse(raw);
-            // التحقق من صحة البيانات
-            if (typeof data.index === 'number' && Array.isArray(data.queue)) {
-                return data;
-            }
-            return null;
-        } catch (e) {
-            console.warn('⚠️ فشل استرجاع تقدم Memory Trainer:', e);
-            return null;
-        }
-    }
-
-    clearProgress(skill) {
-        if (!skill) return;
-        try {
-            localStorage.removeItem(this.getProgressKey(skill));
-        } catch (e) {
-            console.warn('⚠️ فشل مسح تقدم Memory Trainer:', e);
-        }
-    }
-
-    // دالة لاستعادة القائمة الأصلية من المعرفات المخزنة
-    restoreQueueFromIds(skill, queueIds, originalQuestions) {
-        if (!queueIds || !originalQuestions) return null;
-        const restored = [];
-        for (const id of queueIds) {
-            // id format: skill_examId_questionIndex
-            const parts = id.split('_');
-            if (parts.length < 3) continue;
-            const examId = parseInt(parts[1]);
-            const qIndex = parseInt(parts[2]);
-            // البحث عن السؤال في originalQuestions
-            const found = originalQuestions.find(q => {
-                return (q.examId || 1) === examId && (q.questionIndex !== undefined ? q.questionIndex : 0) === qIndex;
-            });
-            if (found) {
-                restored.push(found);
-            } else {
-                // إذا لم نجد السؤال، نضيف نسخة احتياطية (قد يكون السؤال محذوفاً أو تغير)
-                console.warn(`⚠️ لم يتم العثور على السؤال (${id})، سيتم تخطيه`);
-            }
-        }
-        return restored;
-    }
     // ============================================
     // ✅ دالة الحصول على حالة المستخدم (مصدر واحد)
     // ============================================
@@ -157,6 +77,7 @@ class MemoryTrainer {
         this.isFromList = false;
         this.sharedOptions = [];
         this.examSharedOptionsMap = {}; // إعادة تعيين الخريطة
+
         // ✅ وضع قائمة المراحل (من زر القائمة)
         if (mode === 'list') {
             const combinedKey = `_${this.currentSkill}_combinedData`;
@@ -257,6 +178,7 @@ class MemoryTrainer {
                 } 
                 // ============================================
                 // ✅ ✅ ✅ باقي المهارات (Hören, Lesen 2, Sprachbausteine) ✅ ✅ ✅
+                // تبقى كما كانت في النسخة الأصلية
                 // ============================================
                 else {
                     let rawQuestions = examData.allQuestions || [];
@@ -291,36 +213,6 @@ class MemoryTrainer {
                     this.showNotAvailable(`لم يتم تحميل بيانات ${this.currentSkill} بعد`);
                     return;
                 }
-            }
-
-            // ✅ بعد تحميل الأسئلة وبناء القائمة، نحاول استرجاع التقدم المحفوظ
-            const savedProgress = this.loadProgress(this.currentSkill);
-            if (savedProgress && savedProgress.queue && savedProgress.queue.length > 0) {
-                // استعادة القائمة من المعرفات المخزنة
-                const restoredQueue = this.restoreQueueFromIds(this.currentSkill, savedProgress.queue, this.questions);
-                if (restoredQueue && restoredQueue.length > 0) {
-                    // التحقق من أن القائمة المستعادة لها نفس طول القائمة الأصلية (أو على الأقل تطابق جزئي)
-                    if (restoredQueue.length === this.questions.length) {
-                        // استخدام القائمة المستعادة كـ trainingQueue
-                        this.trainingQueue = restoredQueue;
-                        // تعيين المؤشر، مع التأكد من أنه لا يتجاوز الطول
-                        this.currentIndex = Math.min(savedProgress.index, this.trainingQueue.length - 1);
-                        console.log(`🔄 تم استرجاع التقدم: ${this.currentIndex + 1}/${this.trainingQueue.length}`);
-                    } else {
-                        console.warn('⚠️ القائمة المستعادة لا تتطابق مع الأسئلة الحالية، سيتم إنشاء قائمة جديدة');
-                        // إذا لم تتطابق، نبني قائمة جديدة
-                        this.buildTrainingQueue();
-                        // نمسح التقدم القديم لأنه أصبح غير صالح
-                        this.clearProgress(this.currentSkill);
-                    }
-                } else {
-                    // إذا فشل الاسترجاع، نبني قائمة جديدة
-                    this.buildTrainingQueue();
-                    this.clearProgress(this.currentSkill);
-                }
-            } else {
-                // لا يوجد تقدم محفوظ، نبني قائمة جديدة
-                this.buildTrainingQueue();
             }
         } 
         // ✅ وضع الامتحان الفردي (من زر 🧠 داخل الامتحان)
@@ -517,11 +409,6 @@ class MemoryTrainer {
         }
         this.trainingQueue = this.shuffleArray([...baseQueue, ...repeatItems]);
         console.log(`📊 قائمة التدريب: ${this.trainingQueue.length} جملة (${this.isFromList ? 'مرحلة' : 'امتحان فردي'})`);
-
-        // ✅ إذا كان الوضع list، نحفظ التقدم فوراً (المؤشر 0)
-        if (this.isFromList && this.currentSkill) {
-            this.saveProgress(this.currentSkill, 0, this.trainingQueue);
-        }
     }
 
     // ============================================
@@ -1586,29 +1473,18 @@ class MemoryTrainer {
         const percentText = this.card?.querySelector('.memory-progress-percent');
         if (percentText) percentText.textContent = percent + '%';
     }
+
     retryQuestion() {
         this.isAnswered = false;
         this.currentIndex--;
-        // ✅ حفظ التقدم (وضع list فقط)
-        if (this.isFromList && this.currentSkill && this.currentIndex >= 0) {
-            this.saveProgress(this.currentSkill, this.currentIndex, this.trainingQueue);
-        }
         this.nextQuestion();
     }
 
     nextQuestion() {
         this.currentIndex++;
         if (this.currentIndex < this.trainingQueue.length) {
-            // ✅ حفظ التقدم (وضع list فقط)
-            if (this.isFromList && this.currentSkill) {
-                this.saveProgress(this.currentSkill, this.currentIndex, this.trainingQueue);
-            }
             this.showMemoryCard();
         } else {
-            // ✅ عند الانتهاء، نمسح التقدم لأنه اكتمل
-            if (this.isFromList && this.currentSkill) {
-                this.clearProgress(this.currentSkill);
-            }
             this.showPhaseComplete();
         }
     }
@@ -1670,10 +1546,6 @@ class MemoryTrainer {
         this.currentIndex = 0;
         this.totalQuestions = this.trainingQueue.length;
         this.wrongQuestions = [];
-        // ✅ حفظ التقدم الجديد (وضع list فقط)
-        if (this.isFromList && this.currentSkill) {
-            this.saveProgress(this.currentSkill, this.currentIndex, this.trainingQueue);
-        }
         this.showMemoryCard();
     }
 
@@ -1860,21 +1732,17 @@ class MemoryTrainer {
         this.questions = [];
         this.allQuestions = [];
         this.sharedOptions = [];
-        // لا نمسح trainingQueue و currentIndex هنا لأننا نريد الاحتفاظ بالتقدم عند الخروج
-        // ولكن نعيد تعيين المتغيرات الأخرى
+        this.trainingQueue = [];
         this.wrongQuestions = [];
-        // لا نعيد تعيين currentIndex هنا حتى لا نفقد التقدم
-        // this.currentIndex = 0; // تم التعليق عليه
+        this.currentIndex = 0;
         this.isActive = false;
         this.isReviewMode = false;
-        // لا نغير isFromList حتى نعرف إذا كنا في وضع list
-        // this.isFromList = false;
+        this.isFromList = false;
         this.attempts = 0;
         this.correctAttempts = 0;
         this.totalQuestions = 0;
         this.currentExamId = 1;
         this.examType = 'hoeren';
-        // ⚠️ لا نمسح التقدم هنا، سيتم مسحه فقط عند الانتهاء (في nextQuestion عند نهاية القائمة)
     }
 }
 
