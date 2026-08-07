@@ -401,21 +401,23 @@ body {
 .notification-badge {
     position: absolute;
     top: -5px;
-    right: auto;
-    left: -6px;
+    left: -7px;
+    width: 12px;
+    height: 12px;
+    min-width: 12px;
+    font-size: 7px;
     background: #dc3545;
     color: white;
-    font-size: 10px;
-    font-weight: bold;
-    min-width: 18px;
-    height: 18px;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 0 4px;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
-    animation: badgePulse 2s ease-in-out infinite;
+    padding: 0;
+    font-weight: bold;
+    box-shadow: 0 1px 4px rgba(220, 53, 69, 0.3);
+    z-index: 2;
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    animation: badgePulse 2.5s ease-in-out infinite;
 }
 .notification-dropdown {
     position: absolute;
@@ -745,25 +747,7 @@ body:has(#exam.active) .profile-icon {
     animation: bellRing 0.9s both;
 }
 
-/* ===== Badge الإشعارات ===== */
-.notification-bell .notification-badge {
-    position: absolute;
-    top: -4px;
-    right: -4px;
-    background: #dc3545;
-    color: white;
-    font-size: 9px;
-    font-weight: bold;
-    min-width: 18px;
-    height: 18px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 0 4px;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
-    z-index: 2;
-}
+/* تم دمج تعريف .notification-bell .notification-badge مع التعريف الأساسي، لا حاجة لهذا التعريف */
 
 /* ===== اهتزاز الجرس ===== */
 @keyframes bellRing {
@@ -1714,13 +1698,14 @@ body:has(#exam.active) .left-side #navSubscribeBtn { order: 4 !important; }
         flex-shrink: 0 !important;
     }
     .notification-badge {
-    min-width: 14px !important;
-    height: 14px !important;
-    font-size: 8px !important;
-    top: -4px !important;
-    left: -5px !important;
-    animation: badgePulse 2s ease-in-out infinite !important;
-}
+        min-width: 10px !important;
+        height: 10px !important;
+        font-size: 6px !important;
+        top: -4px !important;
+        left: -6px !important;
+        animation: badgePulse 2.5s ease-in-out infinite !important;
+        border-width: 0.5px !important;
+    }
 @media (min-width: 769px) {
     /* توحيد جميع الأزرار الأربعة في الحاسوب */
     .settings-icon-btn,
