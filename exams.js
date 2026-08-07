@@ -1594,7 +1594,7 @@ async function renderExamListForSkill(skill, teilName) {
     
     div.appendChild(titleSpan);
     
-    displaySavedResult(targetSkill, exam.id, titleSpan, div);
+// تم إزالة إضافة النتيجة إلى عنوان الامتحان لمنع التكرار
 
                 // إنشاء حاوية المعلومات - فقط للأقسام المسموحة (ليس Mündlich و Schreiben)
                 const forbiddenChipsSkills = ['schreiben', 'mündlich', 'mündlich1', 'mündlich2', 'mündlich3'];
