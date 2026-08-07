@@ -1944,7 +1944,6 @@ body:has(#exam.active) .left-side #navSubscribeBtn { order: 4 !important; }
         flex-shrink: 0 !important;
     }
     
-    /* زر التصحيح - نفس تصميم الحاسوب مع حجم مناسب للهاتف */
     .check-btn {
         padding: 10px 20px !important;
         font-size: 0.8rem !important;
@@ -1953,14 +1952,22 @@ body:has(#exam.active) .left-side #navSubscribeBtn { order: 4 !important; }
         margin-top: 10px !important;
         min-height: 44px !important;
         width: 100% !important;
-        background: linear-gradient(135deg, #38bdf8, #0ea5e9) !important;
-        color: #0a0e1a !important;
-        border: none !important;
+        background: #1a202c !important;
+        color: #cbd5e1 !important;
+        border: 1px solid #2d3748 !important;
         cursor: pointer !important;
         transition: all 0.2s ease !important;
-        box-shadow: 0 2px 8px rgba(56, 189, 248, 0.2) !important;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.15) !important;
         font-family: inherit !important;
         letter-spacing: 0.3px !important;
+    }
+    .check-btn:hover {
+        background: #2d3748 !important;
+        color: #e2e8f0 !important;
+    }
+    .check-btn:active {
+        background: #0d1117 !important;
+        transform: scale(0.97) !important;
     }
     
     .check-btn:hover {
