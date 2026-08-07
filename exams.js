@@ -2375,13 +2375,19 @@ function createViewModeToggles() {
     header.appendChild(btn2);
     applyExamListView(getExamListMode());
 }
-
 // ============================================
-// ✅ دالة applyExamListView المعدلة - توحيد ارتفاع البطاقات
+// ✅ دالة applyExamListView - نظام الحجم المتدرج (60% ←→ 150%)
 // ============================================
 function applyExamListView(mode) {
     const list = document.getElementById("examsList");
     if (!list) return;
+
+    // نطاق التعديل: فقط الأقسام التي تستخدم grid_view
+    const allowedSkills = ['hoeren1', 'hoeren2', 'hoeren3', 'lesen1', 'lesen2', 'lesen3', 'sprach1', 'sprach2', 'mündlich', 'mündlich1', 'mündlich2', 'mündlich3', 'schreiben'];
+    if (!allowedSkills.includes(currentSkill)) {
+        // إذا كانت المهارة غير مسموحة، نخرج (لا نطبق grid)
+        return;
+    }
 
     const oldGrid = document.getElementById("examGridContainer");
     if (oldGrid) {
@@ -2451,15 +2457,38 @@ function applyExamListView(mode) {
 
     const fixedHeight = Math.min(Math.max(maxHeight, 50), 60);
 
+    // ============================================================
+    // 📐 نظام الحجم المتدرج
+    // ============================================================
+    let scaleFactor = 0.8; // افتراضي 80%
+    try {
+        const saved = localStorage.getItem('siteFontScale');
+        if (saved) {
+            const val = parseFloat(saved);
+            if (!isNaN(val) && val >= 60 && val <= 150) {
+                scaleFactor = val / 100;
+            }
+        }
+    } catch (e) {}
+
+    // معادلة: 80% → 0.7 ,  150% → 1.5
+    const contentMultiplier = 1.142857 * scaleFactor - 0.2142856;
+    // نسبة عنوان أصغر من باقي المحتوى (لئلا يخرج)
+    const titleRatio = 0.65;
+    // نمو البطاقة: 20% فقط من نمو المحتوى
+    const heightFactor = 1 + 0.20 * (contentMultiplier - 1);
+    const adaptedHeight = Math.min(Math.max(fixedHeight * heightFactor, 42), 100);
+
     exams.forEach(item => {
         grid.appendChild(item);
 
+        // ===== 1. أنماط البطاقة =====
         item.style.cssText = `
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            height: ${fixedHeight}px;
+            height: ${adaptedHeight}px;
             padding: 4px 4px;
             background: #fafbfc;
             border: 1px solid #e8ecef;
@@ -2467,13 +2496,13 @@ function applyExamListView(mode) {
             margin: 0;
             box-shadow: none;
             text-align: center;
-            font-size: 11px;
+            font-size: ${11 * contentMultiplier}px;
             cursor: pointer;
             transition: all 0.25s ease;
-            overflow: hidden;
+            overflow: visible;
         `;
 
-        // تأثيرات Hover
+        // ===== تأثيرات Hover (نفسها) =====
         item.addEventListener('mouseenter', function() {
             const isPremium = this.querySelector('.premium-badge') !== null;
             if (isPremium) {
@@ -2518,7 +2547,7 @@ function applyExamListView(mode) {
             if (premiumSpan) premiumSpan.style.transform = "scale(1)";
         });
 
-        // تأثير Active
+        // تأثير Active (نفسه)
         item.addEventListener('mousedown', function() {
             this.style.transform = "scale(0.98)";
             this.style.backgroundColor = "#e2e8f0";
@@ -2532,17 +2561,85 @@ function applyExamListView(mode) {
             this.style.transition = "all 0.25s ease";
         });
 
+        // ===== 2. عنوان الامتحان =====
         const title = item.querySelector(".exam-title");
         if (title) {
-            title.style.fontSize = "11px";
-            title.style.transition = "color 0.25s ease";
+            title.style.cssText = `
+                font-size: ${11 * contentMultiplier * titleRatio}px;
+                line-height: 1.1;
+                max-width: 95%;
+                white-space: normal;
+                word-break: break-word;
+                text-align: center;
+                flex-shrink: 1;
+                transition: color 0.25s ease;
+            `;
         }
 
+        // ===== 3. نتيجة الامتحان =====
         const badge = item.querySelector(".exam-result-badge");
-        if (badge) badge.style.fontSize = "8px";
+        if (badge) {
+            badge.style.cssText = `
+                font-size: ${8 * contentMultiplier}px;
+                line-height: 1;
+            `;
+        }
+
+        // ===== 4. الإحصائيات =====
+        item.querySelectorAll('.exam-chip').forEach(chip => {
+            chip.style.cssText = `
+                font-size: ${8 * contentMultiplier}px;
+                line-height: 1;
+            `;
+            const icon = chip.querySelector('.material-symbols-outlined');
+            if (icon) {
+                icon.style.cssText = `
+                    font-size: ${(8 * contentMultiplier) + 2}px !important;
+                    line-height: 1;
+                `;
+            }
+        });
+
+        // ===== 5. شارة التعديلات =====
+        const versionBadge = item.querySelector('.custom-badge');
+        if (versionBadge) {
+            const vSize = 8 * contentMultiplier;
+            versionBadge.style.cssText = `
+                display: inline-flex !important;
+                align-items: center !important;
+                justify-content: center !important;
+                gap: 1px !important;
+                background: linear-gradient(135deg, #334155, #1e293b) !important;
+                color: #f1f5f9 !important;
+                border-radius: 999px !important;
+                padding: 0 4px 0 2px !important;
+                height: ${Math.max(10, Math.min(18, 14 * contentMultiplier))}px !important;
+                flex-shrink: 0 !important;
+                pointer-events: none !important;
+                user-select: none !important;
+                line-height: 1 !important;
+                border: 1px solid #475569 !important;
+                font-size: ${vSize}px !important;
+            `;
+            const icon = versionBadge.querySelector('.material-symbols-outlined');
+            if (icon) {
+                icon.style.cssText = `
+                    font-size: ${vSize}px !important;
+                    line-height: 1 !important;
+                `;
+            }
+            const numSpan = versionBadge.querySelector('span:last-child');
+            if (numSpan) {
+                numSpan.style.cssText = `
+                    font-size: ${vSize * 0.85}px !important;
+                    font-weight: 600 !important;
+                    line-height: 1 !important;
+                `;
+            }
+        }
     });
 
-    console.log("🟦 Grid View");
+    console.log("🟦 Grid View مع نظام الحجم المتدرج (60%-150%)");
 }
 
 // ============================================
